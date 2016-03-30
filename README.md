@@ -4,7 +4,15 @@ According to YouTube's [policy](http://support.google.com/youtube/answer/2734796
 
 With YouTube External Subtitle you can display subtitles over the embedded video from YouTube on your site. These texts could be translations, comments or lyrics as well. (Any kind of texts is allowed)
 
-If you would like to make subtitle for a video, there are a lot of tools helping you.
+## GITHUB
+
+http://github.com/siloor/youtube.external.subtitle
+
+Please, don't forget to star the repository if you like (and use) the script. This will let me know how many users it has and then how to proceed with further development.
+
+## Making subtitles
+
+If you'd like to make subtitle for a video, there are a lot of tools helping you.
 
 - YouTube has an automatic english speech recognition logic, that does a really good job and makes only a few mistakes. Its a very big help by timing the subtitles.
 - On [DownSub.com](http://downsub.com/) you can download the subtitles from YouTube as an SRT file.
@@ -20,8 +28,6 @@ If you would like to make subtitle for a video, there are a lot of tools helping
 
 By using YouTube's flash video player the subtitle is not visible, the Flash Player is on the top of everything. That is why YouTube External Subtitle is forcing to use YouTube's HTML5 video player (it adds a html5=1 parameter to the iframe's source). This should be an issue only by some very old browsers.
 
-By some mobile devices the fullscreen feature hides the subtitle as well, because the native video player requires the whole screen.
-
-If the fullscreen feature is not that important for you and you have a very huge mobile traffic, maybe you should consider to disable the fullscreen button on the video player (fs=0 parameter).
+By some mobile devices the fullscreen feature hides the subtitle as well, because the native video player requires the whole screen. If the fullscreen feature is not that important for you and you have a very huge mobile traffic, maybe you should consider to disable the fullscreen button on the video player (fs=0 parameter).
 
 The script supports AMD.
