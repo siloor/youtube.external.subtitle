@@ -4,26 +4,27 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>YouTube External Subtitle</title>
-    <link rel="shortcut icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_32.png" sizes="32x32" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_48.png" sizes="48x48" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_96.png" sizes="96x96" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_144.png" sizes="144x144" />
-    <link href="//siloor.com/youtube.external.subtitle/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="//siloor.com/youtube.external.subtitle/static/css/markdown.css" rel="stylesheet" />
-    <link href="//siloor.com/youtube.external.subtitle/static/css/index.css" rel="stylesheet" />
+    <base href="./" />
+    <link rel="shortcut icon" href="static/img/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="static/img/favicon/favicon_32.png" sizes="32x32" />
+    <link rel="icon" href="static/img/favicon/favicon_48.png" sizes="48x48" />
+    <link rel="icon" href="static/img/favicon/favicon_96.png" sizes="96x96" />
+    <link rel="icon" href="static/img/favicon/favicon_144.png" sizes="144x144" />
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="static/css/markdown.css" rel="stylesheet" />
+    <link href="static/css/index.css" rel="stylesheet" />
     <!--[if lt IE 9]>
-    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/html5shiv.min.js"></script>
-    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/respond.min.js"></script>
+    <script src="static/bootstrap/js/html5shiv.min.js"></script>
+    <script src="static/bootstrap/js/respond.min.js"></script>
     <![endif]-->
-    <script src="//siloor.com/youtube.external.subtitle/static/js/jquery-1.11.2.min.js"></script>
-    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/js/jquery-1.11.2.min.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="//siloor.com/youtube.external.subtitle/">YouTube External Subtitle</a>
+            <a class="navbar-brand" href="">YouTube External Subtitle</a>
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -37,6 +38,10 @@
     <h1>YouTube External Subtitle</h1>
     <p>According to YouTube's <a href="http://support.google.com/youtube/answer/2734796?hl=en">policy</a>, only the owner of the content can add subtitle to a video.</p>
     <p>With YouTube External Subtitle you can display subtitles over the embedded video from YouTube on your site. These texts could be translations, comments or lyrics as well. (Any kind of texts is allowed)</p>
+    <h2>GITHUB</h2>
+    <p><a href="https://siloor.github.io/youtube.external.subtitle/">https://siloor.github.io/youtube.external.subtitle/</a></p>
+    <p>Please, don't forget to star the repository if you like (and use) the script. This will let me know how many users it has and then how to proceed with further development.</p>
+    <h2>Making subtitles</h2>
     <p>If you would like to make subtitle for a video, there are a lot of tools helping you.</p>
     <ul>
         <li>YouTube has an automatic english speech recognition logic, that does a really good job and makes only a few mistakes. Its a very big help by timing the subtitles.</li>
@@ -45,9 +50,9 @@
     </ul>
     <h2>Examples</h2>
     <ul>
-        <li><a href="http://siloor.com/youtube.external.subtitle/examples/basic">Basic example</a></li>
-        <li><a href="http://siloor.com/youtube.external.subtitle/examples/srt">Load an SRT file</a></li>
-        <li><a href="http://siloor.com/youtube.external.subtitle/examples/moresubtitles">More subtitles</a></li>
+        <li><a href="examples/basic">Basic example</a></li>
+        <li><a href="examples/srt">Load an SRT file</a></li>
+        <li><a href="examples/moresubtitles">More subtitles</a></li>
     </ul>
     <h2>Limitations</h2>
     <p>By using YouTube's flash video player the subtitle is not visible, the Flash Player is on the top of everything. That is why YouTube External Subtitle is forcing to use YouTube's HTML5 video player (it adds a html5=1 parameter to the iframe's source). This should be an issue only by some very old browsers.</p>
@@ -67,11 +72,6 @@
 
     ga('create', 'UA-45233611-1', 'auto');
     ga('send', 'pageview');
-</script>
-<script>
-    $.ajax({
-        url: '//siloor.com/youtube.external.subtitle/index/track',
-    }).done(function() {});
 </script>
 </body>
 </html>

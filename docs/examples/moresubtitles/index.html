@@ -4,26 +4,27 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>YouTube External Subtitle</title>
-    <link rel="shortcut icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_32.png" sizes="32x32" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_48.png" sizes="48x48" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_96.png" sizes="96x96" />
-    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_144.png" sizes="144x144" />
-    <link href="//siloor.com/youtube.external.subtitle/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="//siloor.com/youtube.external.subtitle/static/css/markdown.css" rel="stylesheet" />
-    <link href="//siloor.com/youtube.external.subtitle/static/css/index.css" rel="stylesheet" />
+    <base href="../../" />
+    <link rel="shortcut icon" href="static/img/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="static/img/favicon/favicon_32.png" sizes="32x32" />
+    <link rel="icon" href="static/img/favicon/favicon_48.png" sizes="48x48" />
+    <link rel="icon" href="static/img/favicon/favicon_96.png" sizes="96x96" />
+    <link rel="icon" href="static/img/favicon/favicon_144.png" sizes="144x144" />
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="static/css/markdown.css" rel="stylesheet" />
+    <link href="static/css/index.css" rel="stylesheet" />
     <!--[if lt IE 9]>
-    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/html5shiv.min.js"></script>
-    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/respond.min.js"></script>
+    <script src="static/bootstrap/js/html5shiv.min.js"></script>
+    <script src="static/bootstrap/js/respond.min.js"></script>
     <![endif]-->
-    <script src="//siloor.com/youtube.external.subtitle/static/js/jquery-1.11.2.min.js"></script>
-    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/js/jquery-1.11.2.min.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="//siloor.com/youtube.external.subtitle/">YouTube External Subtitle</a>
+            <a class="navbar-brand" href="/">YouTube External Subtitle</a>
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -44,7 +45,7 @@
         <option value="en">English</option>
         <option value="hu">Hungarian</option>
     </select>
-    <script src="//siloor.com/youtube.external.subtitle/static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
+    <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
     <script>
         var subtitles = {};
 
@@ -719,7 +720,7 @@
     &lt;option value=&quot;en&quot;&gt;English&lt;/option&gt;
     &lt;option value=&quot;hu&quot;&gt;Hungarian&lt;/option&gt;
 &lt;/select&gt;
-&lt;script src=&quot;//siloor.com/youtube.external.subtitle/static/youtube.external.subtitle/youtube.external.subtitle.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;static/youtube.external.subtitle/youtube.external.subtitle.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 var subtitles = {};
 
@@ -1399,11 +1400,6 @@ document.getElementById('languages').addEventListener('change', function(e) {
 
     ga('create', 'UA-45233611-1', 'auto');
     ga('send', 'pageview');
-</script>
-<script>
-    $.ajax({
-        url: '//siloor.com/youtube.external.subtitle/index/track',
-    }).done(function() {});
 </script>
 </body>
 </html>
