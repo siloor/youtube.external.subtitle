@@ -20,9 +20,9 @@ If you'd like to make subtitle for a video, there are a lot of tools helping you
 
 ## Examples
 
-- [Basic example](http://siloor.com/youtube.external.subtitle/examples/basic)
-- [Load an SRT file](http://siloor.com/youtube.external.subtitle/examples/srt)
-- [More subtitles](http://siloor.com/youtube.external.subtitle/examples/moresubtitles)
+- [Basic example](http://siloor.github.io/youtube.external.subtitle/examples/basic/)
+- [Load an SRT file](http://siloor.github.io/youtube.external.subtitle/examples/srt/)
+- [More subtitles](http://siloor.github.io/youtube.external.subtitle/examples/moresubtitles/)
 
 ## Limitations
 
