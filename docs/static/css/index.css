@@ -1,0 +1,28 @@
+@import url("//fonts.googleapis.com/css?family=Roboto:300,400,700&subset=latin,latin-ext");
+
+body {
+    padding-top: 70px;
+    font-family: Roboto, arial, sans-serif;
+    font-size: 15px;
+}
+
+nav.navbar {
+    background-color: #c51109;
+    border-bottom: 5px solid #e62117;
+}
+
+.navbar-inverse .navbar-brand {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.navbar-inverse .navbar-brand:hover {
+    color: #fff;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: #fff;
+}

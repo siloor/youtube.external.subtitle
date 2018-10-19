@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>YouTube External Subtitle</title>
+    <link rel="shortcut icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_32.png" sizes="32x32" />
+    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_48.png" sizes="48x48" />
+    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_96.png" sizes="96x96" />
+    <link rel="icon" href="//siloor.com/youtube.external.subtitle/static/img/favicon/favicon_144.png" sizes="144x144" />
+    <link href="//siloor.com/youtube.external.subtitle/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="//siloor.com/youtube.external.subtitle/static/css/markdown.css" rel="stylesheet" />
+    <link href="//siloor.com/youtube.external.subtitle/static/css/index.css" rel="stylesheet" />
+    <!--[if lt IE 9]>
+    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/html5shiv.min.js"></script>
+    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="//siloor.com/youtube.external.subtitle/static/js/jquery-1.11.2.min.js"></script>
+    <script src="//siloor.com/youtube.external.subtitle/static/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="//siloor.com/youtube.external.subtitle/">YouTube External Subtitle</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <h1>YouTube External Subtitle</h1>
+    <p>According to YouTube's <a href="http://support.google.com/youtube/answer/2734796?hl=en">policy</a>, only the owner of the content can add subtitle to a video.</p>
+    <p>With YouTube External Subtitle you can display subtitles over the embedded video from YouTube on your site. These texts could be translations, comments or lyrics as well. (Any kind of texts is allowed)</p>
+    <p>If you would like to make subtitle for a video, there are a lot of tools helping you.</p>
+    <ul>
+        <li>YouTube has an automatic english speech recognition logic, that does a really good job and makes only a few mistakes. Its a very big help by timing the subtitles.</li>
+        <li>On <a href="http://downsub.com/">DownSub.com</a> you can download the subtitles from YouTube as an SRT file.</li>
+        <li>There are a lot of good open source SRT editors out there.</li>
+    </ul>
+    <h2>Examples</h2>
+    <ul>
+        <li><a href="http://siloor.com/youtube.external.subtitle/examples/basic">Basic example</a></li>
+        <li><a href="http://siloor.com/youtube.external.subtitle/examples/srt">Load an SRT file</a></li>
+        <li><a href="http://siloor.com/youtube.external.subtitle/examples/moresubtitles">More subtitles</a></li>
+    </ul>
+    <h2>Limitations</h2>
+    <p>By using YouTube's flash video player the subtitle is not visible, the Flash Player is on the top of everything. That is why YouTube External Subtitle is forcing to use YouTube's HTML5 video player (it adds a html5=1 parameter to the iframe's source). This should be an issue only by some very old browsers.</p>
+    <p>By some mobile devices the fullscreen feature hides the subtitle as well, because the native video player requires the whole screen.</p>
+    <p>If the fullscreen feature is not that important for you and you have a very huge mobile traffic, maybe you should consider to disable the fullscreen button on the video player (fs=0 parameter).</p>
+    <p>The script supports AMD.</p><h2>License</h2>
+    <p>The MIT License</p>
+    <p>Copyright (c) 2015 by Milan Magyar <a href="mailto:milan.magyar@gmail.com">milan.magyar@gmail.com</a></p>
+    <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+    <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>		</div>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-45233611-1', 'auto');
+    ga('send', 'pageview');
+</script>
+<script>
+    $.ajax({
+        url: '//siloor.com/youtube.external.subtitle/index/track',
+    }).done(function() {});
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+1
+00:00:10,280 --> 00:00:11,500
+PO: Shifu mester?
+
+2
+00:00:13,400 --> 00:00:14,860
+Jókor? Rosszkor?
+
+3
+00:00:15,520 --> 00:00:17,800
+SHIFU: A kor a tükörképünk,
+
+4
+00:00:18,000 --> 00:00:20,960
+épp olyan, mint mi vagyunk.
+
+5
+00:00:20,960 --> 00:00:23,400
+PO: Milyen a kor... ilyenkor?
+
+6
+00:00:23,400 --> 00:00:24,160
+SHIFU: Óó...
+
+7
+00:00:25,640 --> 00:00:29,520
+SHIFU: Utad következő lépése az
+átváltozás harcosból tanítóvá
+
+8
+00:00:29,600 --> 00:00:30,520
+PO: Rossz tanító vagyok?
+
+9
+00:00:30,700 --> 00:00:33,720
+PO: Óó jajj! A sárkány tanító! Milyen jóképű!
+
+10
+00:00:33,720 --> 00:00:35,199
+WA-TAIIII!
+
+11
+00:00:37,940 --> 00:00:38,800
+MR. PING: Po?
+
+12
+00:00:38,800 --> 00:00:41,099
+PO: Óó, szia apa. Mizujs?
+
+13
+00:00:41,420 --> 00:00:42,380
+SHIFU: Csapnivaló vagy.
+
+14
+00:00:43,620 --> 00:00:45,099
+PO: Ki vagy vándor?
+
+15
+00:00:45,520 --> 00:00:47,420
+LI: Egy apa aki a fiát keresi
+
+16
+00:00:48,760 --> 00:00:49,339
+PO: Apa?
+
+17
+00:00:49,440 --> 00:00:50,680
+LI: A karomba fiam!
+
+18
+00:00:53,960 --> 00:00:56,000
+MR. PING: Mi bizonyítja, hogy rokonságban vagytok?
+
+19
+00:00:56,020 --> 00:00:57,140
+LI: Nézz csak ide!
+
+20
+00:01:01,440 --> 00:01:02,559
+LI: Gyere velem.
+
+21
+00:01:02,560 --> 00:01:05,680
+Van a hegyekben egy titkos panda falu.
+
+22
+00:01:07,080 --> 00:01:07,880
+PO: Váóó...
+
+23
+00:01:07,940 --> 00:01:09,460
+LI: Hazatértél fiam
+
+24
+00:01:10,200 --> 00:01:12,760
+PO: Te pont olyan vagy mint én, csak fiatalban.
+
+25
+00:01:12,760 --> 00:01:14,360
+Te pedig öregben
+
+26
+00:01:14,520 --> 00:01:16,220
+GRANDMA PANDA: Meg kell zabálni téged!
+
+27
+00:01:17,600 --> 00:01:18,300
+Áu!
+
+28
+00:01:19,700 --> 00:01:20,760
+Jól vagyok!
+
+29
+00:01:22,540 --> 00:01:24,540
+KAI: Újra itt van Kai!
+
+30
+00:01:24,900 --> 00:01:25,400
+Ki?
+
+31
+00:01:25,540 --> 00:01:27,600
+KAI: A kínok kovácsa. A bosszúbestia.
+
+32
+00:01:27,600 --> 00:01:28,759
+Özvegygyártó...
+
+33
+00:01:28,760 --> 00:01:29,260
+Nem dereng
+
+34
+00:01:29,260 --> 00:01:31,040
+KAI: Na jó, én dolgoztam Oogway-jel...
+
+35
+00:01:31,040 --> 00:01:32,780
+Jaa! Oogway mesterrel!
+
+36
+00:01:32,800 --> 00:01:34,000
+KAI: Csönd legyen!
+
+37
+00:01:34,000 --> 00:01:36,160
+TIGRESS: Kai romba döntötte a völgyet.
+
+38
+00:01:36,160 --> 00:01:37,080
+Mindennek vége.
+
+39
+00:01:37,440 --> 00:01:39,200
+És most a pandák vannak soron.
+
+40
+00:01:39,640 --> 00:01:41,720
+Meg kell tanítanod őket harcolni.
+
+41
+00:01:42,320 --> 00:01:43,839
+PO: Nekem való feladat.
+
+42
+00:01:44,720 --> 00:01:46,460
+Kung fu mestert csinálok belőletek
+
+43
+00:01:46,740 --> 00:01:47,520
+HAI!
+
+44
+00:01:51,480 --> 00:01:53,360
+Senki nem ígérte, hogy könnyű lesz.
+
+45
+00:01:53,800 --> 00:01:55,020
+MEI MEI: Készülj a táncra...
+
+46
+00:01:55,120 --> 00:01:56,360
+...a vésszel!
+
+47
+00:01:58,360 --> 00:01:59,960
+PO: Becstelen banditák. Ütött az órátok...
+
+48
+00:01:59,960 --> 00:02:02,080
+Ezt nem gondolod komolyan...
+
+49
+00:02:02,440 --> 00:02:04,640
+Whoa! Ah! Ow!
+
+50
+00:02:05,800 --> 00:02:08,000
+KAI: Szóval te vagy a sárkányharcos.
+
+51
+00:02:08,000 --> 00:02:10,120
+PO: Megkímélnél kérlek a locsi-fecsitől?
+
+52
+00:02:10,120 --> 00:02:11,120
+KAI: Elfogom venni a...
+
+53
+00:02:11,120 --> 00:02:12,380
+PO: Óó. locsi-fecsi!
+
+54
+00:02:12,380 --> 00:02:12,880
+KAI: Ebben a-
+
+55
+00:02:12,880 --> 00:02:13,820
+PO: Licsi-locsi feccs-feccs.
+
+56
+00:02:13,880 --> 00:02:14,380
+KAI: Ebbe...
+
+57
+00:02:14,460 --> 00:02:15,420
+PO: Liccs-loccs feccs.
+
+58
+00:02:16,060 --> 00:02:16,560
+KAI: Ebben-
+
+59
+00:02:16,660 --> 00:02:17,160
+PO: Liccs-loccs.
+
+60
+00:02:17,920 --> 00:02:19,200
+PO: Yee haw!
+
+61
+00:02:20,320 --> 00:02:21,380
+MANTIS: Be kell mennünk oda.
+
+62
+00:02:21,400 --> 00:02:21,960
+CRANE: De Shifu mester azt mondta...
+
+63
+00:02:22,020 --> 00:02:23,260
+MANTIS: Te félsz?
+
+64
+00:02:23,340 --> 00:02:26,060
+Hiszen még Pipi mester is bemegy oda, pedig ő pipi.
+
+65
+00:02:26,200 --> 00:02:27,700
+PIPI MESTER: Bock-bock bocka!
