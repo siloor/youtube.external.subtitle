@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>YouTube External Subtitle</title>
+    <base href="../../" />
+    <link rel="shortcut icon" href="static/img/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="static/img/favicon/favicon_32.png" sizes="32x32" />
+    <link rel="icon" href="static/img/favicon/favicon_48.png" sizes="48x48" />
+    <link rel="icon" href="static/img/favicon/favicon_96.png" sizes="96x96" />
+    <link rel="icon" href="static/img/favicon/favicon_144.png" sizes="144x144" />
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="static/css/markdown.css" rel="stylesheet" />
+    <link href="static/css/index.css" rel="stylesheet" />
+    <!--[if lt IE 9]>
+    <script src="static/bootstrap/js/html5shiv.min.js"></script>
+    <script src="static/bootstrap/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="static/js/jquery-1.11.2.min.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="./">YouTube External Subtitle</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <h1>Fullscreen example</h1>
+    <p>The fullscreen example adds a custom button to help displaying the subtitle in fullscreen mode.</p>
+    <div id="fullscreen-container" style="width: 100%; height: 400px;">
+        <iframe id="video" width="100%" height="100%" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
+    </div>
+    <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
+    <button id="fullscreen-btn">Fullscreen</button>
+    <script>
+        var subtitle = [
+            {
+                "start": 10.28,
+                "end": 11.5,
+                "text": "PO: Master Shifu?"
+            },
+            {
+                "start": 13.4,
+                "end": 14.86,
+                "text": "Good time? Bad time?"
+            },
+            {
+                "start": 15.52,
+                "end": 17.8,
+                "text": "SHIFU: Time is an illusion,"
+            },
+            {
+                "start": 18,
+                "end": 20.96,
+                "text": "there is only the now."
+            },
+            {
+                "start": 20.96,
+                "end": 23.4,
+                "text": "PO: So now's a... good time?"
+            },
+            {
+                "start": 23.4,
+                "end": 24.16,
+                "text": "SHIFU: Oh..."
+            },
+            {
+                "start": 25.64,
+                "end": 29.52,
+                "text": "SHIFU: You must take the next step on\nyour journey from warrior to teacher"
+            },
+            {
+                "start": 29.6,
+                "end": 30.52,
+                "text": "PO: But I'm no good at it"
+            },
+            {
+                "start": 30.7,
+                "end": 33.72,
+                "text": "PO: Oh no! It's the dragon teacher! He's so handsome!"
+            },
+            {
+                "start": 33.72,
+                "end": 35.199,
+                "text": "WA-TAIIII!"
+            },
+            {
+                "start": 37.94,
+                "end": 38.8,
+                "text": "MR. PING: Po?"
+            },
+            {
+                "start": 38.8,
+                "end": 41.099,
+                "text": "PO: Oh heyy, Dad. What's up?"
+            },
+            {
+                "start": 41.42,
+                "end": 42.38,
+                "text": "SHIFU: You're terrible at it."
+            },
+            {
+                "start": 43.62,
+                "end": 45.099,
+                "text": "PO: Who... are you?"
+            },
+            {
+                "start": 45.52,
+                "end": 47.42,
+                "text": "LI: I'm looking for my son"
+            },
+            {
+                "start": 48.76,
+                "end": 49.339,
+                "text": "PO: Dad?"
+            },
+            {
+                "start": 49.44,
+                "end": 50.68,
+                "text": "LI: Give your old man a hug!"
+            },
+            {
+                "start": 53.96,
+                "end": 56,
+                "text": "MR. PING: How do we know he's even related to you?"
+            },
+            {
+                "start": 56.02,
+                "end": 57.14,
+                "text": "LI: Look at that!"
+            },
+            {
+                "start": 61.44,
+                "end": 62.559,
+                "text": "LI: Come with me."
+            },
+            {
+                "start": 62.56,
+                "end": 65.68,
+                "text": "There's a secret panda village in the mountains."
+            },
+            {
+                "start": 67.08,
+                "end": 67.88,
+                "text": "PO: Whoa..."
+            },
+            {
+                "start": 67.94,
+                "end": 69.46,
+                "text": "LI: Welcome home, son"
+            },
+            {
+                "start": 70.2,
+                "end": 72.76,
+                "text": "PO: You look just like me, but a baby."
+            },
+            {
+                "start": 72.76,
+                "end": 74.36,
+                "text": "You're like me but old"
+            },
+            {
+                "start": 74.52,
+                "end": 76.22,
+                "text": "GRANDMA PANDA: Ohh... He's adorable!"
+            },
+            {
+                "start": 77.6,
+                "end": 78.3,
+                "text": "Ow!"
+            },
+            {
+                "start": 79.7,
+                "end": 80.76,
+                "text": "I'm good!"
+            },
+            {
+                "start": 82.54,
+                "end": 84.54,
+                "text": "KAI: Kai has returned!"
+            },
+            {
+                "start": 84.9,
+                "end": 85.4,
+                "text": "Who?"
+            },
+            {
+                "start": 85.54,
+                "end": 87.6,
+                "text": "KAI: The Master of Pain. Beast of Vengeance."
+            },
+            {
+                "start": 87.6,
+                "end": 88.759,
+                "text": "Maker of Widows..."
+            },
+            {
+                "start": 88.76,
+                "end": 89.26,
+                "text": "Eh?"
+            },
+            {
+                "start": 89.26,
+                "end": 91.04,
+                "text": "KAI: Okay, I used to work with Oogway..."
+            },
+            {
+                "start": 91.04,
+                "end": 92.78,
+                "text": "Oh! Master Oogway!"
+            },
+            {
+                "start": 92.8,
+                "end": 94,
+                "text": "KAI: Silence!"
+            },
+            {
+                "start": 94,
+                "end": 96.16,
+                "text": "TIGRESS: Kai attacked the valley."
+            },
+            {
+                "start": 96.16,
+                "end": 97.08,
+                "text": "It's all gone."
+            },
+            {
+                "start": 97.44,
+                "end": 99.2,
+                "text": "Now he's coming for the pandas."
+            },
+            {
+                "start": 99.64,
+                "end": 101.72,
+                "text": "You must teach them to fight."
+            },
+            {
+                "start": 102.32,
+                "end": 103.839,
+                "text": "PO: I am ready."
+            },
+            {
+                "start": 104.72,
+                "end": 106.46,
+                "text": "I'm gonna turn you into kung fu masters"
+            },
+            {
+                "start": 106.74,
+                "end": 107.52,
+                "text": "HAI!"
+            },
+            {
+                "start": 111.48,
+                "end": 113.36,
+                "text": "Nobody said this was gonna be easy."
+            },
+            {
+                "start": 113.8,
+                "end": 115.02,
+                "text": "MEI MEI: Get ready to dance..."
+            },
+            {
+                "start": 115.12,
+                "end": 116.36,
+                "text": "...with danger!"
+            },
+            {
+                "start": 118.36,
+                "end": 119.96,
+                "text": "PO: Enemies of justice. Prepare for..."
+            },
+            {
+                "start": 119.96,
+                "end": 122.08,
+                "text": "Whoa! Are you kidding me?"
+            },
+            {
+                "start": 122.44,
+                "end": 124.64,
+                "text": "Whoa! Ah! Ow!"
+            },
+            {
+                "start": 125.8,
+                "end": 128,
+                "text": "KAI: You must be the dragon warrior."
+            },
+            {
+                "start": 128,
+                "end": 130.12,
+                "text": "PO: How bout you spare me the chit chat?"
+            },
+            {
+                "start": 130.12,
+                "end": 131.12,
+                "text": "KAI: I'm going to take your..."
+            },
+            {
+                "start": 131.12,
+                "end": 132.38,
+                "text": "PO: Ugh. Chit chat!"
+            },
+            {
+                "start": 132.38,
+                "end": 132.88,
+                "text": "KAI: In the-"
+            },
+            {
+                "start": 132.88,
+                "end": 133.82,
+                "text": "PO: Chitt chitty chat chat."
+            },
+            {
+                "start": 133.88,
+                "end": 134.38,
+                "text": "KAI: In..."
+            },
+            {
+                "start": 134.46,
+                "end": 135.42,
+                "text": "PO: Chat chat chat."
+            },
+            {
+                "start": 136.06,
+                "end": 136.56,
+                "text": "KAI: In the-"
+            },
+            {
+                "start": 136.66,
+                "end": 137.16,
+                "text": "PO: Chit chat."
+            },
+            {
+                "start": 137.92,
+                "end": 139.2,
+                "text": "PO: Yee haw!"
+            },
+            {
+                "start": 140.32,
+                "end": 141.38,
+                "text": "MANTIS: Got to get in there."
+            },
+            {
+                "start": 141.4,
+                "end": 141.96,
+                "text": "CRANE: But Master Shifu said..."
+            },
+            {
+                "start": 142.02,
+                "end": 143.26,
+                "text": "MANTIS: You're seriously afraid?"
+            },
+            {
+                "start": 143.34,
+                "end": 146.06,
+                "text": "Even Master Chicken's going in there, and he's a chicken."
+            },
+            {
+                "start": 146.2,
+                "end": 147.7,
+                "text": "MASTER CHICKEN: Bock-bock bocka!"
+            }
+        ];
+
+        var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitle);
+
+        document.getElementById('fullscreen-btn').addEventListener('click', function(e) {
+            var elem = document.getElementById('fullscreen-container');
+
+            var openFullscreen = function() {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.mozRequestFullScreen) { /* Firefox */
+                    elem.mozRequestFullScreen();
+                } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                    elem.msRequestFullscreen();
+                }
+            };
+
+            openFullscreen();
+        });
+    </script>
+    <blockquote><pre>
+&lt;div id="fullscreen-container" style="width: 100%; height: 400px;"&gt;
+    &lt;iframe id="video" width="100%" height="100%" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;script src="static/youtube.external.subtitle/youtube.external.subtitle.js"&gt;&lt;/script&gt;
+&lt;button id="fullscreen-btn"&gt;Fullscreen&lt;/button&gt;
+&lt;script&gt;
+var subtitle = [
+    {
+        &quot;start&quot;: 10.28,
+        &quot;end&quot;: 11.5,
+        &quot;text&quot;: &quot;PO: Master Shifu?&quot;
+    },
+    {
+        &quot;start&quot;: 13.4,
+        &quot;end&quot;: 14.86,
+        &quot;text&quot;: &quot;Good time? Bad time?&quot;
+    },
+    {
+        &quot;start&quot;: 15.52,
+        &quot;end&quot;: 17.8,
+        &quot;text&quot;: &quot;SHIFU: Time is an illusion,&quot;
+    },
+    {
+        &quot;start&quot;: 18,
+        &quot;end&quot;: 20.96,
+        &quot;text&quot;: &quot;there is only the now.&quot;
+    },
+    {
+        &quot;start&quot;: 20.96,
+        &quot;end&quot;: 23.4,
+        &quot;text&quot;: &quot;PO: So now's a... good time?&quot;
+    },
+    {
+        &quot;start&quot;: 23.4,
+        &quot;end&quot;: 24.16,
+        &quot;text&quot;: &quot;SHIFU: Oh...&quot;
+    },
+    {
+        &quot;start&quot;: 25.64,
+        &quot;end&quot;: 29.52,
+        &quot;text&quot;: &quot;SHIFU: You must take the next step on\nyour journey from warrior to teacher&quot;
+    },
+    {
+        &quot;start&quot;: 29.6,
+        &quot;end&quot;: 30.52,
+        &quot;text&quot;: &quot;PO: But I'm no good at it&quot;
+    },
+    {
+        &quot;start&quot;: 30.7,
+        &quot;end&quot;: 33.72,
+        &quot;text&quot;: &quot;PO: Oh no! It's the dragon teacher! He's so handsome!&quot;
+    },
+    {
+        &quot;start&quot;: 33.72,
+        &quot;end&quot;: 35.199,
+        &quot;text&quot;: &quot;WA-TAIIII!&quot;
+    },
+    {
+        &quot;start&quot;: 37.94,
+        &quot;end&quot;: 38.8,
+        &quot;text&quot;: &quot;MR. PING: Po?&quot;
+    },
+    {
+        &quot;start&quot;: 38.8,
+        &quot;end&quot;: 41.099,
+        &quot;text&quot;: &quot;PO: Oh heyy, Dad. What's up?&quot;
+    },
+    {
+        &quot;start&quot;: 41.42,
+        &quot;end&quot;: 42.38,
+        &quot;text&quot;: &quot;SHIFU: You're terrible at it.&quot;
+    },
+    {
+        &quot;start&quot;: 43.62,
+        &quot;end&quot;: 45.099,
+        &quot;text&quot;: &quot;PO: Who... are you?&quot;
+    },
+    {
+        &quot;start&quot;: 45.52,
+        &quot;end&quot;: 47.42,
+        &quot;text&quot;: &quot;LI: I'm looking for my son&quot;
+    },
+    {
+        &quot;start&quot;: 48.76,
+        &quot;end&quot;: 49.339,
+        &quot;text&quot;: &quot;PO: Dad?&quot;
+    },
+    {
+        &quot;start&quot;: 49.44,
+        &quot;end&quot;: 50.68,
+        &quot;text&quot;: &quot;LI: Give your old man a hug!&quot;
+    },
+    {
+        &quot;start&quot;: 53.96,
+        &quot;end&quot;: 56,
+        &quot;text&quot;: &quot;MR. PING: How do we know he's even related to you?&quot;
+    },
+    {
+        &quot;start&quot;: 56.02,
+        &quot;end&quot;: 57.14,
+        &quot;text&quot;: &quot;LI: Look at that!&quot;
+    },
+    {
+        &quot;start&quot;: 61.44,
+        &quot;end&quot;: 62.559,
+        &quot;text&quot;: &quot;LI: Come with me.&quot;
+    },
+    {
+        &quot;start&quot;: 62.56,
+        &quot;end&quot;: 65.68,
+        &quot;text&quot;: &quot;There's a secret panda village in the mountains.&quot;
+    },
+    {
+        &quot;start&quot;: 67.08,
+        &quot;end&quot;: 67.88,
+        &quot;text&quot;: &quot;PO: Whoa...&quot;
+    },
+    {
+        &quot;start&quot;: 67.94,
+        &quot;end&quot;: 69.46,
+        &quot;text&quot;: &quot;LI: Welcome home, son&quot;
+    },
+    {
+        &quot;start&quot;: 70.2,
+        &quot;end&quot;: 72.76,
+        &quot;text&quot;: &quot;PO: You look just like me, but a baby.&quot;
+    },
+    {
+        &quot;start&quot;: 72.76,
+        &quot;end&quot;: 74.36,
+        &quot;text&quot;: &quot;You're like me but old&quot;
+    },
+    {
+        &quot;start&quot;: 74.52,
+        &quot;end&quot;: 76.22,
+        &quot;text&quot;: &quot;GRANDMA PANDA: Ohh... He's adorable!&quot;
+    },
+    {
+        &quot;start&quot;: 77.6,
+        &quot;end&quot;: 78.3,
+        &quot;text&quot;: &quot;Ow!&quot;
+    },
+    {
+        &quot;start&quot;: 79.7,
+        &quot;end&quot;: 80.76,
+        &quot;text&quot;: &quot;I'm good!&quot;
+    },
+    {
+        &quot;start&quot;: 82.54,
+        &quot;end&quot;: 84.54,
+        &quot;text&quot;: &quot;KAI: Kai has returned!&quot;
+    },
+    {
+        &quot;start&quot;: 84.9,
+        &quot;end&quot;: 85.4,
+        &quot;text&quot;: &quot;Who?&quot;
+    },
+    {
+        &quot;start&quot;: 85.54,
+        &quot;end&quot;: 87.6,
+        &quot;text&quot;: &quot;KAI: The Master of Pain. Beast of Vengeance.&quot;
+    },
+    {
+        &quot;start&quot;: 87.6,
+        &quot;end&quot;: 88.759,
+        &quot;text&quot;: &quot;Maker of Widows...&quot;
+    },
+    {
+        &quot;start&quot;: 88.76,
+        &quot;end&quot;: 89.26,
+        &quot;text&quot;: &quot;Eh?&quot;
+    },
+    {
+        &quot;start&quot;: 89.26,
+        &quot;end&quot;: 91.04,
+        &quot;text&quot;: &quot;KAI: Okay, I used to work with Oogway...&quot;
+    },
+    {
+        &quot;start&quot;: 91.04,
+        &quot;end&quot;: 92.78,
+        &quot;text&quot;: &quot;Oh! Master Oogway!&quot;
+    },
+    {
+        &quot;start&quot;: 92.8,
+        &quot;end&quot;: 94,
+        &quot;text&quot;: &quot;KAI: Silence!&quot;
+    },
+    {
+        &quot;start&quot;: 94,
+        &quot;end&quot;: 96.16,
+        &quot;text&quot;: &quot;TIGRESS: Kai attacked the valley.&quot;
+    },
+    {
+        &quot;start&quot;: 96.16,
+        &quot;end&quot;: 97.08,
+        &quot;text&quot;: &quot;It's all gone.&quot;
+    },
+    {
+        &quot;start&quot;: 97.44,
+        &quot;end&quot;: 99.2,
+        &quot;text&quot;: &quot;Now he's coming for the pandas.&quot;
+    },
+    {
+        &quot;start&quot;: 99.64,
+        &quot;end&quot;: 101.72,
+        &quot;text&quot;: &quot;You must teach them to fight.&quot;
+    },
+    {
+        &quot;start&quot;: 102.32,
+        &quot;end&quot;: 103.839,
+        &quot;text&quot;: &quot;PO: I am ready.&quot;
+    },
+    {
+        &quot;start&quot;: 104.72,
+        &quot;end&quot;: 106.46,
+        &quot;text&quot;: &quot;I'm gonna turn you into kung fu masters&quot;
+    },
+    {
+        &quot;start&quot;: 106.74,
+        &quot;end&quot;: 107.52,
+        &quot;text&quot;: &quot;HAI!&quot;
+    },
+    {
+        &quot;start&quot;: 111.48,
+        &quot;end&quot;: 113.36,
+        &quot;text&quot;: &quot;Nobody said this was gonna be easy.&quot;
+    },
+    {
+        &quot;start&quot;: 113.8,
+        &quot;end&quot;: 115.02,
+        &quot;text&quot;: &quot;MEI MEI: Get ready to dance...&quot;
+    },
+    {
+        &quot;start&quot;: 115.12,
+        &quot;end&quot;: 116.36,
+        &quot;text&quot;: &quot;...with danger!&quot;
+    },
+    {
+        &quot;start&quot;: 118.36,
+        &quot;end&quot;: 119.96,
+        &quot;text&quot;: &quot;PO: Enemies of justice. Prepare for...&quot;
+    },
+    {
+        &quot;start&quot;: 119.96,
+        &quot;end&quot;: 122.08,
+        &quot;text&quot;: &quot;Whoa! Are you kidding me?&quot;
+    },
+    {
+        &quot;start&quot;: 122.44,
+        &quot;end&quot;: 124.64,
+        &quot;text&quot;: &quot;Whoa! Ah! Ow!&quot;
+    },
+    {
+        &quot;start&quot;: 125.8,
+        &quot;end&quot;: 128,
+        &quot;text&quot;: &quot;KAI: You must be the dragon warrior.&quot;
+    },
+    {
+        &quot;start&quot;: 128,
+        &quot;end&quot;: 130.12,
+        &quot;text&quot;: &quot;PO: How bout you spare me the chit chat?&quot;
+    },
+    {
+        &quot;start&quot;: 130.12,
+        &quot;end&quot;: 131.12,
+        &quot;text&quot;: &quot;KAI: I'm going to take your...&quot;
+    },
+    {
+        &quot;start&quot;: 131.12,
+        &quot;end&quot;: 132.38,
+        &quot;text&quot;: &quot;PO: Ugh. Chit chat!&quot;
+    },
+    {
+        &quot;start&quot;: 132.38,
+        &quot;end&quot;: 132.88,
+        &quot;text&quot;: &quot;KAI: In the-&quot;
+    },
+    {
+        &quot;start&quot;: 132.88,
+        &quot;end&quot;: 133.82,
+        &quot;text&quot;: &quot;PO: Chitt chitty chat chat.&quot;
+    },
+    {
+        &quot;start&quot;: 133.88,
+        &quot;end&quot;: 134.38,
+        &quot;text&quot;: &quot;KAI: In...&quot;
+    },
+    {
+        &quot;start&quot;: 134.46,
+        &quot;end&quot;: 135.42,
+        &quot;text&quot;: &quot;PO: Chat chat chat.&quot;
+    },
+    {
+        &quot;start&quot;: 136.06,
+        &quot;end&quot;: 136.56,
+        &quot;text&quot;: &quot;KAI: In the-&quot;
+    },
+    {
+        &quot;start&quot;: 136.66,
+        &quot;end&quot;: 137.16,
+        &quot;text&quot;: &quot;PO: Chit chat.&quot;
+    },
+    {
+        &quot;start&quot;: 137.92,
+        &quot;end&quot;: 139.2,
+        &quot;text&quot;: &quot;PO: Yee haw!&quot;
+    },
+    {
+        &quot;start&quot;: 140.32,
+        &quot;end&quot;: 141.38,
+        &quot;text&quot;: &quot;MANTIS: Got to get in there.&quot;
+    },
+    {
+        &quot;start&quot;: 141.4,
+        &quot;end&quot;: 141.96,
+        &quot;text&quot;: &quot;CRANE: But Master Shifu said...&quot;
+    },
+    {
+        &quot;start&quot;: 142.02,
+        &quot;end&quot;: 143.26,
+        &quot;text&quot;: &quot;MANTIS: You're seriously afraid?&quot;
+    },
+    {
+        &quot;start&quot;: 143.34,
+        &quot;end&quot;: 146.06,
+        &quot;text&quot;: &quot;Even Master Chicken's going in there, and he's a chicken.&quot;
+    },
+    {
+        &quot;start&quot;: 146.2,
+        &quot;end&quot;: 147.7,
+        &quot;text&quot;: &quot;MASTER CHICKEN: Bock-bock bocka!&quot;
+    }
+];
+
+var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitle);
+
+document.getElementById('fullscreen-btn').addEventListener('click', function(e) {
+    var elem = document.getElementById('fullscreen-container');
+
+    var openFullscreen = function() {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            elem.msRequestFullscreen();
+        }
+    };
+
+    openFullscreen();
+});
+&lt;/script&gt;
+</pre></blockquote>
+</div>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-127764423-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-127764423-1');
+</script>
+</body>
+</html>

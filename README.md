@@ -24,11 +24,10 @@ If you'd like to make subtitle for a video, there are a lot of tools helping you
 - [Load an SRT file](http://siloor.github.io/youtube.external.subtitle/examples/srt/)
 - [More subtitles](http://siloor.github.io/youtube.external.subtitle/examples/moresubtitles/)
 - [Style subtitles](http://siloor.github.io/youtube.external.subtitle/examples/style/)
+- [Fullscreen](http://siloor.github.io/youtube.external.subtitle/examples/fullscreen/)
 
 ## Limitations
 
-By using YouTube's flash video player the subtitle is not visible, the Flash Player is on the top of everything. That is why YouTube External Subtitle is forcing to use YouTube's HTML5 video player (it adds a html5=1 parameter to the iframe's source). This should be an issue only by some very old browsers.
-
-By some mobile devices the fullscreen feature hides the subtitle as well, because the native video player requires the whole screen. If the fullscreen feature is not that important for you and you have a very huge mobile traffic, maybe you should consider to disable the fullscreen button on the video player (fs=0 parameter).
+By latest browsers, the embedded iframe requesting the fullscreen mode requires the whole window, so the script is not allowed to display anything in front of the player. That is why YouTube External Subtitle disables the fullscreen button by default. You can add your own fullscreen logic on your page, check the fullscreen example.
 
 The script supports AMD.

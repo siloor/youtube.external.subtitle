@@ -235,6 +235,10 @@
 			newSrc = addQueryStringParameterToUrl(newSrc, { playsinline: '1' });
 		}
 
+		if (newSrc.indexOf('fs=') === -1) {
+			newSrc = addQueryStringParameterToUrl(newSrc, { fs: '0' });
+		}
+
 		if (iframe.src !== newSrc) {
 			iframe.src = newSrc;
 		}

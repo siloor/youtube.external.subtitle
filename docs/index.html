@@ -54,11 +54,10 @@
         <li><a href="examples/srt">Load an SRT file</a></li>
         <li><a href="examples/moresubtitles">More subtitles</a></li>
         <li><a href="examples/style">Style subtitles</a></li>
+        <li><a href="examples/fullscreen">Fullscreen</a></li>
     </ul>
     <h2>Limitations</h2>
-    <p>By using YouTube's flash video player the subtitle is not visible, the Flash Player is on the top of everything. That is why YouTube External Subtitle is forcing to use YouTube's HTML5 video player (it adds a html5=1 parameter to the iframe's source). This should be an issue only by some very old browsers.</p>
-    <p>By some mobile devices the fullscreen feature hides the subtitle as well, because the native video player requires the whole screen.</p>
-    <p>If the fullscreen feature is not that important for you and you have a very huge mobile traffic, maybe you should consider to disable the fullscreen button on the video player (fs=0 parameter).</p>
+    <p>By latest browsers, the embedded iframe requesting the fullscreen mode requires the whole window, so the script is not allowed to display anything in front of the player. That is why YouTube External Subtitle disables the fullscreen button by default. You can add your own fullscreen logic on your page, check the fullscreen example.</p>
     <p>The script supports AMD.</p><h2>License</h2>
     <p>The MIT License</p>
     <p>Copyright (c) 2015 by Milan Magyar <a href="mailto:milan.magyar@gmail.com">milan.magyar@gmail.com</a></p>
