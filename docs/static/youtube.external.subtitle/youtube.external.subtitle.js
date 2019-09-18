@@ -85,27 +85,31 @@
 		return Math.floor(seconds / 10);
 	};
 
+	var getCacheNames = function(start, end) {
+		var cacheNames = [];
+		var endCacheName = getCacheName(end);
+
+		for (var i = getCacheName(start); i <= endCacheName; i++) {
+			cacheNames.push(i);
+		}
+
+		return cacheNames;
+	};
+
 	var buildCache = function(subtitles) {
 		var cache = {};
 
 		for (var i in subtitles) {
 			var subtitle = subtitles[i];
 
-			var startCache = getCacheName(subtitle.start);
-			var endCache = getCacheName(subtitle.end);
+			var cacheNames = getCacheNames(subtitle.start, subtitle.end);
 
-			if (!cache[startCache]) {
-				cache[startCache] = [];
-			}
-
-			cache[startCache].push(subtitle);
-
-			if (startCache !== endCache) {
-				if (!cache[endCache]) {
-					cache[endCache] = [];
+			for (var j = 0; j < cacheNames.length; j++) {
+				if (!cache[cacheNames[j]]) {
+					cache[cacheNames[j]] = [];
 				}
 
-				cache[endCache].push(subtitle);
+				cache[cacheNames[j]].push(subtitle);
 			}
 		}
 

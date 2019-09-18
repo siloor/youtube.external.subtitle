@@ -94,7 +94,7 @@
 		}
 
 		return cacheNames;
-	}
+	};
 
 	var buildCache = function(subtitles) {
 		var cache = {};
