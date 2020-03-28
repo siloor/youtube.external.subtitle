@@ -22,43 +22,38 @@ declare global {
 const YoutubeExternalSubtitle: any = {};
 const root = window;
 
-const iframeApiLoaded = () => {
-  return !!(root.YT && root.YT.Player);
-};
-
 const proxy = (func, context) => {
   return (...args) => {
     return func.apply(context, args);
   };
 };
 
-const addClass = (element, cls) => {
-  if (!hasClass(element, cls)) {
-    element.className += (element.className ? ' ' : '') + cls;
-  }
+const hasClass = (element, cls) => {
+  return !!element.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
 };
 
-const hasClass = (element, cls) => {
-  return element.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+const addClass = (element, cls) => {
+  if (hasClass(element, cls)) {
+    return;
+  }
+
+  element.className += (element.className ? ' ' : '') + cls;
 };
 
 const removeClass = (element, cls) => {
-  if (hasClass(element, cls)) {
-    const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
-
-    element.className = element.className.replace(reg, ' ');
+  if (!hasClass(element, cls)) {
+    return;
   }
+
+  const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+
+  element.className = element.className.replace(reg, ' ');
 };
 
 const getYouTubeIDFromUrl = (url) => {
   const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
 
-  if (match && match[7].length === 11) {
-    return match[7];
-  }
-  else {
-    return false;
-  }
+  return match && match[7].length === 11 ? match[7] : false;
 };
 
 const addQueryStringParameterToUrl = (url, qsParameters) => {
@@ -82,7 +77,7 @@ const addQueryStringParameterToUrl = (url, qsParameters) => {
     qs += (qs === '' ? '?' : '&') + i + '=' + qsParameters[i];
   }
 
-  return url + qs + hash;
+  return `${url}${qs}${hash}`;
 };
 
 const getCacheName = (seconds) => {
@@ -103,21 +98,37 @@ const getCacheNames = (start, end) => {
 const buildCache = (subtitles) => {
   const cache = {};
 
-  for (let i in subtitles) {
-    const subtitle = subtitles[i];
-
-    const cacheNames = getCacheNames(subtitle.start, subtitle.end);
-
-    for (let j = 0; j < cacheNames.length; j++) {
-      if (!cache[cacheNames[j]]) {
-        cache[cacheNames[j]] = [];
+  for (let subtitle of subtitles) {
+    for (let cacheName of getCacheNames(subtitle.start, subtitle.end)) {
+      if (!cache[cacheName]) {
+        cache[cacheName] = [];
       }
 
-      cache[cacheNames[j]].push(subtitle);
+      cache[cacheName].push(subtitle);
     }
   }
 
   return cache;
+};
+
+const getSubtitleFromCache = (seconds, builtCache) => {
+  if (!builtCache) {
+    return null;
+  }
+
+  const cache = builtCache[getCacheName(seconds)];
+
+  if (!cache) {
+    return null;
+  }
+
+  for (let subtitle of cache) {
+    if (seconds >= subtitle.start && seconds <= subtitle.end) {
+      return subtitle;
+    }
+  }
+
+  return null;
 };
 
 const iframeApiScriptAdded = () => {
@@ -134,7 +145,18 @@ const iframeApiScriptAdded = () => {
   return false;
 };
 
+const addIframeApiScript = () => {
+  const tag = root.document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  const firstScriptTag = root.document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+};
+
 const loadIframeApi = (cb) => {
+  const iframeApiLoaded = () => {
+    return !!(root.YT && root.YT.Player);
+  };
+
   if (iframeApiLoaded()) {
     cb();
 
@@ -150,10 +172,7 @@ const loadIframeApi = (cb) => {
   }, 100);
 
   if (!iframeApiScriptAdded()) {
-    const tag = root.document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = root.document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    addIframeApiScript();
   }
 };
 
@@ -211,6 +230,28 @@ const firstInit = () => {
   root.document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
 };
 
+const getIframeSrc = (src) => {
+  let newSrc = src;
+
+  if (newSrc.indexOf('enablejsapi=1') === -1) {
+    newSrc = addQueryStringParameterToUrl(newSrc, { enablejsapi: '1' });
+  }
+
+  if (newSrc.indexOf('html5=1') === -1) {
+    newSrc = addQueryStringParameterToUrl(newSrc, { html5: '1' });
+  }
+
+  if (newSrc.indexOf('playsinline=1') === -1) {
+    newSrc = addQueryStringParameterToUrl(newSrc, { playsinline: '1' });
+  }
+
+  if (newSrc.indexOf('fs=') === -1) {
+    newSrc = addQueryStringParameterToUrl(newSrc, { fs: '0' });
+  }
+
+  return newSrc;
+};
+
 const Subtitle = YoutubeExternalSubtitle.Subtitle = function(iframe, subtitles) {
   this.subtitle = null;
   this.cache = null;
@@ -229,30 +270,14 @@ const Subtitle = YoutubeExternalSubtitle.Subtitle = function(iframe, subtitles) 
     firstInit();
   }
 
-  let newSrc = iframe.src;
+  const src = getIframeSrc(iframe.src);
 
-  if (newSrc.indexOf('enablejsapi=1') === -1) {
-    newSrc = addQueryStringParameterToUrl(newSrc, { enablejsapi: '1' });
-  }
-
-  if (newSrc.indexOf('html5=1') === -1) {
-    newSrc = addQueryStringParameterToUrl(newSrc, { html5: '1' });
-  }
-
-  if (newSrc.indexOf('playsinline=1') === -1) {
-    newSrc = addQueryStringParameterToUrl(newSrc, { playsinline: '1' });
-  }
-
-  if (newSrc.indexOf('fs=') === -1) {
-    newSrc = addQueryStringParameterToUrl(newSrc, { fs: '0' });
-  }
-
-  if (iframe.src !== newSrc) {
-    iframe.src = newSrc;
+  if (iframe.src !== src) {
+    iframe.src = src;
   }
 
   if (subtitles) {
-    this.cache = buildCache(subtitles);
+    this.load(subtitles);
   }
 
   loadIframeApi(() => {
@@ -319,7 +344,7 @@ Subtitle.prototype.onStateChange = function(e) {
 };
 
 Subtitle.prototype.onTimeChange = function() {
-  const subtitle = this.getSubtitleFromCache(this.player.getCurrentTime());
+  const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
 
   if (this.subtitle === subtitle) {
     return;
@@ -330,45 +355,26 @@ Subtitle.prototype.onTimeChange = function() {
   this.render();
 };
 
-Subtitle.prototype.getSubtitleFromCache = function(seconds) {
-  if (!this.cache) {
-    return null;
-  }
-
-  const cache = this.cache[getCacheName(seconds)];
-
-  if (!cache) {
-    return null;
-  }
-
-  for (let i in cache) {
-    if (seconds >= cache[i].start && seconds <= cache[i].end) {
-      return cache[i];
-    }
-  }
-
-  return null;
-};
-
 Subtitle.prototype.render = function() {
   if (this.subtitle === null) {
     this.element.style.display = '';
-  }
-  else {
-    const iframe = this.player.getIframe();
 
-    const frame = {
-      x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
-      y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
-      width: iframe.offsetWidth,
-      height: iframe.offsetHeight
-    };
-
-    this.element.innerHTML = '<span>' + this.subtitle.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + '</span>';
-    this.element.style.display = 'block';
-    this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
-    this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
+    return;
   }
+
+  const iframe = this.player.getIframe();
+
+  const frame = {
+    x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
+    y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
+    width: iframe.offsetWidth,
+    height: iframe.offsetHeight
+  };
+
+  this.element.innerHTML = '<span>' + this.subtitle.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + '</span>';
+  this.element.style.display = 'block';
+  this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
+  this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
 };
 
 export default YoutubeExternalSubtitle;
