@@ -241,6 +241,13 @@
         var videoUrl = this.player.getVideoEmbedCode().match(/src="(.*?)"/)[1];
         return getYouTubeIDFromUrl(videoUrl);
     };
+    Subtitle.prototype.setSubtitle = function (subtitle) {
+        if (this.subtitle === subtitle) {
+            return;
+        }
+        this.subtitle = subtitle;
+        this.render();
+    };
     Subtitle.prototype.onStateChange = function (e) {
         if (this.videoId !== this.getCurrentVideoId()) {
             return;
@@ -253,17 +260,12 @@
         }
         else if (e.data === root.YT.PlayerState.ENDED) {
             this.stop();
-            this.subtitle = null;
-            this.render();
+            this.setSubtitle(null);
         }
     };
     Subtitle.prototype.onTimeChange = function () {
         var subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
-        if (this.subtitle === subtitle) {
-            return;
-        }
-        this.subtitle = subtitle;
-        this.render();
+        this.setSubtitle(subtitle);
     };
     Subtitle.prototype.render = function () {
         if (this.subtitle === null) {
