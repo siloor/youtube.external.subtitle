@@ -128,35 +128,46 @@
             addIframeApiScript();
         }
     };
-    var fullscreenChangeHandler = function (e) {
+    var getFullscreenSubtitleElement = function () {
         var fullscreenElement = root.document.fullscreenElement ||
             root.document.webkitFullscreenElement ||
             root.document.webkitCurrentFullScreenElement ||
             root.document.mozFullScreenElement ||
             root.document.msFullscreenElement;
-        var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
+        var element = null;
         if (fullscreenElement) {
             if (fullscreenElement.youtubeExternalSubtitle) {
-                var _loop_1 = function (i) {
-                    var subtitle = subtitles[i];
-                    if (subtitle === fullscreenElement.youtubeExternalSubtitle.element) {
-                        addClass(subtitle, 'fullscreen');
-                        setTimeout(function () {
-                            subtitle.parentFrame.youtubeExternalSubtitle.render();
-                        }, 0);
-                    }
-                    else {
-                        addClass(subtitle, 'fullscreen-ignore');
-                    }
-                };
-                for (var i = 0; i < subtitles.length; i++) {
-                    _loop_1(i);
+                element = fullscreenElement.youtubeExternalSubtitle.element;
+            }
+            else {
+                var elements = fullscreenElement.getElementsByClassName('youtube-external-subtitle');
+                if (elements.length > 0) {
+                    element = elements[0];
                 }
             }
         }
-        else {
-            for (var i = 0; i < subtitles.length; i++) {
-                var subtitle = subtitles[i];
+        return {
+            element: element,
+            isFullscreen: !!fullscreenElement
+        };
+    };
+    var fullscreenChangeHandler = function (e) {
+        var _a = getFullscreenSubtitleElement(), fullscreenSubtitleElement = _a.element, isFullscreen = _a.isFullscreen;
+        var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
+        var _loop_1 = function (i) {
+            var subtitle = subtitles[i];
+            if (isFullscreen) {
+                if (fullscreenSubtitleElement === subtitle) {
+                    addClass(subtitle, 'fullscreen');
+                    setTimeout(function () {
+                        subtitle.parentFrame.youtubeExternalSubtitle.render();
+                    }, 0);
+                }
+                else {
+                    addClass(subtitle, 'fullscreen-ignore');
+                }
+            }
+            else {
                 if (hasClass(subtitle, 'fullscreen')) {
                     removeClass(subtitle, 'fullscreen');
                     subtitle.parentFrame.youtubeExternalSubtitle.render();
@@ -165,6 +176,9 @@
                     removeClass(subtitle, 'fullscreen-ignore');
                 }
             }
+        };
+        for (var i = 0; i < subtitles.length; i++) {
+            _loop_1(i);
         }
     };
     var firstInit = function () {

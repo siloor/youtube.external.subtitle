@@ -176,37 +176,52 @@ const loadIframeApi = (cb) => {
   }
 };
 
-const fullscreenChangeHandler = (e) => {
+const getFullscreenSubtitleElement = () => {
   const fullscreenElement = root.document.fullscreenElement ||
     root.document.webkitFullscreenElement ||
     root.document.webkitCurrentFullScreenElement ||
     root.document.mozFullScreenElement ||
     root.document.msFullscreenElement;
 
-  const subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
+  let element = null;
 
   if (fullscreenElement) {
     if (fullscreenElement.youtubeExternalSubtitle) {
-      for (let i = 0; i < subtitles.length; i++) {
-        const subtitle = subtitles[i];
+      element = fullscreenElement.youtubeExternalSubtitle.element;
+    } else {
+      const elements = fullscreenElement.getElementsByClassName('youtube-external-subtitle');
 
-        if (subtitle === fullscreenElement.youtubeExternalSubtitle.element) {
-          addClass(subtitle, 'fullscreen');
-
-          setTimeout(() => {
-            subtitle.parentFrame.youtubeExternalSubtitle.render();
-          }, 0);
-        }
-        else {
-          addClass(subtitle, 'fullscreen-ignore');
-        }
+      if (elements.length > 0) {
+        element = elements[0];
       }
     }
   }
-  else {
-    for (let i = 0; i < subtitles.length; i++) {
-      const subtitle = subtitles[i];
 
+  return {
+    element: element,
+    isFullscreen: !!fullscreenElement
+  };
+};
+
+const fullscreenChangeHandler = (e) => {
+  const { element: fullscreenSubtitleElement, isFullscreen } = getFullscreenSubtitleElement();
+
+  const subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
+
+  for (let i = 0; i < subtitles.length; i++) {
+    const subtitle = subtitles[i];
+
+    if (isFullscreen) {
+      if (fullscreenSubtitleElement === subtitle) {
+        addClass(subtitle, 'fullscreen');
+
+        setTimeout(() => {
+          subtitle.parentFrame.youtubeExternalSubtitle.render();
+        }, 0);
+      } else {
+        addClass(subtitle, 'fullscreen-ignore');
+      }
+    } else {
       if (hasClass(subtitle, 'fullscreen')) {
         removeClass(subtitle, 'fullscreen');
 
