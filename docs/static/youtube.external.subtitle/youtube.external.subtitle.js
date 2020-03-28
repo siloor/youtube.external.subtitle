@@ -137,27 +137,32 @@
         var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
         if (fullscreenElement) {
             if (fullscreenElement.youtubeExternalSubtitle) {
-                for (var i = 0; i < subtitles.length; i++) {
-                    if (subtitles[i] === fullscreenElement.youtubeExternalSubtitle.element) {
-                        addClass(subtitles[i], 'fullscreen');
+                var _loop_1 = function (i) {
+                    var subtitle = subtitles[i];
+                    if (subtitle === fullscreenElement.youtubeExternalSubtitle.element) {
+                        addClass(subtitle, 'fullscreen');
                         setTimeout(function () {
-                            fullscreenElement.youtubeExternalSubtitle.render();
+                            subtitle.parentFrame.youtubeExternalSubtitle.render();
                         }, 0);
                     }
                     else {
-                        addClass(subtitles[i], 'fullscreen-ignore');
+                        addClass(subtitle, 'fullscreen-ignore');
                     }
+                };
+                for (var i = 0; i < subtitles.length; i++) {
+                    _loop_1(i);
                 }
             }
         }
         else {
             for (var i = 0; i < subtitles.length; i++) {
-                if (hasClass(subtitles[i], 'fullscreen')) {
-                    removeClass(subtitles[i], 'fullscreen');
-                    subtitles[i].parentFrame.youtubeExternalSubtitle.render();
+                var subtitle = subtitles[i];
+                if (hasClass(subtitle, 'fullscreen')) {
+                    removeClass(subtitle, 'fullscreen');
+                    subtitle.parentFrame.youtubeExternalSubtitle.render();
                 }
                 else {
-                    removeClass(subtitles[i], 'fullscreen-ignore');
+                    removeClass(subtitle, 'fullscreen-ignore');
                 }
             }
         }

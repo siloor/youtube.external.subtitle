@@ -188,28 +188,32 @@ const fullscreenChangeHandler = (e) => {
   if (fullscreenElement) {
     if (fullscreenElement.youtubeExternalSubtitle) {
       for (let i = 0; i < subtitles.length; i++) {
-        if (subtitles[i] === fullscreenElement.youtubeExternalSubtitle.element) {
-          addClass(subtitles[i], 'fullscreen');
+        const subtitle = subtitles[i];
+
+        if (subtitle === fullscreenElement.youtubeExternalSubtitle.element) {
+          addClass(subtitle, 'fullscreen');
 
           setTimeout(() => {
-            fullscreenElement.youtubeExternalSubtitle.render();
+            subtitle.parentFrame.youtubeExternalSubtitle.render();
           }, 0);
         }
         else {
-          addClass(subtitles[i], 'fullscreen-ignore');
+          addClass(subtitle, 'fullscreen-ignore');
         }
       }
     }
   }
   else {
     for (let i = 0; i < subtitles.length; i++) {
-      if (hasClass(subtitles[i], 'fullscreen')) {
-        removeClass(subtitles[i], 'fullscreen');
+      const subtitle = subtitles[i];
 
-        subtitles[i].parentFrame.youtubeExternalSubtitle.render();
+      if (hasClass(subtitle, 'fullscreen')) {
+        removeClass(subtitle, 'fullscreen');
+
+        subtitle.parentFrame.youtubeExternalSubtitle.render();
       }
       else {
-        removeClass(subtitles[i], 'fullscreen-ignore');
+        removeClass(subtitle, 'fullscreen-ignore');
       }
     }
   }
