@@ -11,7 +11,11 @@
     };
     var proxy = function (func, context) {
         return function () {
-            return func.apply(context, arguments);
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            return func.apply(context, args);
         };
     };
     var addClass = function (element, cls) {
@@ -155,6 +159,7 @@
         root.document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
     };
     var Subtitle = YoutubeExternalSubtitle.Subtitle = function (iframe, subtitles) {
+        var _this = this;
         this.subtitle = null;
         this.cache = null;
         this.timeChangeInterval = 0;
@@ -187,15 +192,15 @@
         if (subtitles) {
             this.cache = buildCache(subtitles);
         }
-        loadIframeApi(proxy(function () {
-            this.player = new root.YT.Player(iframe);
-            this.videoId = this.getCurrentVideoId();
-            this.element = root.document.createElement('div');
-            addClass(this.element, 'youtube-external-subtitle');
-            this.element.parentFrame = iframe;
-            iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
-            this.player.addEventListener('onStateChange', proxy(this.onStateChange, this));
-        }, this));
+        loadIframeApi(function () {
+            _this.player = new root.YT.Player(iframe);
+            _this.videoId = _this.getCurrentVideoId();
+            _this.element = root.document.createElement('div');
+            addClass(_this.element, 'youtube-external-subtitle');
+            _this.element.parentFrame = iframe;
+            iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
+            _this.player.addEventListener('onStateChange', proxy(_this.onStateChange, _this));
+        });
     };
     Subtitle.prototype.load = function (subtitles) {
         this.cache = buildCache(subtitles);
