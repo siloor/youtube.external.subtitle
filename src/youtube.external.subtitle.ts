@@ -183,32 +183,33 @@ const fullscreenChangeHandler = (e) => {
     root.document.mozFullScreenElement ||
     root.document.msFullscreenElement;
 
-  const subtitleElements = root.document.getElementsByClassName('youtube-external-subtitle');
-  const isFullscreen = !!fullscreenElement;
+  const subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
 
-  for (let i = 0; i < subtitleElements.length; i++) {
-    const subtitleElement = subtitleElements[i];
-    const subtitle = isFullscreen
-      ? fullscreenElement.youtubeExternalSubtitle
-      : subtitleElement.parentFrame.youtubeExternalSubtitle;
+  if (fullscreenElement) {
+    if (fullscreenElement.youtubeExternalSubtitle) {
+      for (let i = 0; i < subtitles.length; i++) {
+        if (subtitles[i] === fullscreenElement.youtubeExternalSubtitle.element) {
+          addClass(subtitles[i], 'fullscreen');
 
-    const isFullscreenSubtitle = isFullscreen
-      ? !!subtitle && subtitleElement === subtitle.element
-      : hasClass(subtitleElement, 'fullscreen');
-
-    if (isFullscreen) {
-      addClass(subtitleElement, isFullscreenSubtitle ? 'fullscreen' : 'fullscreen-ignore');
-
-      if (isFullscreenSubtitle) {
-        setTimeout(() => {
-          subtitle.render();
-        }, 0);
+          setTimeout(() => {
+            fullscreenElement.youtubeExternalSubtitle.render();
+          }, 0);
+        }
+        else {
+          addClass(subtitles[i], 'fullscreen-ignore');
+        }
       }
-    } else {
-      removeClass(subtitleElement, isFullscreenSubtitle ? 'fullscreen' : 'fullscreen-ignore');
+    }
+  }
+  else {
+    for (let i = 0; i < subtitles.length; i++) {
+      if (hasClass(subtitles[i], 'fullscreen')) {
+        removeClass(subtitles[i], 'fullscreen');
 
-      if (isFullscreenSubtitle) {
-        subtitle.render();
+        subtitles[i].parentFrame.youtubeExternalSubtitle.render();
+      }
+      else {
+        removeClass(subtitles[i], 'fullscreen-ignore');
       }
     }
   }

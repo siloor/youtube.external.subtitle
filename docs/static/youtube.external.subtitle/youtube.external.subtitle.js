@@ -134,33 +134,32 @@
             root.document.webkitCurrentFullScreenElement ||
             root.document.mozFullScreenElement ||
             root.document.msFullscreenElement;
-        var subtitleElements = root.document.getElementsByClassName('youtube-external-subtitle');
-        var isFullscreen = !!fullscreenElement;
-        var _loop_1 = function (i) {
-            var subtitleElement = subtitleElements[i];
-            var subtitle = isFullscreen
-                ? fullscreenElement.youtubeExternalSubtitle
-                : subtitleElement.parentFrame.youtubeExternalSubtitle;
-            var isFullscreenSubtitle = isFullscreen
-                ? !!subtitle && subtitleElement === subtitle.element
-                : hasClass(subtitleElement, 'fullscreen');
-            if (isFullscreen) {
-                addClass(subtitleElement, isFullscreenSubtitle ? 'fullscreen' : 'fullscreen-ignore');
-                if (isFullscreenSubtitle) {
-                    setTimeout(function () {
-                        subtitle.render();
-                    }, 0);
+        var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
+        if (fullscreenElement) {
+            if (fullscreenElement.youtubeExternalSubtitle) {
+                for (var i = 0; i < subtitles.length; i++) {
+                    if (subtitles[i] === fullscreenElement.youtubeExternalSubtitle.element) {
+                        addClass(subtitles[i], 'fullscreen');
+                        setTimeout(function () {
+                            fullscreenElement.youtubeExternalSubtitle.render();
+                        }, 0);
+                    }
+                    else {
+                        addClass(subtitles[i], 'fullscreen-ignore');
+                    }
                 }
             }
-            else {
-                removeClass(subtitleElement, isFullscreenSubtitle ? 'fullscreen' : 'fullscreen-ignore');
-                if (isFullscreenSubtitle) {
-                    subtitle.render();
+        }
+        else {
+            for (var i = 0; i < subtitles.length; i++) {
+                if (hasClass(subtitles[i], 'fullscreen')) {
+                    removeClass(subtitles[i], 'fullscreen');
+                    subtitles[i].parentFrame.youtubeExternalSubtitle.render();
+                }
+                else {
+                    removeClass(subtitles[i], 'fullscreen-ignore');
                 }
             }
-        };
-        for (var i = 0; i < subtitleElements.length; i++) {
-            _loop_1(i);
         }
     };
     var firstInit = function () {
