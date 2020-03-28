@@ -1,0 +1,18 @@
+{
+  "name": "youtube.external.subtitle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "youtube.external.subtitle.js",
+  "scripts": {
+    "start": "rollup -c -w",
+    "build": "rollup -c"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^4.0.0",
+    "rollup": "^2.2.0",
+    "tslib": "^1.11.1",
+    "typescript": "^3.8.3"
+  }
+}
