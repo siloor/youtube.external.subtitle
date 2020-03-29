@@ -6,10 +6,10 @@ declare global {
 
 declare global {
   interface Document {
-    webkitFullscreenElement: any;
-    webkitCurrentFullScreenElement: any;
-    mozFullScreenElement: any;
-    msFullscreenElement: any;
+    webkitFullscreenElement: Element;
+    webkitCurrentFullScreenElement: Element;
+    mozFullScreenElement: Element;
+    msFullscreenElement: Element;
   }
 }
 
@@ -71,7 +71,7 @@ const addQueryStringParameterToUrl = (url: string, qsParameters: any): string =>
   }
 
   for (let i in qsParameters) {
-    qs += (qs === '' ? '?' : '&') + i + '=' + qsParameters[i];
+    qs += `${qs === '' ? '?' : '&'}${i}=${qsParameters[i]}`;
   }
 
   return `${url}${qs}${hash}`;
@@ -173,12 +173,23 @@ const loadIframeApi = (cb: Function): void => {
   }
 };
 
-const getFullscreenSubtitleElement = (): any => {
-  const fullscreenElement = root.document.fullscreenElement ||
+const getFullscreenElement = (): Element => {
+  return root.document.fullscreenElement ||
     root.document.webkitFullscreenElement ||
     root.document.webkitCurrentFullScreenElement ||
     root.document.mozFullScreenElement ||
     root.document.msFullscreenElement;
+};
+
+const getSubtitleElements = (container: Element|Document): HTMLCollectionOf<YoutubeExternalSubtitleElement> => {
+  return container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
+};
+
+const getFullscreenSubtitleElement = (): {
+  element: YoutubeExternalSubtitleElement,
+  isFullscreen: boolean
+} => {
+  const fullscreenElement = getFullscreenElement() as YoutubeExternalSubtitleElement;
 
   let element = null;
 
@@ -186,7 +197,7 @@ const getFullscreenSubtitleElement = (): any => {
     if (fullscreenElement.youtubeExternalSubtitle) {
       element = fullscreenElement.youtubeExternalSubtitle.element;
     } else {
-      const elements = fullscreenElement.getElementsByClassName(CSS.CLASS);
+      const elements = getSubtitleElements(fullscreenElement);
 
       if (elements.length > 0) {
         element = elements[0];
@@ -203,7 +214,7 @@ const getFullscreenSubtitleElement = (): any => {
 const fullscreenChangeHandler = (): void => {
   const { element: fullscreenSubtitleElement, isFullscreen } = getFullscreenSubtitleElement();
 
-  const subtitles = root.document.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
+  const subtitles = getSubtitleElements(root.document);
 
   for (let i = 0; i < subtitles.length; i++) {
     const subtitle = subtitles[i].youtubeExternalSubtitle;

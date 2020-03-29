@@ -72,7 +72,7 @@
             url = url.substr(0, qsIndex);
         }
         for (var i in qsParameters) {
-            qs += (qs === '' ? '?' : '&') + i + '=' + qsParameters[i];
+            qs += "" + (qs === '' ? '?' : '&') + i + "=" + qsParameters[i];
         }
         return "" + url + qs + hash;
     };
@@ -151,19 +151,25 @@
             addIframeApiScript();
         }
     };
-    var getFullscreenSubtitleElement = function () {
-        var fullscreenElement = root.document.fullscreenElement ||
+    var getFullscreenElement = function () {
+        return root.document.fullscreenElement ||
             root.document.webkitFullscreenElement ||
             root.document.webkitCurrentFullScreenElement ||
             root.document.mozFullScreenElement ||
             root.document.msFullscreenElement;
+    };
+    var getSubtitleElements = function (container) {
+        return container.getElementsByClassName(CSS.CLASS);
+    };
+    var getFullscreenSubtitleElement = function () {
+        var fullscreenElement = getFullscreenElement();
         var element = null;
         if (fullscreenElement) {
             if (fullscreenElement.youtubeExternalSubtitle) {
                 element = fullscreenElement.youtubeExternalSubtitle.element;
             }
             else {
-                var elements = fullscreenElement.getElementsByClassName(CSS.CLASS);
+                var elements = getSubtitleElements(fullscreenElement);
                 if (elements.length > 0) {
                     element = elements[0];
                 }
@@ -176,7 +182,7 @@
     };
     var fullscreenChangeHandler = function () {
         var _a = getFullscreenSubtitleElement(), fullscreenSubtitleElement = _a.element, isFullscreen = _a.isFullscreen;
-        var subtitles = root.document.getElementsByClassName(CSS.CLASS);
+        var subtitles = getSubtitleElements(root.document);
         var _loop_1 = function (i) {
             var subtitle = subtitles[i].youtubeExternalSubtitle;
             if (isFullscreen) {
