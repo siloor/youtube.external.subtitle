@@ -38,7 +38,6 @@
         return r;
     }
 
-    var YoutubeExternalSubtitle = {};
     var root = window;
     var proxy = function (func, context) {
         return function () {
@@ -51,7 +50,7 @@
     };
     var getYouTubeIDFromUrl = function (url) {
         var match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
-        return match && match[7].length === 11 ? match[7] : false;
+        return match && match[7].length === 11 ? match[7] : null;
     };
     var addQueryStringParameterToUrl = function (url, qsParameters) {
         var hashIndex = url.indexOf('#');
@@ -220,138 +219,142 @@
         }
         return newSrc;
     };
-    var Subtitle = YoutubeExternalSubtitle.Subtitle = function (iframe, subtitles) {
-        var _this = this;
-        this.cache = null;
-        this.timeChangeInterval = 0;
-        this.player = null;
-        this.videoId = null;
-        this.element = null;
-        this.state = {
-            text: null,
-            classes: []
-        };
-        if (iframe.youtubeExternalSubtitle) {
-            throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
-        }
-        iframe.youtubeExternalSubtitle = this;
-        if (!root.document.getElementById('youtube-external-subtitle-style')) {
-            firstInit();
-        }
-        var src = getIframeSrc(iframe.src);
-        if (iframe.src !== src) {
-            iframe.src = src;
-        }
-        if (subtitles) {
-            this.load(subtitles);
-        }
-        loadIframeApi(function () {
-            _this.player = new root.YT.Player(iframe);
-            _this.videoId = _this.getCurrentVideoId();
-            _this.element = root.document.createElement('div');
-            _this.element.youtubeExternalSubtitle = _this;
-            iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
-            _this.render();
-            _this.player.addEventListener('onStateChange', proxy(_this.onStateChange, _this));
-        });
-    };
-    Subtitle.prototype.load = function (subtitles) {
-        this.cache = buildCache(subtitles);
-    };
-    Subtitle.prototype.setState = function (state) {
-        var prevState = this.state;
-        var nextState = __assign(__assign({}, prevState), state);
-        var changed = false;
-        for (var i in nextState) {
-            if (prevState[i] !== nextState[i]) {
-                changed = true;
-                break;
+    var Subtitle = /** @class */ (function () {
+        function Subtitle(iframe, subtitles) {
+            var _this = this;
+            this.cache = null;
+            this.timeChangeInterval = 0;
+            this.player = null;
+            this.videoId = null;
+            this.element = null;
+            this.state = {
+                text: null,
+                classes: []
+            };
+            if (iframe.youtubeExternalSubtitle) {
+                throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
+            iframe.youtubeExternalSubtitle = this;
+            if (!root.document.getElementById('youtube-external-subtitle-style')) {
+                firstInit();
+            }
+            var src = getIframeSrc(iframe.src);
+            if (iframe.src !== src) {
+                iframe.src = src;
+            }
+            if (subtitles) {
+                this.load(subtitles);
+            }
+            loadIframeApi(function () {
+                _this.player = new root.YT.Player(iframe);
+                _this.videoId = _this.getCurrentVideoId();
+                _this.element = root.document.createElement('div');
+                _this.element.youtubeExternalSubtitle = _this;
+                iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
+                _this.render();
+                _this.player.addEventListener('onStateChange', proxy(_this.onStateChange, _this));
+            });
         }
-        if (!changed) {
-            return;
-        }
-        this.state = nextState;
-        this.render();
-    };
-    Subtitle.prototype.hasClass = function (cls) {
-        return this.state.classes.indexOf(cls) !== -1;
-    };
-    Subtitle.prototype.addClass = function (cls) {
-        if (this.hasClass(cls)) {
-            return;
-        }
-        this.setState({
-            classes: __spreadArrays(this.state.classes, [
-                cls
-            ])
-        });
-    };
-    Subtitle.prototype.removeClass = function (cls) {
-        if (!this.hasClass(cls)) {
-            return;
-        }
-        var classes = __spreadArrays(this.state.classes);
-        var index = classes.indexOf(cls);
-        if (index > -1) {
-            classes.splice(index, 1);
-        }
-        this.setState({ classes: classes });
-    };
-    Subtitle.prototype.start = function () {
-        this.stop();
-        this.timeChangeInterval = setInterval(proxy(this.onTimeChange, this), 500);
-    };
-    Subtitle.prototype.stop = function () {
-        clearInterval(this.timeChangeInterval);
-    };
-    Subtitle.prototype.destroy = function () {
-        this.stop();
-        this.element.parentNode.removeChild(this.element);
-        this.player.getIframe().youtubeExternalSubtitle = null;
-    };
-    Subtitle.prototype.getCurrentVideoId = function () {
-        var videoUrl = this.player.getVideoEmbedCode().match(/src="(.*?)"/)[1];
-        return getYouTubeIDFromUrl(videoUrl);
-    };
-    Subtitle.prototype.onStateChange = function (e) {
-        if (this.videoId !== this.getCurrentVideoId()) {
-            return;
-        }
-        if (e.data === root.YT.PlayerState.PLAYING) {
-            this.start();
-        }
-        else if (e.data === root.YT.PlayerState.PAUSED) {
-            this.stop();
-        }
-        else if (e.data === root.YT.PlayerState.ENDED) {
-            this.stop();
-            this.setState({ text: null });
-        }
-    };
-    Subtitle.prototype.onTimeChange = function () {
-        var subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
-        this.setState({ text: subtitle ? subtitle.text : null });
-    };
-    Subtitle.prototype.render = function () {
-        if (this.state.text === null) {
-            this.element.style.display = '';
-            return;
-        }
-        var iframe = this.player.getIframe();
-        var frame = {
-            x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
-            y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
-            width: iframe.offsetWidth,
-            height: iframe.offsetHeight
+        Subtitle.prototype.load = function (subtitles) {
+            this.cache = buildCache(subtitles);
         };
-        this.element.innerHTML = "<span>" + this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
-        this.element.className = "youtube-external-subtitle " + this.state.classes.join(' ');
-        this.element.style.display = 'block';
-        this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
-        this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
-    };
+        Subtitle.prototype.hasClass = function (cls) {
+            return this.state.classes.indexOf(cls) !== -1;
+        };
+        Subtitle.prototype.addClass = function (cls) {
+            if (this.hasClass(cls)) {
+                return;
+            }
+            this.setState({
+                classes: __spreadArrays(this.state.classes, [
+                    cls
+                ])
+            });
+        };
+        Subtitle.prototype.removeClass = function (cls) {
+            if (!this.hasClass(cls)) {
+                return;
+            }
+            var classes = __spreadArrays(this.state.classes);
+            var index = classes.indexOf(cls);
+            if (index > -1) {
+                classes.splice(index, 1);
+            }
+            this.setState({ classes: classes });
+        };
+        Subtitle.prototype.destroy = function () {
+            this.stop();
+            this.element.parentNode.removeChild(this.element);
+            this.player.getIframe().youtubeExternalSubtitle = null;
+        };
+        Subtitle.prototype.render = function () {
+            if (this.state.text === null) {
+                this.element.style.display = '';
+                return;
+            }
+            var iframe = this.player.getIframe();
+            var frame = {
+                x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
+                y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
+                width: iframe.offsetWidth,
+                height: iframe.offsetHeight
+            };
+            this.element.innerHTML = "<span>" + this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
+            this.element.className = "youtube-external-subtitle " + this.state.classes.join(' ');
+            this.element.style.display = 'block';
+            this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
+            this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
+        };
+        Subtitle.prototype.setState = function (state) {
+            var prevState = this.state;
+            var nextState = __assign(__assign({}, prevState), state);
+            var changed = false;
+            for (var i in nextState) {
+                if (prevState[i] !== nextState[i]) {
+                    changed = true;
+                    break;
+                }
+            }
+            if (!changed) {
+                return;
+            }
+            this.state = nextState;
+            this.render();
+        };
+        Subtitle.prototype.start = function () {
+            this.stop();
+            this.timeChangeInterval = setInterval(proxy(this.onTimeChange, this), 500);
+        };
+        Subtitle.prototype.stop = function () {
+            clearInterval(this.timeChangeInterval);
+        };
+        Subtitle.prototype.getCurrentVideoId = function () {
+            var videoUrl = this.player.getVideoEmbedCode().match(/src="(.*?)"/)[1];
+            return getYouTubeIDFromUrl(videoUrl);
+        };
+        Subtitle.prototype.onStateChange = function (e) {
+            if (this.videoId !== this.getCurrentVideoId()) {
+                return;
+            }
+            if (e.data === root.YT.PlayerState.PLAYING) {
+                this.start();
+            }
+            else if (e.data === root.YT.PlayerState.PAUSED) {
+                this.stop();
+            }
+            else if (e.data === root.YT.PlayerState.ENDED) {
+                this.stop();
+                this.setState({ text: null });
+            }
+        };
+        Subtitle.prototype.onTimeChange = function () {
+            var subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
+            this.setState({ text: subtitle ? subtitle.text : null });
+        };
+        return Subtitle;
+    }());
+    var youtube_external_subtitle = { Subtitle: Subtitle };
 
-    return YoutubeExternalSubtitle;
+    return youtube_external_subtitle;
 
 })));
