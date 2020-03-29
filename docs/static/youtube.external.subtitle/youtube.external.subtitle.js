@@ -219,6 +219,14 @@
         }
         return newSrc;
     };
+    var isStateChanged = function (prevState, nextState) {
+        for (var i in nextState) {
+            if (prevState[i] !== nextState[i]) {
+                return true;
+            }
+        }
+        return false;
+    };
     var Subtitle = /** @class */ (function () {
         function Subtitle(iframe, subtitles) {
             var _this = this;
@@ -308,14 +316,7 @@
         Subtitle.prototype.setState = function (state) {
             var prevState = this.state;
             var nextState = __assign(__assign({}, prevState), state);
-            var changed = false;
-            for (var i in nextState) {
-                if (prevState[i] !== nextState[i]) {
-                    changed = true;
-                    break;
-                }
-            }
-            if (!changed) {
+            if (!isStateChanged(prevState, nextState)) {
                 return;
             }
             this.state = nextState;

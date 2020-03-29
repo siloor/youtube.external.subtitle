@@ -27,6 +27,11 @@ interface SubtitleEntry {
   text: string;
 }
 
+interface State {
+  text: string;
+  classes: string[];
+}
+
 const root = window;
 
 const proxy = (func, context) => {
@@ -251,13 +256,23 @@ const getIframeSrc = (src: string): string => {
   return newSrc;
 };
 
+const isStateChanged = (prevState: State, nextState: State): boolean => {
+  for (let i in nextState) {
+    if (prevState[i] !== nextState[i]) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 class Subtitle {
   private cache: any = null;
   private timeChangeInterval: number = 0;
   private player: any = null;
   private videoId: string = null;
   private element: any = null;
-  private state: any = {
+  private state: State = {
     text: null,
     classes: []
   };
@@ -367,24 +382,14 @@ class Subtitle {
     this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
   }
 
-  private setState(state): void {
+  private setState(state: any): void {
     const prevState = this.state;
-    const nextState = {
+    const nextState: State = {
       ...prevState,
       ...state
     };
 
-    let changed = false;
-
-    for (let i in nextState) {
-      if (prevState[i] !== nextState[i]) {
-        changed = true;
-
-        break;
-      }
-    }
-
-    if (!changed) {
+    if (!isStateChanged(prevState, nextState)) {
       return;
     }
 
