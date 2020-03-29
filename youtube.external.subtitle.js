@@ -45,15 +45,6 @@
         FULLSCREEN: 'fullscreen',
         FULLSCREEN_IGNORE: 'fullscreen-ignore'
     };
-    var proxy = function (func, context) {
-        return function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            return func.apply(context, args);
-        };
-    };
     var getYouTubeIDFromUrl = function (url) {
         var match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
         return match && match[7].length === 11 ? match[7] : null;
@@ -267,7 +258,7 @@
                 _this.element.youtubeExternalSubtitle = _this;
                 iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
                 _this.render();
-                _this.player.addEventListener('onStateChange', proxy(_this.onStateChange, _this));
+                _this.player.addEventListener('onStateChange', function (e) { return _this.onStateChange(e); });
             });
         }
         Subtitle.prototype.load = function (subtitles) {
@@ -330,8 +321,9 @@
             this.render();
         };
         Subtitle.prototype.start = function () {
+            var _this = this;
             this.stop();
-            this.timeChangeInterval = setInterval(proxy(this.onTimeChange, this), 500);
+            this.timeChangeInterval = setInterval(function () { return _this.onTimeChange(); }, 500);
         };
         Subtitle.prototype.stop = function () {
             clearInterval(this.timeChangeInterval);

@@ -41,12 +41,6 @@ const CSS = {
   FULLSCREEN_IGNORE: 'fullscreen-ignore'
 };
 
-const proxy = (func, context) => {
-  return (...args) => {
-    return func.apply(context, args);
-  };
-};
-
 const getYouTubeIDFromUrl = (url: string): string => {
   const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
 
@@ -325,7 +319,7 @@ class Subtitle {
 
       this.render();
 
-      this.player.addEventListener('onStateChange', proxy(this.onStateChange, this));
+      this.player.addEventListener('onStateChange', (e) => this.onStateChange(e));
     });
   }
 
@@ -416,7 +410,7 @@ class Subtitle {
   private start(): void {
     this.stop();
 
-    this.timeChangeInterval = setInterval(proxy(this.onTimeChange, this), 500);
+    this.timeChangeInterval = setInterval(() => this.onTimeChange(), 500);
   }
 
   private stop(): void {
