@@ -39,6 +39,12 @@
     }
 
     var root = window;
+    var CSS = {
+        ID: 'youtube-external-subtitle-style',
+        CLASS: 'youtube-external-subtitle',
+        FULLSCREEN: 'fullscreen',
+        FULLSCREEN_IGNORE: 'fullscreen-ignore'
+    };
     var proxy = function (func, context) {
         return function () {
             var args = [];
@@ -157,7 +163,7 @@
                 element = fullscreenElement.youtubeExternalSubtitle.element;
             }
             else {
-                var elements = fullscreenElement.getElementsByClassName('youtube-external-subtitle');
+                var elements = fullscreenElement.getElementsByClassName(CSS.CLASS);
                 if (elements.length > 0) {
                     element = elements[0];
                 }
@@ -170,12 +176,12 @@
     };
     var fullscreenChangeHandler = function () {
         var _a = getFullscreenSubtitleElement(), fullscreenSubtitleElement = _a.element, isFullscreen = _a.isFullscreen;
-        var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
+        var subtitles = root.document.getElementsByClassName(CSS.CLASS);
         var _loop_1 = function (i) {
             var subtitle = subtitles[i].youtubeExternalSubtitle;
             if (isFullscreen) {
                 var isFullscreenElement = fullscreenSubtitleElement === subtitle.element;
-                subtitle.addClass(isFullscreenElement ? 'fullscreen' : 'fullscreen-ignore');
+                subtitle.addClass(isFullscreenElement ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
                 if (isFullscreenElement) {
                     setTimeout(function () {
                         subtitle.render();
@@ -183,8 +189,8 @@
                 }
             }
             else {
-                var isFullscreenElement = subtitle.hasClass('fullscreen');
-                subtitle.removeClass(isFullscreenElement ? 'fullscreen' : 'fullscreen-ignore');
+                var isFullscreenElement = subtitle.hasClass(CSS.FULLSCREEN);
+                subtitle.removeClass(isFullscreenElement ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
             }
         };
         for (var i = 0; i < subtitles.length; i++) {
@@ -193,9 +199,9 @@
     };
     var firstInit = function () {
         var style = root.document.createElement('style');
-        style.id = 'youtube-external-subtitle-style';
+        style.id = CSS.ID;
         style.type = 'text/css';
-        style.innerHTML = ".youtube-external-subtitle { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 17px; text-align: center; } .youtube-external-subtitle span { background: #000; padding: 1px 4px; display: inline-block; margin-bottom: 2px; } .youtube-external-subtitle.fullscreen-ignore { display: none !important; } .youtube-external-subtitle.fullscreen { z-index: 3000000000; }";
+        style.innerHTML = "\n    ." + CSS.CLASS + " { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 17px; text-align: center; }\n    ." + CSS.CLASS + " span { background: #000; padding: 1px 4px; display: inline-block; margin-bottom: 2px; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN_IGNORE + " { display: none !important; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN + " { z-index: 3000000000; }\n  ";
         var head = root.document.getElementsByTagName('head')[0] || root.document.documentElement;
         head.insertBefore(style, head.firstChild);
         root.document.addEventListener('fullscreenchange', fullscreenChangeHandler);
@@ -243,7 +249,7 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            if (!root.document.getElementById('youtube-external-subtitle-style')) {
+            if (!root.document.getElementById(CSS.ID)) {
                 firstInit();
             }
             var src = getIframeSrc(iframe.src);
@@ -308,7 +314,7 @@
                 height: iframe.offsetHeight
             };
             this.element.innerHTML = "<span>" + this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
-            this.element.className = "youtube-external-subtitle " + this.state.classes.join(' ');
+            this.element.className = CSS.CLASS + " " + this.state.classes.join(' ');
             this.element.style.display = 'block';
             this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
             this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
