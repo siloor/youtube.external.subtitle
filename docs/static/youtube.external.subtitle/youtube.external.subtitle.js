@@ -180,17 +180,12 @@
         var _loop_1 = function (i) {
             var subtitle = subtitles[i].youtubeExternalSubtitle;
             if (isFullscreen) {
-                var isFullscreenElement = fullscreenSubtitleElement === subtitle.element;
-                subtitle.addClass(isFullscreenElement ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
-                if (isFullscreenElement) {
-                    setTimeout(function () {
-                        subtitle.render();
-                    }, 0);
-                }
+                setTimeout(function () {
+                    subtitle.addClass(fullscreenSubtitleElement === subtitle.element ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+                }, 0);
             }
             else {
-                var isFullscreenElement = subtitle.hasClass(CSS.FULLSCREEN);
-                subtitle.removeClass(isFullscreenElement ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+                subtitle.removeClass(subtitle.hasClass(CSS.FULLSCREEN) ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
             }
         };
         for (var i = 0; i < subtitles.length; i++) {

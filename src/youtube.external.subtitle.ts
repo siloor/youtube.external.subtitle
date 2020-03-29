@@ -209,19 +209,11 @@ const fullscreenChangeHandler = (): void => {
     const subtitle = subtitles[i].youtubeExternalSubtitle;
 
     if (isFullscreen) {
-      const isFullscreenElement = fullscreenSubtitleElement === subtitle.element;
-
-      subtitle.addClass(isFullscreenElement ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
-
-      if (isFullscreenElement) {
-        setTimeout(() => {
-          subtitle.render();
-        }, 0);
-      }
+      setTimeout(() => {
+        subtitle.addClass(fullscreenSubtitleElement === subtitle.element ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+      }, 0);
     } else {
-      const isFullscreenElement = subtitle.hasClass(CSS.FULLSCREEN);
-
-      subtitle.removeClass(isFullscreenElement ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+      subtitle.removeClass(subtitle.hasClass(CSS.FULLSCREEN) ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
     }
   }
 };
