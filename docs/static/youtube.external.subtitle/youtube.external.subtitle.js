@@ -4,6 +4,40 @@
     (global = global || self, global.YoutubeExternalSubtitle = factory());
 }(this, (function () { 'use strict';
 
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    }
+
     var YoutubeExternalSubtitle = {};
     var root = window;
     var proxy = function (func, context) {
@@ -14,22 +48,6 @@
             }
             return func.apply(context, args);
         };
-    };
-    var hasClass = function (element, cls) {
-        return !!element.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
-    };
-    var addClass = function (element, cls) {
-        if (hasClass(element, cls)) {
-            return;
-        }
-        element.className += (element.className ? ' ' : '') + cls;
-    };
-    var removeClass = function (element, cls) {
-        if (!hasClass(element, cls)) {
-            return;
-        }
-        var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
-        element.className = element.className.replace(reg, ' ');
     };
     var getYouTubeIDFromUrl = function (url) {
         var match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
@@ -155,26 +173,19 @@
         var _a = getFullscreenSubtitleElement(), fullscreenSubtitleElement = _a.element, isFullscreen = _a.isFullscreen;
         var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
         var _loop_1 = function (i) {
-            var subtitle = subtitles[i];
+            var subtitle = subtitles[i].youtubeExternalSubtitle;
             if (isFullscreen) {
-                if (fullscreenSubtitleElement === subtitle) {
-                    addClass(subtitle, 'fullscreen');
+                var isFullscreenElement = fullscreenSubtitleElement === subtitle.element;
+                subtitle.addClass(isFullscreenElement ? 'fullscreen' : 'fullscreen-ignore');
+                if (isFullscreenElement) {
                     setTimeout(function () {
-                        subtitle.parentFrame.youtubeExternalSubtitle.render();
+                        subtitle.render();
                     }, 0);
-                }
-                else {
-                    addClass(subtitle, 'fullscreen-ignore');
                 }
             }
             else {
-                if (hasClass(subtitle, 'fullscreen')) {
-                    removeClass(subtitle, 'fullscreen');
-                    subtitle.parentFrame.youtubeExternalSubtitle.render();
-                }
-                else {
-                    removeClass(subtitle, 'fullscreen-ignore');
-                }
+                var isFullscreenElement = subtitle.hasClass('fullscreen');
+                subtitle.removeClass(isFullscreenElement ? 'fullscreen' : 'fullscreen-ignore');
             }
         };
         for (var i = 0; i < subtitles.length; i++) {
@@ -211,12 +222,15 @@
     };
     var Subtitle = YoutubeExternalSubtitle.Subtitle = function (iframe, subtitles) {
         var _this = this;
-        this.subtitle = null;
         this.cache = null;
         this.timeChangeInterval = 0;
         this.player = null;
         this.videoId = null;
         this.element = null;
+        this.state = {
+            text: null,
+            classes: []
+        };
         if (iframe.youtubeExternalSubtitle) {
             throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
         }
@@ -235,14 +249,54 @@
             _this.player = new root.YT.Player(iframe);
             _this.videoId = _this.getCurrentVideoId();
             _this.element = root.document.createElement('div');
-            addClass(_this.element, 'youtube-external-subtitle');
-            _this.element.parentFrame = iframe;
+            _this.element.youtubeExternalSubtitle = _this;
             iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
+            _this.render();
             _this.player.addEventListener('onStateChange', proxy(_this.onStateChange, _this));
         });
     };
     Subtitle.prototype.load = function (subtitles) {
         this.cache = buildCache(subtitles);
+    };
+    Subtitle.prototype.setState = function (state) {
+        var prevState = this.state;
+        var nextState = __assign(__assign({}, prevState), state);
+        var changed = false;
+        for (var i in nextState) {
+            if (prevState[i] !== nextState[i]) {
+                changed = true;
+                break;
+            }
+        }
+        if (!changed) {
+            return;
+        }
+        this.state = nextState;
+        this.render();
+    };
+    Subtitle.prototype.hasClass = function (cls) {
+        return this.state.classes.indexOf(cls) !== -1;
+    };
+    Subtitle.prototype.addClass = function (cls) {
+        if (this.hasClass(cls)) {
+            return;
+        }
+        this.setState({
+            classes: __spreadArrays(this.state.classes, [
+                cls
+            ])
+        });
+    };
+    Subtitle.prototype.removeClass = function (cls) {
+        if (!this.hasClass(cls)) {
+            return;
+        }
+        var classes = __spreadArrays(this.state.classes);
+        var index = classes.indexOf(cls);
+        if (index > -1) {
+            classes.splice(index, 1);
+        }
+        this.setState({ classes: classes });
     };
     Subtitle.prototype.start = function () {
         this.stop();
@@ -260,13 +314,6 @@
         var videoUrl = this.player.getVideoEmbedCode().match(/src="(.*?)"/)[1];
         return getYouTubeIDFromUrl(videoUrl);
     };
-    Subtitle.prototype.setSubtitle = function (subtitle) {
-        if (this.subtitle === subtitle) {
-            return;
-        }
-        this.subtitle = subtitle;
-        this.render();
-    };
     Subtitle.prototype.onStateChange = function (e) {
         if (this.videoId !== this.getCurrentVideoId()) {
             return;
@@ -279,15 +326,15 @@
         }
         else if (e.data === root.YT.PlayerState.ENDED) {
             this.stop();
-            this.setSubtitle(null);
+            this.setState({ text: null });
         }
     };
     Subtitle.prototype.onTimeChange = function () {
         var subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
-        this.setSubtitle(subtitle);
+        this.setState({ text: subtitle ? subtitle.text : null });
     };
     Subtitle.prototype.render = function () {
-        if (this.subtitle === null) {
+        if (this.state.text === null) {
             this.element.style.display = '';
             return;
         }
@@ -298,7 +345,8 @@
             width: iframe.offsetWidth,
             height: iframe.offsetHeight
         };
-        this.element.innerHTML = '<span>' + this.subtitle.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + '</span>';
+        this.element.innerHTML = "<span>" + this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
+        this.element.className = "youtube-external-subtitle " + this.state.classes.join(' ');
         this.element.style.display = 'block';
         this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
         this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';

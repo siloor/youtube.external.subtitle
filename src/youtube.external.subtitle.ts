@@ -15,7 +15,7 @@ declare global {
 
 declare global {
   interface Element {
-    parentFrame: any;
+    youtubeExternalSubtitle: any;
   }
 }
 
@@ -26,28 +26,6 @@ const proxy = (func, context) => {
   return (...args) => {
     return func.apply(context, args);
   };
-};
-
-const hasClass = (element, cls) => {
-  return !!element.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
-};
-
-const addClass = (element, cls) => {
-  if (hasClass(element, cls)) {
-    return;
-  }
-
-  element.className += (element.className ? ' ' : '') + cls;
-};
-
-const removeClass = (element, cls) => {
-  if (!hasClass(element, cls)) {
-    return;
-  }
-
-  const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
-
-  element.className = element.className.replace(reg, ' ');
 };
 
 const getYouTubeIDFromUrl = (url) => {
@@ -209,27 +187,22 @@ const fullscreenChangeHandler = (e) => {
   const subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
 
   for (let i = 0; i < subtitles.length; i++) {
-    const subtitle = subtitles[i];
+    const subtitle = subtitles[i].youtubeExternalSubtitle;
 
     if (isFullscreen) {
-      if (fullscreenSubtitleElement === subtitle) {
-        addClass(subtitle, 'fullscreen');
+      const isFullscreenElement = fullscreenSubtitleElement === subtitle.element;
 
+      subtitle.addClass(isFullscreenElement ? 'fullscreen' : 'fullscreen-ignore');
+
+      if (isFullscreenElement) {
         setTimeout(() => {
-          subtitle.parentFrame.youtubeExternalSubtitle.render();
+          subtitle.render();
         }, 0);
-      } else {
-        addClass(subtitle, 'fullscreen-ignore');
       }
     } else {
-      if (hasClass(subtitle, 'fullscreen')) {
-        removeClass(subtitle, 'fullscreen');
+      const isFullscreenElement = subtitle.hasClass('fullscreen');
 
-        subtitle.parentFrame.youtubeExternalSubtitle.render();
-      }
-      else {
-        removeClass(subtitle, 'fullscreen-ignore');
-      }
+      subtitle.removeClass(isFullscreenElement ? 'fullscreen' : 'fullscreen-ignore');
     }
   }
 };
@@ -272,12 +245,15 @@ const getIframeSrc = (src) => {
 };
 
 const Subtitle = YoutubeExternalSubtitle.Subtitle = function(iframe, subtitles) {
-  this.subtitle = null;
   this.cache = null;
   this.timeChangeInterval = 0;
   this.player = null;
   this.videoId = null;
   this.element = null;
+  this.state = {
+    text: null,
+    classes: []
+  };
 
   if (iframe.youtubeExternalSubtitle) {
     throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
@@ -304,11 +280,12 @@ const Subtitle = YoutubeExternalSubtitle.Subtitle = function(iframe, subtitles) 
     this.videoId = this.getCurrentVideoId();
 
     this.element = root.document.createElement('div');
-    addClass(this.element, 'youtube-external-subtitle');
 
-    this.element.parentFrame = iframe;
+    this.element.youtubeExternalSubtitle = this;
 
     iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
+
+    this.render();
 
     this.player.addEventListener('onStateChange', proxy(this.onStateChange, this));
   });
@@ -316,6 +293,65 @@ const Subtitle = YoutubeExternalSubtitle.Subtitle = function(iframe, subtitles) 
 
 Subtitle.prototype.load = function(subtitles) {
   this.cache = buildCache(subtitles);
+};
+
+Subtitle.prototype.setState = function(state) {
+  const prevState = this.state;
+  const nextState = {
+    ...prevState,
+    ...state
+  };
+
+  let changed = false;
+
+  for (let i in nextState) {
+    if (prevState[i] !== nextState[i]) {
+      changed = true;
+
+      break;
+    }
+  }
+
+  if (!changed) {
+    return;
+  }
+
+  this.state = nextState;
+
+  this.render();
+};
+
+Subtitle.prototype.hasClass = function(cls) {
+  return this.state.classes.indexOf(cls) !== -1;
+};
+
+Subtitle.prototype.addClass = function(cls) {
+  if (this.hasClass(cls)) {
+    return;
+  }
+
+  this.setState({
+    classes: [
+      ...this.state.classes,
+      cls
+    ]
+  });
+};
+
+Subtitle.prototype.removeClass = function(cls) {
+  if (!this.hasClass(cls)) {
+    return;
+  }
+
+  const classes = [ ...this.state.classes ];
+
+  const index = classes.indexOf(cls);
+
+  if (index > -1) {
+    classes.splice(index, 1);
+  }
+
+  this.setState({ classes });
 };
 
 Subtitle.prototype.start = function() {
@@ -342,16 +378,6 @@ Subtitle.prototype.getCurrentVideoId = function() {
   return getYouTubeIDFromUrl(videoUrl);
 };
 
-Subtitle.prototype.setSubtitle = function(subtitle) {
-  if (this.subtitle === subtitle) {
-    return;
-  }
-
-  this.subtitle = subtitle;
-
-  this.render();
-};
-
 Subtitle.prototype.onStateChange = function(e) {
   if (this.videoId !== this.getCurrentVideoId()) {
     return;
@@ -366,18 +392,18 @@ Subtitle.prototype.onStateChange = function(e) {
   else if (e.data === root.YT.PlayerState.ENDED) {
     this.stop();
 
-    this.setSubtitle(null);
+    this.setState({ text: null });
   }
 };
 
 Subtitle.prototype.onTimeChange = function() {
   const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
 
-  this.setSubtitle(subtitle);
+  this.setState({ text: subtitle ? subtitle.text : null });
 };
 
 Subtitle.prototype.render = function() {
-  if (this.subtitle === null) {
+  if (this.state.text === null) {
     this.element.style.display = '';
 
     return;
@@ -392,7 +418,8 @@ Subtitle.prototype.render = function() {
     height: iframe.offsetHeight
   };
 
-  this.element.innerHTML = '<span>' + this.subtitle.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + '</span>';
+  this.element.innerHTML = `<span>${this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
+  this.element.className = `youtube-external-subtitle ${this.state.classes.join(' ')}`;
   this.element.style.display = 'block';
   this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
   this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
