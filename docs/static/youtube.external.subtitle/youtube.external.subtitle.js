@@ -168,7 +168,7 @@
             isFullscreen: !!fullscreenElement
         };
     };
-    var fullscreenChangeHandler = function (e) {
+    var fullscreenChangeHandler = function () {
         var _a = getFullscreenSubtitleElement(), fullscreenSubtitleElement = _a.element, isFullscreen = _a.isFullscreen;
         var subtitles = root.document.getElementsByClassName('youtube-external-subtitle');
         var _loop_1 = function (i) {

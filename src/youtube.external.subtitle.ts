@@ -17,6 +17,16 @@ interface YoutubeExternalSubtitleElement extends Element {
   youtubeExternalSubtitle: any;
 }
 
+interface YoutubeExternalSubtitleFrame extends HTMLIFrameElement {
+  youtubeExternalSubtitle: any;
+}
+
+interface SubtitleEntry {
+  start: number;
+  end: number;
+  text: string;
+}
+
 const root = window;
 
 const proxy = (func, context) => {
@@ -25,13 +35,13 @@ const proxy = (func, context) => {
   };
 };
 
-const getYouTubeIDFromUrl = (url) => {
+const getYouTubeIDFromUrl = (url: string): string => {
   const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
 
   return match && match[7].length === 11 ? match[7] : null;
 };
 
-const addQueryStringParameterToUrl = (url, qsParameters) => {
+const addQueryStringParameterToUrl = (url: string, qsParameters: any): string => {
   const hashIndex = url.indexOf('#');
   let hash = '';
 
@@ -55,11 +65,11 @@ const addQueryStringParameterToUrl = (url, qsParameters) => {
   return `${url}${qs}${hash}`;
 };
 
-const getCacheName = (seconds) => {
+const getCacheName = (seconds: number): number => {
   return Math.floor(seconds / 10);
 };
 
-const getCacheNames = (start, end) => {
+const getCacheNames = (start: number, end: number): number[] => {
   const cacheNames = [];
   const endCacheName = getCacheName(end);
 
@@ -70,7 +80,7 @@ const getCacheNames = (start, end) => {
   return cacheNames;
 };
 
-const buildCache = (subtitles) => {
+const buildCache = (subtitles: SubtitleEntry[]): any => {
   const cache = {};
 
   for (let subtitle of subtitles) {
@@ -86,7 +96,7 @@ const buildCache = (subtitles) => {
   return cache;
 };
 
-const getSubtitleFromCache = (seconds, builtCache) => {
+const getSubtitleFromCache = (seconds: number, builtCache: any): SubtitleEntry => {
   if (!builtCache) {
     return null;
   }
@@ -106,7 +116,7 @@ const getSubtitleFromCache = (seconds, builtCache) => {
   return null;
 };
 
-const iframeApiScriptAdded = () => {
+const iframeApiScriptAdded = (): boolean => {
   const scripts = root.document.getElementsByTagName('script');
 
   for (let i = 0; i < scripts.length; i++) {
@@ -120,14 +130,14 @@ const iframeApiScriptAdded = () => {
   return false;
 };
 
-const addIframeApiScript = () => {
+const addIframeApiScript = (): void => {
   const tag = root.document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   const firstScriptTag = root.document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
 
-const loadIframeApi = (cb) => {
+const loadIframeApi = (cb: Function): void => {
   const iframeApiLoaded = () => {
     return !!(root.YT && root.YT.Player);
   };
@@ -151,7 +161,7 @@ const loadIframeApi = (cb) => {
   }
 };
 
-const getFullscreenSubtitleElement = () => {
+const getFullscreenSubtitleElement = (): any => {
   const fullscreenElement = root.document.fullscreenElement ||
     root.document.webkitFullscreenElement ||
     root.document.webkitCurrentFullScreenElement ||
@@ -178,7 +188,7 @@ const getFullscreenSubtitleElement = () => {
   };
 };
 
-const fullscreenChangeHandler = (e) => {
+const fullscreenChangeHandler = (): void => {
   const { element: fullscreenSubtitleElement, isFullscreen } = getFullscreenSubtitleElement();
 
   const subtitles = root.document.getElementsByClassName('youtube-external-subtitle') as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
@@ -204,7 +214,7 @@ const fullscreenChangeHandler = (e) => {
   }
 };
 
-const firstInit = () => {
+const firstInit = (): void => {
   const style = root.document.createElement('style');
   style.id = 'youtube-external-subtitle-style';
   style.type = 'text/css';
@@ -219,7 +229,7 @@ const firstInit = () => {
   root.document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
 };
 
-const getIframeSrc = (src) => {
+const getIframeSrc = (src: string): string => {
   let newSrc = src;
 
   if (newSrc.indexOf('enablejsapi=1') === -1) {
@@ -252,7 +262,7 @@ class Subtitle {
     classes: []
   };
 
-  constructor(iframe, subtitles) {
+  constructor(iframe: YoutubeExternalSubtitleFrame, subtitles: SubtitleEntry[]) {
     if (iframe.youtubeExternalSubtitle) {
       throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
     }
@@ -289,15 +299,15 @@ class Subtitle {
     });
   }
 
-  public load(subtitles) {
+  public load(subtitles: SubtitleEntry[]): void {
     this.cache = buildCache(subtitles);
   }
 
-  public hasClass(cls) {
+  public hasClass(cls: string): boolean {
     return this.state.classes.indexOf(cls) !== -1;
   }
 
-  public addClass(cls) {
+  public addClass(cls: string): void {
     if (this.hasClass(cls)) {
       return;
     }
@@ -310,7 +320,7 @@ class Subtitle {
     });
   }
 
-  public removeClass(cls) {
+  public removeClass(cls: string): void {
     if (!this.hasClass(cls)) {
       return;
     }
@@ -326,7 +336,7 @@ class Subtitle {
     this.setState({ classes });
   }
 
-  public destroy() {
+  public destroy(): void {
     this.stop();
 
     this.element.parentNode.removeChild(this.element);
@@ -334,7 +344,7 @@ class Subtitle {
     this.player.getIframe().youtubeExternalSubtitle = null;
   }
 
-  public render() {
+  public render(): void {
     if (this.state.text === null) {
       this.element.style.display = '';
 
@@ -357,7 +367,7 @@ class Subtitle {
     this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
   }
 
-  private setState(state) {
+  private setState(state): void {
     const prevState = this.state;
     const nextState = {
       ...prevState,
@@ -383,23 +393,23 @@ class Subtitle {
     this.render();
   }
 
-  private start() {
+  private start(): void {
     this.stop();
 
     this.timeChangeInterval = setInterval(proxy(this.onTimeChange, this), 500);
   }
 
-  private stop() {
+  private stop(): void {
     clearInterval(this.timeChangeInterval);
   }
 
-  private getCurrentVideoId() {
+  private getCurrentVideoId(): string {
     const videoUrl = this.player.getVideoEmbedCode().match(/src="(.*?)"/)[1];
 
     return getYouTubeIDFromUrl(videoUrl);
   }
 
-  private onStateChange(e) {
+  private onStateChange(e: any): void {
     if (this.videoId !== this.getCurrentVideoId()) {
       return;
     }
@@ -415,7 +425,7 @@ class Subtitle {
     }
   }
 
-  private onTimeChange() {
+  private onTimeChange(): void {
     const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
 
     this.setState({ text: subtitle ? subtitle.text : null });
