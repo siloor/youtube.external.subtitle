@@ -41,12 +41,6 @@ const CSS = {
   FULLSCREEN_IGNORE: 'fullscreen-ignore'
 };
 
-const getYouTubeIDFromUrl = (url: string): string => {
-  const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/);
-
-  return match && match[7].length === 11 ? match[7] : null;
-};
-
 const addQueryStringParameterToUrl = (url: string, qsParameters: any): string => {
   const hashIndex = url.indexOf('#');
   let hash = '';
@@ -309,7 +303,6 @@ class Subtitle {
 
     loadIframeApi(() => {
       this.player = new root.YT.Player(iframe);
-      this.videoId = this.getCurrentVideoId();
 
       this.element = root.document.createElement('div');
 
@@ -319,6 +312,7 @@ class Subtitle {
 
       this.render();
 
+      this.player.addEventListener('onReady', () => this.onReady());
       this.player.addEventListener('onStateChange', (e) => this.onStateChange(e));
     });
   }
@@ -418,9 +412,11 @@ class Subtitle {
   }
 
   private getCurrentVideoId(): string {
-    const videoUrl = this.player.getVideoEmbedCode().match(/src="(.*?)"/)[1];
+    return this.player.getVideoData().video_id;
+  }
 
-    return getYouTubeIDFromUrl(videoUrl);
+  private onReady(): void {
+    this.videoId = this.getCurrentVideoId();
   }
 
   private onStateChange(e: any): void {
