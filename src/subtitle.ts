@@ -65,7 +65,7 @@ const addQueryStringParameterToUrl = (url: string, qsParameters: any): string =>
   return `${url}${qs}${hash}`;
 };
 
-const getCacheName = (seconds: number): number => {
+export const getCacheName = (seconds: number): number => {
   return Math.floor(seconds / 10);
 };
 
