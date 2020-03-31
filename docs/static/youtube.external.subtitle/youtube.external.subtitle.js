@@ -238,6 +238,24 @@
                 text: null,
                 classes: []
             };
+            this.onPlayerReady = function () {
+                _this.videoId = _this.getCurrentVideoId();
+            };
+            this.onPlayerStateChange = function (e) {
+                if (_this.videoId !== _this.getCurrentVideoId()) {
+                    return;
+                }
+                if (e.data === root.YT.PlayerState.PLAYING) {
+                    _this.start();
+                }
+                else if (e.data === root.YT.PlayerState.PAUSED) {
+                    _this.stop();
+                }
+                else if (e.data === root.YT.PlayerState.ENDED) {
+                    _this.stop();
+                    _this.setState({ text: null });
+                }
+            };
             if (iframe.youtubeExternalSubtitle) {
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
@@ -258,8 +276,8 @@
                 _this.element.youtubeExternalSubtitle = _this;
                 iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
                 _this.render();
-                _this.player.addEventListener('onReady', function () { return _this.onReady(); });
-                _this.player.addEventListener('onStateChange', function (e) { return _this.onStateChange(e); });
+                _this.player.addEventListener('onReady', _this.onPlayerReady);
+                _this.player.addEventListener('onStateChange', _this.onPlayerStateChange);
             });
         }
         Subtitle.prototype.load = function (subtitles) {
@@ -293,6 +311,8 @@
             this.stop();
             this.element.parentNode.removeChild(this.element);
             this.player.getIframe().youtubeExternalSubtitle = null;
+            this.player.removeEventListener('onReady', this.onPlayerReady);
+            this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
         };
         Subtitle.prototype.render = function () {
             if (this.state.text === null) {
@@ -331,24 +351,6 @@
         };
         Subtitle.prototype.getCurrentVideoId = function () {
             return this.player.getVideoData().video_id;
-        };
-        Subtitle.prototype.onReady = function () {
-            this.videoId = this.getCurrentVideoId();
-        };
-        Subtitle.prototype.onStateChange = function (e) {
-            if (this.videoId !== this.getCurrentVideoId()) {
-                return;
-            }
-            if (e.data === root.YT.PlayerState.PLAYING) {
-                this.start();
-            }
-            else if (e.data === root.YT.PlayerState.PAUSED) {
-                this.stop();
-            }
-            else if (e.data === root.YT.PlayerState.ENDED) {
-                this.stop();
-                this.setState({ text: null });
-            }
         };
         Subtitle.prototype.onTimeChange = function () {
             var subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);

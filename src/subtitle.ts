@@ -318,8 +318,8 @@ class Subtitle {
 
       this.render();
 
-      this.player.addEventListener('onReady', () => this.onReady());
-      this.player.addEventListener('onStateChange', (e) => this.onStateChange(e));
+      this.player.addEventListener('onReady', this.onPlayerReady);
+      this.player.addEventListener('onStateChange', this.onPlayerStateChange);
     });
   }
 
@@ -366,6 +366,9 @@ class Subtitle {
     this.element.parentNode.removeChild(this.element);
 
     this.player.getIframe().youtubeExternalSubtitle = null;
+
+    this.player.removeEventListener('onReady', this.onPlayerReady);
+    this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
   }
 
   public render(): void {
@@ -421,11 +424,17 @@ class Subtitle {
     return this.player.getVideoData().video_id;
   }
 
-  private onReady(): void {
-    this.videoId = this.getCurrentVideoId();
+  private onTimeChange(): void {
+    const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
+
+    this.setState({ text: subtitle ? subtitle.text : null });
   }
 
-  private onStateChange(e: any): void {
+  private onPlayerReady = (): void => {
+    this.videoId = this.getCurrentVideoId();
+  };
+
+  private onPlayerStateChange = (e: any): void => {
     if (this.videoId !== this.getCurrentVideoId()) {
       return;
     }
@@ -439,13 +448,7 @@ class Subtitle {
 
       this.setState({ text: null });
     }
-  }
-
-  private onTimeChange(): void {
-    const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
-
-    this.setState({ text: subtitle ? subtitle.text : null });
-  }
+  };
 }
 
 export default Subtitle;
