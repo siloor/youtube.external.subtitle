@@ -145,44 +145,49 @@
             root.document.mozFullScreenElement ||
             root.document.msFullscreenElement;
     };
-    var getSubtitleElements = function (container) {
-        return container.getElementsByClassName(CSS.CLASS);
+    var getSubtitles = function (container) {
+        var subtitleElements = container.getElementsByClassName(CSS.CLASS);
+        var subtitles = [];
+        for (var i = 0; i < subtitleElements.length; i++) {
+            subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
+        }
+        return subtitles;
     };
-    var getFullscreenSubtitleElement = function () {
+    var getFullscreenSubtitle = function () {
         var fullscreenElement = getFullscreenElement();
-        var element = null;
+        var subtitle = null;
         if (fullscreenElement) {
             if (fullscreenElement.youtubeExternalSubtitle) {
-                element = fullscreenElement.youtubeExternalSubtitle.element;
+                subtitle = fullscreenElement.youtubeExternalSubtitle;
             }
             else {
-                var elements = getSubtitleElements(fullscreenElement);
+                var elements = getSubtitles(fullscreenElement);
                 if (elements.length > 0) {
-                    element = elements[0];
+                    subtitle = elements[0];
                 }
             }
         }
         return {
-            element: element,
+            subtitle: subtitle,
             isFullscreen: !!fullscreenElement
         };
     };
     var fullscreenChangeHandler = function () {
-        var _a = getFullscreenSubtitleElement(), fullscreenSubtitleElement = _a.element, isFullscreen = _a.isFullscreen;
-        var subtitles = getSubtitleElements(root.document);
-        var _loop_1 = function (i) {
-            var subtitle = subtitles[i].youtubeExternalSubtitle;
+        var _a = getFullscreenSubtitle(), fullscreenSubtitle = _a.subtitle, isFullscreen = _a.isFullscreen;
+        var subtitles = getSubtitles(root.document);
+        var _loop_1 = function (subtitle) {
             if (isFullscreen) {
                 setTimeout(function () {
-                    subtitle.addClass(fullscreenSubtitleElement === subtitle.element ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+                    subtitle.addClass(fullscreenSubtitle === subtitle ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
                 }, 0);
             }
             else {
                 subtitle.removeClass(subtitle.hasClass(CSS.FULLSCREEN) ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
             }
         };
-        for (var i = 0; i < subtitles.length; i++) {
-            _loop_1(i);
+        for (var _i = 0, subtitles_2 = subtitles; _i < subtitles_2.length; _i++) {
+            var subtitle = subtitles_2[_i];
+            _loop_1(subtitle);
         }
     };
     var firstInit = function () {

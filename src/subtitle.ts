@@ -14,11 +14,11 @@ declare global {
 }
 
 interface YoutubeExternalSubtitleElement extends Element {
-  youtubeExternalSubtitle: any;
+  youtubeExternalSubtitle: Subtitle;
 }
 
 interface YoutubeExternalSubtitleFrame extends HTMLIFrameElement {
-  youtubeExternalSubtitle: any;
+  youtubeExternalSubtitle: Subtitle;
 }
 
 interface SubtitleEntry {
@@ -169,47 +169,53 @@ const getFullscreenElement = (): Element => {
     root.document.msFullscreenElement;
 };
 
-const getSubtitleElements = (container: Element|Document): HTMLCollectionOf<YoutubeExternalSubtitleElement> => {
-  return container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
+const getSubtitles = (container: Element|Document): Subtitle[] => {
+  const subtitleElements = container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
+
+  const subtitles = [];
+
+  for (let i = 0; i < subtitleElements.length; i++) {
+    subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
+  }
+
+  return subtitles;
 };
 
-const getFullscreenSubtitleElement = (): {
-  element: YoutubeExternalSubtitleElement,
+const getFullscreenSubtitle = (): {
+  subtitle: Subtitle,
   isFullscreen: boolean
 } => {
   const fullscreenElement = getFullscreenElement() as YoutubeExternalSubtitleElement;
 
-  let element = null;
+  let subtitle = null;
 
   if (fullscreenElement) {
     if (fullscreenElement.youtubeExternalSubtitle) {
-      element = fullscreenElement.youtubeExternalSubtitle.element;
+      subtitle = fullscreenElement.youtubeExternalSubtitle;
     } else {
-      const elements = getSubtitleElements(fullscreenElement);
+      const elements = getSubtitles(fullscreenElement);
 
       if (elements.length > 0) {
-        element = elements[0];
+        subtitle = elements[0];
       }
     }
   }
 
   return {
-    element: element,
+    subtitle: subtitle,
     isFullscreen: !!fullscreenElement
   };
 };
 
 const fullscreenChangeHandler = (): void => {
-  const { element: fullscreenSubtitleElement, isFullscreen } = getFullscreenSubtitleElement();
+  const { subtitle: fullscreenSubtitle, isFullscreen } = getFullscreenSubtitle();
 
-  const subtitles = getSubtitleElements(root.document);
+  const subtitles = getSubtitles(root.document);
 
-  for (let i = 0; i < subtitles.length; i++) {
-    const subtitle = subtitles[i].youtubeExternalSubtitle;
-
+  for (let subtitle of subtitles) {
     if (isFullscreen) {
       setTimeout(() => {
-        subtitle.addClass(fullscreenSubtitleElement === subtitle.element ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+        subtitle.addClass(fullscreenSubtitle === subtitle ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
       }, 0);
     } else {
       subtitle.removeClass(subtitle.hasClass(CSS.FULLSCREEN) ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
