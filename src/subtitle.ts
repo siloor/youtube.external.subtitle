@@ -307,16 +307,16 @@ class Subtitle {
       this.load(subtitles);
     }
 
+    this.element = root.document.createElement('div');
+
+    this.element.youtubeExternalSubtitle = this;
+
+    iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
+
+    this.render();
+
     loadIframeApi(() => {
       this.player = new root.YT.Player(iframe);
-
-      this.element = root.document.createElement('div');
-
-      this.element.youtubeExternalSubtitle = this;
-
-      iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
-
-      this.render();
 
       this.player.addEventListener('onReady', this.onPlayerReady);
       this.player.addEventListener('onStateChange', this.onPlayerStateChange);
@@ -372,26 +372,27 @@ class Subtitle {
   }
 
   public render(): void {
-    if (this.state.text === null) {
-      this.element.style.display = '';
+    this.element.className = [ CSS.CLASS, ...this.state.classes ].join(' ');
 
-      return;
+    const text = this.state.text === null ? '' : this.state.text;
+
+    this.element.innerHTML = `<span>${text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
+
+    this.element.style.display = this.state.text === null ? '' : 'block';
+
+    if (this.player) {
+      const iframe = this.player.getIframe();
+
+      const frame = {
+        x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
+        y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
+        width: iframe.offsetWidth,
+        height: iframe.offsetHeight
+      };
+
+      this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
+      this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
     }
-
-    const iframe = this.player.getIframe();
-
-    const frame = {
-      x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
-      y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
-      width: iframe.offsetWidth,
-      height: iframe.offsetHeight
-    };
-
-    this.element.innerHTML = `<span>${this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
-    this.element.className = `${CSS.CLASS} ${this.state.classes.join(' ')}`;
-    this.element.style.display = 'block';
-    this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
-    this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
   }
 
   private setState(state: any): void {

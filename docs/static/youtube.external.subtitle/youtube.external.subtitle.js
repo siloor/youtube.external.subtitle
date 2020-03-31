@@ -270,12 +270,12 @@
             if (subtitles) {
                 this.load(subtitles);
             }
+            this.element = root.document.createElement('div');
+            this.element.youtubeExternalSubtitle = this;
+            iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
+            this.render();
             loadIframeApi(function () {
                 _this.player = new root.YT.Player(iframe);
-                _this.element = root.document.createElement('div');
-                _this.element.youtubeExternalSubtitle = _this;
-                iframe.parentNode.insertBefore(_this.element, iframe.nextSibling);
-                _this.render();
                 _this.player.addEventListener('onReady', _this.onPlayerReady);
                 _this.player.addEventListener('onStateChange', _this.onPlayerStateChange);
             });
@@ -315,22 +315,21 @@
             this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
         };
         Subtitle.prototype.render = function () {
-            if (this.state.text === null) {
-                this.element.style.display = '';
-                return;
+            this.element.className = __spreadArrays([CSS.CLASS], this.state.classes).join(' ');
+            var text = this.state.text === null ? '' : this.state.text;
+            this.element.innerHTML = "<span>" + text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
+            this.element.style.display = this.state.text === null ? '' : 'block';
+            if (this.player) {
+                var iframe = this.player.getIframe();
+                var frame = {
+                    x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
+                    y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
+                    width: iframe.offsetWidth,
+                    height: iframe.offsetHeight
+                };
+                this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
+                this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
             }
-            var iframe = this.player.getIframe();
-            var frame = {
-                x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
-                y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
-                width: iframe.offsetWidth,
-                height: iframe.offsetHeight
-            };
-            this.element.innerHTML = "<span>" + this.state.text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
-            this.element.className = CSS.CLASS + " " + this.state.classes.join(' ');
-            this.element.style.display = 'block';
-            this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
-            this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
         };
         Subtitle.prototype.setState = function (state) {
             var prevState = this.state;
