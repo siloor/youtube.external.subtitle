@@ -280,7 +280,7 @@ class Subtitle {
   private timeChangeInterval: number = 0;
   private player: any = null;
   private videoId: string = null;
-  private element: any = null;
+  private readonly element: any = null;
   private state: State = {
     text: null,
     classes: []
