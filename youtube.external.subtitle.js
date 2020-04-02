@@ -238,6 +238,10 @@
                 text: null,
                 isFullscreenActive: null
             };
+            this.onTimeChange = function () {
+                var subtitle = getSubtitleFromCache(_this.player.getCurrentTime(), _this.cache);
+                _this.setState({ text: subtitle ? subtitle.text : null });
+            };
             this.onPlayerReady = function () {
                 _this.videoId = _this.getCurrentVideoId();
             };
@@ -325,19 +329,14 @@
             this.render();
         };
         Subtitle.prototype.start = function () {
-            var _this = this;
             this.stop();
-            this.timeChangeInterval = setInterval(function () { return _this.onTimeChange(); }, 500);
+            this.timeChangeInterval = setInterval(this.onTimeChange, 500);
         };
         Subtitle.prototype.stop = function () {
             clearInterval(this.timeChangeInterval);
         };
         Subtitle.prototype.getCurrentVideoId = function () {
             return this.player.getVideoData().video_id;
-        };
-        Subtitle.prototype.onTimeChange = function () {
-            var subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
-            this.setState({ text: subtitle ? subtitle.text : null });
         };
         return Subtitle;
     }());

@@ -357,7 +357,7 @@ class Subtitle {
   private start(): void {
     this.stop();
 
-    this.timeChangeInterval = setInterval(() => this.onTimeChange(), 500);
+    this.timeChangeInterval = setInterval(this.onTimeChange, 500);
   }
 
   private stop(): void {
@@ -368,11 +368,11 @@ class Subtitle {
     return this.player.getVideoData().video_id;
   }
 
-  private onTimeChange(): void {
+  private onTimeChange = (): void => {
     const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
 
     this.setState({ text: subtitle ? subtitle.text : null });
-  }
+  };
 
   private onPlayerReady = (): void => {
     this.videoId = this.getCurrentVideoId();
