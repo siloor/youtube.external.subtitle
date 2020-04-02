@@ -30,14 +30,6 @@
         return __assign.apply(this, arguments);
     };
 
-    function __spreadArrays() {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-        return r;
-    }
-
     var root = window;
     var CSS = {
         ID: 'youtube-external-subtitle-style',
@@ -176,13 +168,14 @@
         var _a = getFullscreenSubtitle(), fullscreenSubtitle = _a.subtitle, isFullscreen = _a.isFullscreen;
         var subtitles = getSubtitles(root.document);
         var _loop_1 = function (subtitle) {
+            var isFullscreenActive = isFullscreen ? fullscreenSubtitle === subtitle : null;
             if (isFullscreen) {
                 setTimeout(function () {
-                    subtitle.addClass(fullscreenSubtitle === subtitle ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+                    subtitle.setIsFullscreenActive(isFullscreenActive);
                 }, 0);
             }
             else {
-                subtitle.removeClass(subtitle.hasClass(CSS.FULLSCREEN) ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+                subtitle.setIsFullscreenActive(isFullscreenActive);
             }
         };
         for (var _i = 0, subtitles_2 = subtitles; _i < subtitles_2.length; _i++) {
@@ -236,7 +229,7 @@
             this.element = null;
             this.state = {
                 text: null,
-                classes: []
+                isFullscreenActive: null
             };
             this.onPlayerReady = function () {
                 _this.videoId = _this.getCurrentVideoId();
@@ -283,29 +276,8 @@
         Subtitle.prototype.load = function (subtitles) {
             this.cache = buildCache(subtitles);
         };
-        Subtitle.prototype.hasClass = function (cls) {
-            return this.state.classes.indexOf(cls) !== -1;
-        };
-        Subtitle.prototype.addClass = function (cls) {
-            if (this.hasClass(cls)) {
-                return;
-            }
-            this.setState({
-                classes: __spreadArrays(this.state.classes, [
-                    cls
-                ])
-            });
-        };
-        Subtitle.prototype.removeClass = function (cls) {
-            if (!this.hasClass(cls)) {
-                return;
-            }
-            var classes = __spreadArrays(this.state.classes);
-            var index = classes.indexOf(cls);
-            if (index > -1) {
-                classes.splice(index, 1);
-            }
-            this.setState({ classes: classes });
+        Subtitle.prototype.setIsFullscreenActive = function (isFullscreenActive) {
+            this.setState({ isFullscreenActive: isFullscreenActive });
         };
         Subtitle.prototype.destroy = function () {
             this.stop();
@@ -315,7 +287,11 @@
             this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
         };
         Subtitle.prototype.render = function () {
-            this.element.className = __spreadArrays([CSS.CLASS], this.state.classes).join(' ');
+            var classes = [CSS.CLASS];
+            if (this.state.isFullscreenActive !== null) {
+                classes.push(this.state.isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+            }
+            this.element.className = classes.join(' ');
             var text = this.state.text === null ? '' : this.state.text;
             this.element.innerHTML = "<span>" + text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
             this.element.style.display = this.state.text === null ? '' : 'block';

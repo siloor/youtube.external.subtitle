@@ -29,7 +29,7 @@ interface SubtitleEntry {
 
 interface State {
   text: string;
-  classes: string[];
+  isFullscreenActive: boolean;
 }
 
 const root = window;
@@ -213,12 +213,14 @@ const fullscreenChangeHandler = (): void => {
   const subtitles = getSubtitles(root.document);
 
   for (let subtitle of subtitles) {
+    const isFullscreenActive = isFullscreen ? fullscreenSubtitle === subtitle : null;
+
     if (isFullscreen) {
       setTimeout(() => {
-        subtitle.addClass(fullscreenSubtitle === subtitle ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+        subtitle.setIsFullscreenActive(isFullscreenActive);
       }, 0);
     } else {
-      subtitle.removeClass(subtitle.hasClass(CSS.FULLSCREEN) ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+      subtitle.setIsFullscreenActive(isFullscreenActive);
     }
   }
 };
@@ -283,7 +285,7 @@ class Subtitle {
   private readonly element: any = null;
   private state: State = {
     text: null,
-    classes: []
+    isFullscreenActive: null
   };
 
   constructor(iframe: YoutubeExternalSubtitleFrame, subtitles: SubtitleEntry[]) {
@@ -327,37 +329,8 @@ class Subtitle {
     this.cache = buildCache(subtitles);
   }
 
-  public hasClass(cls: string): boolean {
-    return this.state.classes.indexOf(cls) !== -1;
-  }
-
-  public addClass(cls: string): void {
-    if (this.hasClass(cls)) {
-      return;
-    }
-
-    this.setState({
-      classes: [
-        ...this.state.classes,
-        cls
-      ]
-    });
-  }
-
-  public removeClass(cls: string): void {
-    if (!this.hasClass(cls)) {
-      return;
-    }
-
-    const classes = [ ...this.state.classes ];
-
-    const index = classes.indexOf(cls);
-
-    if (index > -1) {
-      classes.splice(index, 1);
-    }
-
-    this.setState({ classes });
+  public setIsFullscreenActive(isFullscreenActive: boolean): void {
+    this.setState({ isFullscreenActive });
   }
 
   public destroy(): void {
@@ -372,7 +345,13 @@ class Subtitle {
   }
 
   public render(): void {
-    this.element.className = [ CSS.CLASS, ...this.state.classes ].join(' ');
+    const classes = [ CSS.CLASS ];
+
+    if (this.state.isFullscreenActive !== null) {
+      classes.push(this.state.isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+    }
+
+    this.element.className = classes.join(' ');
 
     const text = this.state.text === null ? '' : this.state.text;
 
