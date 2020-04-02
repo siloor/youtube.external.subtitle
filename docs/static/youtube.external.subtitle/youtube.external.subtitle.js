@@ -201,7 +201,11 @@
             _loop_1(subtitle);
         }
     };
-    var firstInit = function () {
+    var globalStyleAdded = function () {
+        var document = DIC.getDocument();
+        return !!document.getElementById(CSS.ID);
+    };
+    var addGlobalStyle = function () {
         var document = DIC.getDocument();
         var style = document.createElement('style');
         style.id = CSS.ID;
@@ -229,6 +233,13 @@
             newSrc = addQueryStringParameterToUrl(newSrc, { fs: '0' });
         }
         return newSrc;
+    };
+    var createSubtitleElement = function (iframe, subtitle) {
+        var document = DIC.getDocument();
+        var element = document.createElement('div');
+        element.youtubeExternalSubtitle = subtitle;
+        iframe.parentNode.insertBefore(element, iframe.nextSibling);
+        return element;
     };
     var isStateChanged = function (prevState, nextState) {
         for (var i in nextState) {
@@ -272,9 +283,8 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            var document = DIC.getDocument();
-            if (!document.getElementById(CSS.ID)) {
-                firstInit();
+            if (!globalStyleAdded()) {
+                addGlobalStyle();
             }
             var src = getIframeSrc(iframe.src);
             if (iframe.src !== src) {
@@ -283,9 +293,7 @@
             if (subtitles) {
                 this.load(subtitles);
             }
-            this.element = document.createElement('div');
-            this.element.youtubeExternalSubtitle = this;
-            iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
+            this.element = createSubtitleElement(iframe, this);
             this.render();
             loadIframeApi(function () {
                 _this.player = new root.YT.Player(iframe);

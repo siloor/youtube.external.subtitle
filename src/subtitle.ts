@@ -6,7 +6,7 @@ declare global {
   }
 }
 
-interface YoutubeExternalSubtitleElement extends Element {
+interface YoutubeExternalSubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
 }
 
@@ -226,7 +226,13 @@ const fullscreenChangeHandler = (): void => {
   }
 };
 
-const firstInit = (): void => {
+const globalStyleAdded = (): boolean => {
+  const document = DIC.getDocument();
+
+  return !!document.getElementById(CSS.ID);
+};
+
+const addGlobalStyle = (): void => {
   const document = DIC.getDocument();
 
   const style = document.createElement('style');
@@ -270,6 +276,18 @@ const getIframeSrc = (src: string): string => {
   return newSrc;
 };
 
+const createSubtitleElement = (iframe: YoutubeExternalSubtitleFrame, subtitle: Subtitle): YoutubeExternalSubtitleElement => {
+  const document = DIC.getDocument();
+
+  const element = document.createElement('div') as YoutubeExternalSubtitleElement;
+
+  element.youtubeExternalSubtitle = subtitle;
+
+  iframe.parentNode.insertBefore(element, iframe.nextSibling);
+
+  return element;
+};
+
 const isStateChanged = (prevState: State, nextState: State): boolean => {
   for (let i in nextState) {
     if (prevState[i] !== nextState[i]) {
@@ -285,7 +303,7 @@ class Subtitle {
   private timeChangeInterval: number = 0;
   private player: any = null;
   private videoId: string = null;
-  private readonly element: any = null;
+  private readonly element: YoutubeExternalSubtitleElement = null;
   private state: State = {
     text: null,
     isFullscreenActive: null
@@ -298,10 +316,8 @@ class Subtitle {
 
     iframe.youtubeExternalSubtitle = this;
 
-    const document = DIC.getDocument();
-
-    if (!document.getElementById(CSS.ID)) {
-      firstInit();
+    if (!globalStyleAdded()) {
+      addGlobalStyle();
     }
 
     const src = getIframeSrc(iframe.src);
@@ -314,11 +330,7 @@ class Subtitle {
       this.load(subtitles);
     }
 
-    this.element = document.createElement('div');
-
-    this.element.youtubeExternalSubtitle = this;
-
-    iframe.parentNode.insertBefore(this.element, iframe.nextSibling);
+    this.element = createSubtitleElement(iframe, this);
 
     this.render();
 
