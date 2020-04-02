@@ -26,35 +26,11 @@ const CSS = {
   FULLSCREEN_IGNORE: 'fullscreen-ignore'
 };
 
-const addQueryStringParameterToUrl = (url: string, qsParameters: any): string => {
-  const hashIndex = url.indexOf('#');
-  let hash = '';
-
-  if (hashIndex !== -1) {
-    hash = url.substr(hashIndex);
-    url = url.substr(0, hashIndex);
-  }
-
-  const qsIndex = url.indexOf('?');
-  let qs = '';
-
-  if (qsIndex !== -1) {
-    qs = url.substr(qsIndex);
-    url = url.substr(0, qsIndex);
-  }
-
-  for (let i in qsParameters) {
-    qs += `${qs === '' ? '?' : '&'}${i}=${qsParameters[i]}`;
-  }
-
-  return `${url}${qs}${hash}`;
-};
-
 export const getCacheName = (seconds: number): number => {
   return Math.floor(seconds / 10);
 };
 
-const getCacheNames = (start: number, end: number): number[] => {
+export const getCacheNames = (start: number, end: number): number[] => {
   const cacheNames = [];
   const endCacheName = getCacheName(end);
 
@@ -65,7 +41,7 @@ const getCacheNames = (start: number, end: number): number[] => {
   return cacheNames;
 };
 
-const buildCache = (subtitles: SubtitleEntry[]): any => {
+export const buildCache = (subtitles: SubtitleEntry[]): any => {
   const cache = {};
 
   for (let subtitle of subtitles) {
@@ -81,7 +57,7 @@ const buildCache = (subtitles: SubtitleEntry[]): any => {
   return cache;
 };
 
-const getSubtitleFromCache = (seconds: number, builtCache: any): SubtitleEntry => {
+export const getSubtitleFromCache = (seconds: number, builtCache: any): SubtitleEntry => {
   if (!builtCache) {
     return null;
   }
@@ -195,6 +171,30 @@ const addGlobalStyle = (): void => {
   document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
   document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
   document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+};
+
+const addQueryStringParameterToUrl = (url: string, qsParameters: any): string => {
+  const hashIndex = url.indexOf('#');
+  let hash = '';
+
+  if (hashIndex !== -1) {
+    hash = url.substr(hashIndex);
+    url = url.substr(0, hashIndex);
+  }
+
+  const qsIndex = url.indexOf('?');
+  let qs = '';
+
+  if (qsIndex !== -1) {
+    qs = url.substr(qsIndex);
+    url = url.substr(0, qsIndex);
+  }
+
+  for (let i in qsParameters) {
+    qs += `${qs === '' ? '?' : '&'}${i}=${qsParameters[i]}`;
+  }
+
+  return `${url}${qs}${hash}`;
 };
 
 const getIframeSrc = (src: string): string => {

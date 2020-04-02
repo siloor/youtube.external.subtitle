@@ -64,24 +64,6 @@
         FULLSCREEN: 'fullscreen',
         FULLSCREEN_IGNORE: 'fullscreen-ignore'
     };
-    var addQueryStringParameterToUrl = function (url, qsParameters) {
-        var hashIndex = url.indexOf('#');
-        var hash = '';
-        if (hashIndex !== -1) {
-            hash = url.substr(hashIndex);
-            url = url.substr(0, hashIndex);
-        }
-        var qsIndex = url.indexOf('?');
-        var qs = '';
-        if (qsIndex !== -1) {
-            qs = url.substr(qsIndex);
-            url = url.substr(0, qsIndex);
-        }
-        for (var i in qsParameters) {
-            qs += "" + (qs === '' ? '?' : '&') + i + "=" + qsParameters[i];
-        }
-        return "" + url + qs + hash;
-    };
     var getCacheName = function (seconds) {
         return Math.floor(seconds / 10);
     };
@@ -194,6 +176,24 @@
         document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+    };
+    var addQueryStringParameterToUrl = function (url, qsParameters) {
+        var hashIndex = url.indexOf('#');
+        var hash = '';
+        if (hashIndex !== -1) {
+            hash = url.substr(hashIndex);
+            url = url.substr(0, hashIndex);
+        }
+        var qsIndex = url.indexOf('?');
+        var qs = '';
+        if (qsIndex !== -1) {
+            qs = url.substr(qsIndex);
+            url = url.substr(0, qsIndex);
+        }
+        for (var i in qsParameters) {
+            qs += "" + (qs === '' ? '?' : '&') + i + "=" + qsParameters[i];
+        }
+        return "" + url + qs + hash;
     };
     var getIframeSrc = function (src) {
         var newSrc = src;
