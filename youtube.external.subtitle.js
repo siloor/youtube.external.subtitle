@@ -33,6 +33,8 @@
     var Container = /** @class */ (function () {
         function Container() {
             this.document = null;
+            this.onIframeApiReady = null;
+            this.YT = null;
         }
         Container.prototype.setDocument = function (document) {
             this.document = document;
@@ -40,11 +42,22 @@
         Container.prototype.getDocument = function () {
             return this.document;
         };
+        Container.prototype.setYT = function (YT) {
+            this.YT = YT;
+        };
+        Container.prototype.getYT = function () {
+            return this.YT;
+        };
+        Container.prototype.setOnIframeApiReady = function (onIframeApiReady) {
+            this.onIframeApiReady = onIframeApiReady;
+        };
+        Container.prototype.getOnIframeApiReady = function () {
+            return this.onIframeApiReady;
+        };
         return Container;
     }());
     var DIC = new Container();
 
-    var root = window;
     var CSS = {
         ID: 'youtube-external-subtitle-style',
         CLASS: 'youtube-external-subtitle',
@@ -109,42 +122,6 @@
             }
         }
         return null;
-    };
-    var iframeApiScriptAdded = function () {
-        var document = DIC.getDocument();
-        var scripts = document.getElementsByTagName('script');
-        for (var i = 0; i < scripts.length; i++) {
-            var src = scripts[i].src;
-            if (src && src.indexOf('youtube.com/iframe_api') !== -1) {
-                return true;
-            }
-        }
-        return false;
-    };
-    var addIframeApiScript = function () {
-        var document = DIC.getDocument();
-        var tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    };
-    var loadIframeApi = function (cb) {
-        var iframeApiLoaded = function () {
-            return !!(root.YT && root.YT.Player);
-        };
-        if (iframeApiLoaded()) {
-            cb();
-            return;
-        }
-        var iframeApiInterval = setInterval(function () {
-            if (iframeApiLoaded()) {
-                clearInterval(iframeApiInterval);
-                cb();
-            }
-        }, 100);
-        if (!iframeApiScriptAdded()) {
-            addIframeApiScript();
-        }
     };
     var getFullscreenElement = function () {
         var document = DIC.getDocument();
@@ -268,13 +245,14 @@
                 if (_this.videoId !== _this.getCurrentVideoId()) {
                     return;
                 }
-                if (e.data === root.YT.PlayerState.PLAYING) {
+                var YT = DIC.getYT();
+                if (e.data === YT.PlayerState.PLAYING) {
                     _this.start();
                 }
-                else if (e.data === root.YT.PlayerState.PAUSED) {
+                else if (e.data === YT.PlayerState.PAUSED) {
                     _this.stop();
                 }
-                else if (e.data === root.YT.PlayerState.ENDED) {
+                else if (e.data === YT.PlayerState.ENDED) {
                     _this.stop();
                     _this.setState({ text: null });
                 }
@@ -295,8 +273,10 @@
             }
             this.element = createSubtitleElement(iframe, this);
             this.render();
-            loadIframeApi(function () {
-                _this.player = new root.YT.Player(iframe);
+            var onIframeApiReady = DIC.getOnIframeApiReady();
+            onIframeApiReady(function () {
+                var YT = DIC.getYT();
+                _this.player = new YT.Player(iframe);
                 _this.player.addEventListener('onReady', _this.onPlayerReady);
                 _this.player.addEventListener('onStateChange', _this.onPlayerStateChange);
             });
@@ -362,7 +342,52 @@
         return Subtitle;
     }());
 
+    var iframeApiScriptAdded = function () {
+        var document = DIC.getDocument();
+        var scripts = document.getElementsByTagName('script');
+        for (var i = 0; i < scripts.length; i++) {
+            var src = scripts[i].src;
+            if (src && src.indexOf('youtube.com/iframe_api') !== -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+    var addIframeApiScript = function () {
+        var document = DIC.getDocument();
+        var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    };
+    var iframeApiLoaded = function () {
+        return !!(window.YT && window.YT.Player);
+    };
+    var onIframeApiReady = function (cb) {
+        if (DIC.getYT() !== null) {
+            cb();
+            return;
+        }
+        var onLoaded = function () {
+            DIC.setYT(window.YT);
+            cb();
+        };
+        if (iframeApiLoaded()) {
+            onLoaded();
+            return;
+        }
+        var iframeApiInterval = setInterval(function () {
+            if (iframeApiLoaded()) {
+                clearInterval(iframeApiInterval);
+                onLoaded();
+            }
+        }, 100);
+        if (!iframeApiScriptAdded()) {
+            addIframeApiScript();
+        }
+    };
     DIC.setDocument(window.document);
+    DIC.setOnIframeApiReady(onIframeApiReady);
     var youtube_external_subtitle = { Subtitle: Subtitle };
 
     return youtube_external_subtitle;

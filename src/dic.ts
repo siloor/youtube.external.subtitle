@@ -9,6 +9,8 @@ declare global {
 
 class Container {
   private document: Document = null;
+  private onIframeApiReady: Function = null;
+  private YT: any = null;
 
   constructor() {}
 
@@ -18,6 +20,22 @@ class Container {
 
   public getDocument(): Document {
     return this.document;
+  }
+
+  public setYT(YT: any): void {
+    this.YT = YT;
+  }
+
+  public getYT(): any {
+    return this.YT;
+  }
+
+  public setOnIframeApiReady(onIframeApiReady: Function): void {
+    this.onIframeApiReady = onIframeApiReady;
+  }
+
+  public getOnIframeApiReady(): Function {
+    return this.onIframeApiReady;
   }
 }
 

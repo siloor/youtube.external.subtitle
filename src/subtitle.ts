@@ -1,11 +1,5 @@
 import DIC from './dic';
 
-declare global {
-  interface Window {
-    YT: any;
-  }
-}
-
 interface YoutubeExternalSubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
 }
@@ -24,8 +18,6 @@ interface State {
   text: string;
   isFullscreenActive: boolean;
 }
-
-const root = window;
 
 const CSS = {
   ID: 'youtube-external-subtitle-style',
@@ -107,55 +99,6 @@ const getSubtitleFromCache = (seconds: number, builtCache: any): SubtitleEntry =
   }
 
   return null;
-};
-
-const iframeApiScriptAdded = (): boolean => {
-  const document = DIC.getDocument();
-
-  const scripts = document.getElementsByTagName('script');
-
-  for (let i = 0; i < scripts.length; i++) {
-    const src = scripts[i].src;
-
-    if (src && src.indexOf('youtube.com/iframe_api') !== -1) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-const addIframeApiScript = (): void => {
-  const document = DIC.getDocument();
-
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-};
-
-const loadIframeApi = (cb: Function): void => {
-  const iframeApiLoaded = () => {
-    return !!(root.YT && root.YT.Player);
-  };
-
-  if (iframeApiLoaded()) {
-    cb();
-
-    return;
-  }
-
-  const iframeApiInterval = setInterval(() => {
-    if (iframeApiLoaded()) {
-      clearInterval(iframeApiInterval);
-
-      cb();
-    }
-  }, 100);
-
-  if (!iframeApiScriptAdded()) {
-    addIframeApiScript();
-  }
 };
 
 const getFullscreenElement = (): Element => {
@@ -334,8 +277,12 @@ class Subtitle {
 
     this.render();
 
-    loadIframeApi(() => {
-      this.player = new root.YT.Player(iframe);
+    const onIframeApiReady = DIC.getOnIframeApiReady();
+
+    onIframeApiReady(() => {
+      const YT = DIC.getYT();
+
+      this.player = new YT.Player(iframe);
 
       this.player.addEventListener('onReady', this.onPlayerReady);
       this.player.addEventListener('onStateChange', this.onPlayerStateChange);
@@ -436,11 +383,13 @@ class Subtitle {
       return;
     }
 
-    if (e.data === root.YT.PlayerState.PLAYING) {
+    const YT = DIC.getYT();
+
+    if (e.data === YT.PlayerState.PLAYING) {
       this.start();
-    } else if (e.data === root.YT.PlayerState.PAUSED) {
+    } else if (e.data === YT.PlayerState.PAUSED) {
       this.stop();
-    } else if (e.data === root.YT.PlayerState.ENDED) {
+    } else if (e.data === YT.PlayerState.ENDED) {
       this.stop();
 
       this.setState({ text: null });
