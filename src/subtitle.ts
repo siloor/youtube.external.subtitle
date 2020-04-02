@@ -1,15 +1,8 @@
+import DIC from './dic';
+
 declare global {
   interface Window {
     YT: any;
-  }
-}
-
-declare global {
-  interface Document {
-    webkitFullscreenElement: Element;
-    webkitCurrentFullScreenElement: Element;
-    mozFullScreenElement: Element;
-    msFullscreenElement: Element;
   }
 }
 
@@ -117,7 +110,9 @@ const getSubtitleFromCache = (seconds: number, builtCache: any): SubtitleEntry =
 };
 
 const iframeApiScriptAdded = (): boolean => {
-  const scripts = root.document.getElementsByTagName('script');
+  const document = DIC.getDocument();
+
+  const scripts = document.getElementsByTagName('script');
 
   for (let i = 0; i < scripts.length; i++) {
     const src = scripts[i].src;
@@ -131,9 +126,11 @@ const iframeApiScriptAdded = (): boolean => {
 };
 
 const addIframeApiScript = (): void => {
-  const tag = root.document.createElement('script');
+  const document = DIC.getDocument();
+
+  const tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
-  const firstScriptTag = root.document.getElementsByTagName('script')[0];
+  const firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
 
@@ -162,11 +159,13 @@ const loadIframeApi = (cb: Function): void => {
 };
 
 const getFullscreenElement = (): Element => {
-  return root.document.fullscreenElement ||
-    root.document.webkitFullscreenElement ||
-    root.document.webkitCurrentFullScreenElement ||
-    root.document.mozFullScreenElement ||
-    root.document.msFullscreenElement;
+  const document = DIC.getDocument();
+
+  return document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.webkitCurrentFullScreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement;
 };
 
 const getSubtitles = (container: Element|Document): Subtitle[] => {
@@ -210,7 +209,9 @@ const getFullscreenSubtitle = (): {
 const fullscreenChangeHandler = (): void => {
   const { subtitle: fullscreenSubtitle, isFullscreen } = getFullscreenSubtitle();
 
-  const subtitles = getSubtitles(root.document);
+  const document = DIC.getDocument();
+
+  const subtitles = getSubtitles(document);
 
   for (let subtitle of subtitles) {
     const isFullscreenActive = isFullscreen ? fullscreenSubtitle === subtitle : null;
@@ -226,7 +227,9 @@ const fullscreenChangeHandler = (): void => {
 };
 
 const firstInit = (): void => {
-  const style = root.document.createElement('style');
+  const document = DIC.getDocument();
+
+  const style = document.createElement('style');
   style.id = CSS.ID;
   style.type = 'text/css';
   style.innerHTML = `
@@ -236,13 +239,13 @@ const firstInit = (): void => {
     .${CSS.CLASS}.${CSS.FULLSCREEN} { z-index: 3000000000; }
   `;
 
-  const head = root.document.getElementsByTagName('head')[0] || root.document.documentElement;
+  const head = document.getElementsByTagName('head')[0] || document.documentElement;
   head.insertBefore(style, head.firstChild);
 
-  root.document.addEventListener('fullscreenchange', fullscreenChangeHandler);
-  root.document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
-  root.document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
-  root.document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+  document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+  document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+  document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+  document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
 };
 
 const getIframeSrc = (src: string): string => {
@@ -295,7 +298,9 @@ class Subtitle {
 
     iframe.youtubeExternalSubtitle = this;
 
-    if (!root.document.getElementById(CSS.ID)) {
+    const document = DIC.getDocument();
+
+    if (!document.getElementById(CSS.ID)) {
       firstInit();
     }
 
@@ -309,7 +314,7 @@ class Subtitle {
       this.load(subtitles);
     }
 
-    this.element = root.document.createElement('div');
+    this.element = document.createElement('div');
 
     this.element.youtubeExternalSubtitle = this;
 
