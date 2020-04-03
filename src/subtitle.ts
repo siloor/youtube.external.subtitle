@@ -77,7 +77,7 @@ export const getSubtitleFromCache = (seconds: number, builtCache: any): Subtitle
   return null;
 };
 
-const getFullscreenElement = (): Element => {
+export const getFullscreenElement = (): Element => {
   const document = DIC.getDocument();
 
   return document.fullscreenElement ||

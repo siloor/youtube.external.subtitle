@@ -2,8 +2,10 @@ import {
   getCacheName,
   getCacheNames,
   buildCache,
-  getSubtitleFromCache
+  getSubtitleFromCache,
+  getFullscreenElement
 } from './subtitle';
+import DIC from './dic';
 
 test('getCacheName returns the correct cache name', () => {
   expect(getCacheName(39)).toStrictEqual(3);
@@ -55,4 +57,43 @@ test('getSubtitleFromCache returns the correct subtitle', () => {
   expect(getSubtitleFromCache(14, cache)).toStrictEqual(null);
 
   expect(getSubtitleFromCache(10, cache)).toStrictEqual({ start: 9.9, end: 12, text: 'fakeText3' });
+});
+
+test('getFullscreenElement returns the correct element', () => {
+  const standard = {};
+  const webkit = {};
+  const webkitCurrent = {};
+  const moz = {};
+  const ms = {};
+
+  const setFullscreenElements = (
+    fullscreenElement,
+    webkitFullscreenElement,
+    webkitCurrentFullScreenElement,
+    mozFullScreenElement,
+    msFullscreenElement
+  ) => {
+    DIC.setDocument({
+      fullscreenElement,
+      webkitFullscreenElement,
+      webkitCurrentFullScreenElement,
+      mozFullScreenElement,
+      msFullscreenElement
+    } as Document);
+  };
+
+  setFullscreenElements(standard, webkit, webkitCurrent, moz, ms);
+  expect(getFullscreenElement()).toBe(standard);
+
+  setFullscreenElements(undefined, webkit, webkitCurrent, moz, ms);
+  expect(getFullscreenElement()).toBe(webkit);
+
+  setFullscreenElements(undefined, undefined, webkitCurrent, moz, ms);
+  expect(getFullscreenElement()).toBe(webkitCurrent);
+
+  setFullscreenElements(undefined, undefined, undefined, moz, ms);
+  expect(getFullscreenElement()).toBe(moz);
+
+  setFullscreenElements(undefined, undefined, undefined, undefined, ms);
+  expect(getFullscreenElement()).toBe(ms);
 });
