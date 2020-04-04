@@ -333,8 +333,14 @@ class Subtitle {
         height: iframe.offsetHeight
       };
 
+      this.element.style.visibility = 'hidden';
+      this.element.style.top = frame.y + 'px';
+      this.element.style.left = frame.x + 'px';
+      this.element.style.maxWidth = (frame.width - 20) + 'px';
+
       this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
       this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
+      this.element.style.visibility = '';
     }
   }
 
