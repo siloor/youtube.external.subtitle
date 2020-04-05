@@ -343,7 +343,7 @@
             this.timeChangeInterval = setInterval(this.onTimeChange, 500);
             this.controlsHideTimeout = setTimeout(function () {
                 _this.setState({ controlsVisible: false });
-            }, 4000);
+            }, 3000);
         };
         Subtitle.prototype.stop = function () {
             clearInterval(this.timeChangeInterval);

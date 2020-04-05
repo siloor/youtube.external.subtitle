@@ -373,7 +373,7 @@ class Subtitle {
 
     this.controlsHideTimeout = setTimeout(() => {
       this.setState({ controlsVisible: false });
-    }, 4000);
+    }, 3000);
   }
 
   private stop(): void {
