@@ -1,10 +1,10 @@
 import DIC from './dic';
 
-interface YoutubeExternalSubtitleElement extends HTMLDivElement {
+interface SubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
 }
 
-interface YoutubeExternalSubtitleFrame extends HTMLIFrameElement {
+interface SubtitleFrame extends HTMLIFrameElement {
   youtubeExternalSubtitle: Subtitle;
 }
 
@@ -89,7 +89,7 @@ export const getFullscreenElement = (): Element => {
 };
 
 export const getSubtitles = (container: Element|Document): Subtitle[] => {
-  const subtitleElements = container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
+  const subtitleElements = container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<SubtitleElement>;
 
   const subtitles = [];
 
@@ -100,7 +100,7 @@ export const getSubtitles = (container: Element|Document): Subtitle[] => {
   return subtitles;
 };
 
-const getFullscreenSubtitle = (fullscreenElement: YoutubeExternalSubtitleElement): Subtitle => {
+const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subtitle => {
   if (!fullscreenElement) {
     return null;
   }
@@ -119,7 +119,7 @@ const getFullscreenSubtitle = (fullscreenElement: YoutubeExternalSubtitleElement
 };
 
 const fullscreenChangeHandler = (): void => {
-  const fullscreenElement = getFullscreenElement() as YoutubeExternalSubtitleElement;
+  const fullscreenElement = getFullscreenElement() as SubtitleElement;
   const isFullscreen = !!fullscreenElement;
 
   const fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
@@ -215,10 +215,10 @@ const getIframeSrc = (src: string): string => {
   return newSrc;
 };
 
-const createSubtitleElement = (iframe: YoutubeExternalSubtitleFrame, subtitle: Subtitle): YoutubeExternalSubtitleElement => {
+const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle): SubtitleElement => {
   const document = DIC.getDocument();
 
-  const element = document.createElement('div') as YoutubeExternalSubtitleElement;
+  const element = document.createElement('div') as SubtitleElement;
 
   element.youtubeExternalSubtitle = subtitle;
 
@@ -243,14 +243,14 @@ class Subtitle {
   private controlsHideTimeout: number = 0;
   private player: any = null;
   private videoId: string = null;
-  private readonly element: YoutubeExternalSubtitleElement = null;
+  private readonly element: SubtitleElement = null;
   private state: State = {
     text: null,
     isFullscreenActive: null,
     controlsVisible: true
   };
 
-  constructor(iframe: YoutubeExternalSubtitleFrame, subtitles: SubtitleEntry[]) {
+  constructor(iframe: SubtitleFrame, subtitles: SubtitleEntry[]) {
     if (iframe.youtubeExternalSubtitle) {
       throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
     }
