@@ -3,9 +3,41 @@ import {
   getCacheNames,
   buildCache,
   getSubtitleFromCache,
-  getFullscreenElement
+  getFullscreenElement,
+  getSubtitles
 } from './subtitle';
 import DIC from './dic';
+
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      arrayItemsToBe(a: any[]): R;
+    }
+  }
+}
+
+expect.extend({
+  arrayItemsToBe(received: any[], expected: any[]): any {
+    const getResult = (pass: boolean): any => {
+      return {
+        message: () => `expected ${received} to be ${expected}`,
+        pass,
+      };
+    };
+
+    if (received.length !== expected.length) {
+      return getResult(false);
+    }
+
+    for (let i = 0; i < expected.length; i++) {
+      if (expected[i] !== received[i]) {
+        return getResult(false);
+      }
+    }
+
+    return getResult(true);
+  },
+});
 
 test('getCacheName returns the correct cache name', () => {
   expect(getCacheName(39)).toStrictEqual(3);
@@ -96,4 +128,26 @@ test('getFullscreenElement returns the correct element', () => {
 
   setFullscreenElements(undefined, undefined, undefined, undefined, ms);
   expect(getFullscreenElement()).toBe(ms);
+});
+
+test('getSubtitles returns the correct subtitles', () => {
+  const createContainerMock = (results): Element => {
+    const container: Partial<Element> = {
+      getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
+        return results;
+      }
+    };
+
+    return container as Element;
+  };
+
+  expect(getSubtitles(createContainerMock([]))).toStrictEqual([]);
+
+  const subtitle1 = {};
+  const subtitle2 = {};
+
+  expect(getSubtitles(createContainerMock([
+    { youtubeExternalSubtitle: subtitle1 },
+    { youtubeExternalSubtitle: subtitle2 }
+  ]))).arrayItemsToBe([ subtitle1, subtitle2 ]);
 });

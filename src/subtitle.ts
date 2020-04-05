@@ -88,7 +88,7 @@ export const getFullscreenElement = (): Element => {
     document.msFullscreenElement;
 };
 
-const getSubtitles = (container: Element|Document): Subtitle[] => {
+export const getSubtitles = (container: Element|Document): Subtitle[] => {
   const subtitleElements = container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<YoutubeExternalSubtitleElement>;
 
   const subtitles = [];
