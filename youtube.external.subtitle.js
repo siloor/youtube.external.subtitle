@@ -231,12 +231,14 @@
             var _this = this;
             this.cache = null;
             this.timeChangeInterval = 0;
+            this.controlsHideTimeout = 0;
             this.player = null;
             this.videoId = null;
             this.element = null;
             this.state = {
                 text: null,
-                isFullscreenActive: null
+                isFullscreenActive: null,
+                controlsVisible: true
             };
             this.onTimeChange = function () {
                 var subtitle = getSubtitleFromCache(_this.player.getCurrentTime(), _this.cache);
@@ -320,7 +322,8 @@
                 this.element.style.left = frame.x + 'px';
                 this.element.style.maxWidth = (frame.width - 20) + 'px';
                 this.element.style.fontSize = (frame.height / 140) + 'rem';
-                this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
+                var bottomPadding = frame.height < 200 && !this.state.controlsVisible ? 20 : 60;
+                this.element.style.top = (frame.y + frame.height - bottomPadding - this.element.offsetHeight) + 'px';
                 this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
                 this.element.style.visibility = '';
             }
@@ -335,11 +338,17 @@
             this.render();
         };
         Subtitle.prototype.start = function () {
+            var _this = this;
             this.stop();
             this.timeChangeInterval = setInterval(this.onTimeChange, 500);
+            this.controlsHideTimeout = setTimeout(function () {
+                _this.setState({ controlsVisible: false });
+            }, 4000);
         };
         Subtitle.prototype.stop = function () {
             clearInterval(this.timeChangeInterval);
+            clearTimeout(this.controlsHideTimeout);
+            this.setState({ controlsVisible: true });
         };
         Subtitle.prototype.getCurrentVideoId = function () {
             return this.player.getVideoData().video_id;

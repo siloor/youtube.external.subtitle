@@ -17,6 +17,7 @@ interface SubtitleEntry {
 interface State {
   text: string;
   isFullscreenActive: boolean;
+  controlsVisible: boolean;
 }
 
 const CSS = {
@@ -244,12 +245,14 @@ const isStateChanged = (prevState: State, nextState: State): boolean => {
 class Subtitle {
   private cache: any = null;
   private timeChangeInterval: number = 0;
+  private controlsHideTimeout: number = 0;
   private player: any = null;
   private videoId: string = null;
   private readonly element: YoutubeExternalSubtitleElement = null;
   private state: State = {
     text: null,
-    isFullscreenActive: null
+    isFullscreenActive: null,
+    controlsVisible: true
   };
 
   constructor(iframe: YoutubeExternalSubtitleFrame, subtitles: SubtitleEntry[]) {
@@ -339,7 +342,9 @@ class Subtitle {
       this.element.style.maxWidth = (frame.width - 20) + 'px';
       this.element.style.fontSize = (frame.height / 140) + 'rem';
 
-      this.element.style.top = (frame.y + frame.height - 60 - this.element.offsetHeight) + 'px';
+      const bottomPadding = frame.height < 200 && !this.state.controlsVisible ? 20 : 60;
+
+      this.element.style.top = (frame.y + frame.height - bottomPadding - this.element.offsetHeight) + 'px';
       this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
       this.element.style.visibility = '';
     }
@@ -365,10 +370,17 @@ class Subtitle {
     this.stop();
 
     this.timeChangeInterval = setInterval(this.onTimeChange, 500);
+
+    this.controlsHideTimeout = setTimeout(() => {
+      this.setState({ controlsVisible: false });
+    }, 4000);
   }
 
   private stop(): void {
     clearInterval(this.timeChangeInterval);
+    clearTimeout(this.controlsHideTimeout);
+
+    this.setState({ controlsVisible: true });
   }
 
   private getCurrentVideoId(): string {
