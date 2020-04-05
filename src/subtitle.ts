@@ -340,7 +340,7 @@ class Subtitle {
       this.element.style.top = frame.y + 'px';
       this.element.style.left = frame.x + 'px';
       this.element.style.maxWidth = (frame.width - 20) + 'px';
-      this.element.style.fontSize = (frame.height / 140) + 'rem';
+      this.element.style.fontSize = (frame.height / 260) + 'em';
 
       const bottomPadding = frame.height < 200 && !this.state.controlsVisible ? 20 : 60;
 
