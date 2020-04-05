@@ -121,27 +121,23 @@
         }
         return subtitles;
     };
-    var getFullscreenSubtitle = function () {
-        var fullscreenElement = getFullscreenElement();
-        var subtitle = null;
-        if (fullscreenElement) {
-            if (fullscreenElement.youtubeExternalSubtitle) {
-                subtitle = fullscreenElement.youtubeExternalSubtitle;
-            }
-            else {
-                var elements = getSubtitles(fullscreenElement);
-                if (elements.length > 0) {
-                    subtitle = elements[0];
-                }
-            }
+    var getFullscreenSubtitle = function (fullscreenElement) {
+        if (!fullscreenElement) {
+            return null;
         }
-        return {
-            subtitle: subtitle,
-            isFullscreen: !!fullscreenElement
-        };
+        if (fullscreenElement.youtubeExternalSubtitle) {
+            return fullscreenElement.youtubeExternalSubtitle;
+        }
+        var elements = getSubtitles(fullscreenElement);
+        if (elements.length > 0) {
+            return elements[0];
+        }
+        return null;
     };
     var fullscreenChangeHandler = function () {
-        var _a = getFullscreenSubtitle(), fullscreenSubtitle = _a.subtitle, isFullscreen = _a.isFullscreen;
+        var fullscreenElement = getFullscreenElement();
+        var isFullscreen = !!fullscreenElement;
+        var fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
         var document = DIC.getDocument();
         var subtitles = getSubtitles(document);
         var _loop_1 = function (subtitle) {

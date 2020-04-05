@@ -100,34 +100,29 @@ export const getSubtitles = (container: Element|Document): Subtitle[] => {
   return subtitles;
 };
 
-const getFullscreenSubtitle = (): {
-  subtitle: Subtitle,
-  isFullscreen: boolean
-} => {
-  const fullscreenElement = getFullscreenElement() as YoutubeExternalSubtitleElement;
-
-  let subtitle = null;
-
-  if (fullscreenElement) {
-    if (fullscreenElement.youtubeExternalSubtitle) {
-      subtitle = fullscreenElement.youtubeExternalSubtitle;
-    } else {
-      const elements = getSubtitles(fullscreenElement);
-
-      if (elements.length > 0) {
-        subtitle = elements[0];
-      }
-    }
+const getFullscreenSubtitle = (fullscreenElement: YoutubeExternalSubtitleElement): Subtitle => {
+  if (!fullscreenElement) {
+    return null;
   }
 
-  return {
-    subtitle: subtitle,
-    isFullscreen: !!fullscreenElement
-  };
+  if (fullscreenElement.youtubeExternalSubtitle) {
+    return fullscreenElement.youtubeExternalSubtitle;
+  }
+
+  const elements = getSubtitles(fullscreenElement);
+
+  if (elements.length > 0) {
+    return elements[0];
+  }
+
+  return null;
 };
 
 const fullscreenChangeHandler = (): void => {
-  const { subtitle: fullscreenSubtitle, isFullscreen } = getFullscreenSubtitle();
+  const fullscreenElement = getFullscreenElement() as YoutubeExternalSubtitleElement;
+  const isFullscreen = !!fullscreenElement;
+
+  const fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
 
   const document = DIC.getDocument();
 
