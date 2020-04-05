@@ -82,9 +82,7 @@ export const getSubtitleFromCache = (seconds: number, builtCache: Cache): Subtit
   return null;
 };
 
-export const getFullscreenElement = (): Element => {
-  const document = DIC.getDocument();
-
+export const getFullscreenElement = (document: Document): Element => {
   return document.fullscreenElement ||
     document.webkitFullscreenElement ||
     document.webkitCurrentFullScreenElement ||
@@ -123,12 +121,12 @@ const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subtitle => 
 };
 
 const fullscreenChangeHandler = (): void => {
-  const fullscreenElement = getFullscreenElement() as SubtitleElement;
+  const document = DIC.getDocument();
+
+  const fullscreenElement = getFullscreenElement(document) as SubtitleElement;
   const isFullscreen = !!fullscreenElement;
 
   const fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
-
-  const document = DIC.getDocument();
 
   const subtitles = getSubtitles(document);
 

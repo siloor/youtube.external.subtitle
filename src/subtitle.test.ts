@@ -98,36 +98,41 @@ test('getFullscreenElement returns the correct element', () => {
   const moz = {};
   const ms = {};
 
-  const setFullscreenElements = (
+  const getDocument = (
     fullscreenElement,
     webkitFullscreenElement,
     webkitCurrentFullScreenElement,
     mozFullScreenElement,
     msFullscreenElement
   ) => {
-    DIC.setDocument({
+    return {
       fullscreenElement,
       webkitFullscreenElement,
       webkitCurrentFullScreenElement,
       mozFullScreenElement,
       msFullscreenElement
-    } as Document);
+    } as Document;
   };
 
-  setFullscreenElements(standard, webkit, webkitCurrent, moz, ms);
-  expect(getFullscreenElement()).toBe(standard);
+  expect(getFullscreenElement(
+    getDocument(standard, webkit, webkitCurrent, moz, ms)
+  )).toBe(standard);
 
-  setFullscreenElements(undefined, webkit, webkitCurrent, moz, ms);
-  expect(getFullscreenElement()).toBe(webkit);
+  expect(getFullscreenElement(
+    getDocument(undefined, webkit, webkitCurrent, moz, ms)
+  )).toBe(webkit);
 
-  setFullscreenElements(undefined, undefined, webkitCurrent, moz, ms);
-  expect(getFullscreenElement()).toBe(webkitCurrent);
+  expect(getFullscreenElement(
+    getDocument(undefined, undefined, webkitCurrent, moz, ms)
+  )).toBe(webkitCurrent);
 
-  setFullscreenElements(undefined, undefined, undefined, moz, ms);
-  expect(getFullscreenElement()).toBe(moz);
+  expect(getFullscreenElement(
+    getDocument(undefined, undefined, undefined, moz, ms)
+  )).toBe(moz);
 
-  setFullscreenElements(undefined, undefined, undefined, undefined, ms);
-  expect(getFullscreenElement()).toBe(ms);
+  expect(getFullscreenElement(
+    getDocument(undefined, undefined, undefined, undefined, ms)
+  )).toBe(ms);
 });
 
 test('getSubtitles returns the correct subtitles', () => {

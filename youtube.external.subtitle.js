@@ -105,8 +105,7 @@
         }
         return null;
     };
-    var getFullscreenElement = function () {
-        var document = DIC.getDocument();
+    var getFullscreenElement = function (document) {
         return document.fullscreenElement ||
             document.webkitFullscreenElement ||
             document.webkitCurrentFullScreenElement ||
@@ -135,10 +134,10 @@
         return null;
     };
     var fullscreenChangeHandler = function () {
-        var fullscreenElement = getFullscreenElement();
+        var document = DIC.getDocument();
+        var fullscreenElement = getFullscreenElement(document);
         var isFullscreen = !!fullscreenElement;
         var fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
-        var document = DIC.getDocument();
         var subtitles = getSubtitles(document);
         var _loop_1 = function (subtitle) {
             var isFullscreenActive = isFullscreen ? fullscreenSubtitle === subtitle : null;
