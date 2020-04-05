@@ -20,6 +20,10 @@ interface State {
   controlsVisible: boolean;
 }
 
+interface Cache {
+  [propName: number]: SubtitleEntry[];
+}
+
 const CSS = {
   ID: 'youtube-external-subtitle-style',
   CLASS: 'youtube-external-subtitle',
@@ -42,7 +46,7 @@ export const getCacheNames = (start: number, end: number): number[] => {
   return cacheNames;
 };
 
-export const buildCache = (subtitles: SubtitleEntry[]): any => {
+export const buildCache = (subtitles: SubtitleEntry[]): Cache => {
   const cache = {};
 
   for (let subtitle of subtitles) {
@@ -58,7 +62,7 @@ export const buildCache = (subtitles: SubtitleEntry[]): any => {
   return cache;
 };
 
-export const getSubtitleFromCache = (seconds: number, builtCache: any): SubtitleEntry => {
+export const getSubtitleFromCache = (seconds: number, builtCache: Cache): SubtitleEntry => {
   if (!builtCache) {
     return null;
   }
@@ -238,7 +242,7 @@ const isStateChanged = (prevState: State, nextState: State): boolean => {
 };
 
 class Subtitle {
-  private cache: any = null;
+  private cache: Cache = null;
   private timeChangeInterval: number = 0;
   private controlsHideTimeout: number = 0;
   private player: any = null;
