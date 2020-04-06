@@ -143,14 +143,16 @@ const fullscreenChangeHandler = (): void => {
   }
 };
 
-const globalStyleAdded = (): boolean => {
-  const document = DIC.getDocument();
-
+const isInitialized = (document: Document): boolean => {
   return !!document.getElementById(CSS.ID);
 };
 
-const addGlobalStyle = (): void => {
+const initialize = (): void => {
   const document = DIC.getDocument();
+
+  if (isInitialized(document)) {
+    return;
+  }
 
   const style = document.createElement('style');
   style.id = CSS.ID;
@@ -259,9 +261,7 @@ class Subtitle {
 
     iframe.youtubeExternalSubtitle = this;
 
-    if (!globalStyleAdded()) {
-      addGlobalStyle();
-    }
+    initialize();
 
     const src = getIframeSrc(iframe.src);
 

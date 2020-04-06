@@ -155,12 +155,14 @@
             _loop_1(subtitle);
         }
     };
-    var globalStyleAdded = function () {
-        var document = DIC.getDocument();
+    var isInitialized = function (document) {
         return !!document.getElementById(CSS.ID);
     };
-    var addGlobalStyle = function () {
+    var initialize = function () {
         var document = DIC.getDocument();
+        if (isInitialized(document)) {
+            return;
+        }
         var style = document.createElement('style');
         style.id = CSS.ID;
         style.type = 'text/css';
@@ -262,9 +264,7 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            if (!globalStyleAdded()) {
-                addGlobalStyle();
-            }
+            initialize();
             var src = getIframeSrc(iframe.src);
             if (iframe.src !== src) {
                 iframe.src = src;
