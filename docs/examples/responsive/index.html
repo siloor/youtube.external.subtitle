@@ -20,6 +20,9 @@
     <![endif]-->
     <script src="static/js/jquery-1.11.2.min.js"></script>
     <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body { padding-left: 10px; }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -38,14 +41,18 @@
 <div class="container">
     <h1>Responsive example</h1>
     <p>The responsive example loads the subtitles from an array and add it to the video.</p>
-    <iframe id="video" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
+    <div id="fullscreen-container">
+        <iframe id="video" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
+    </div>
     <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
     <style>
-      #video { width: 100%; }
+      #video { width: 100%; height: 100%; }
+      #fullscreen-container { width: 100%; }
       @media screen and (min-width: 500px) {
-        #video { height: 400px; }
+          #fullscreen-container { height: 400px; }
       }
     </style>
+    <button id="fullscreen-btn">Fullscreen</button>
     <script>
         var subtitle = [
             {
@@ -376,15 +383,37 @@
         ];
 
         var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitle);
+
+        document.getElementById('fullscreen-btn').addEventListener('click', function(e) {
+            var elem = document.getElementById('fullscreen-container');
+
+            var openFullscreen = function() {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.mozRequestFullScreen) { /* Firefox */
+                    elem.mozRequestFullScreen();
+                } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                    elem.msRequestFullscreen();
+                }
+          };
+
+          openFullscreen();
+        });
     </script>
-    <blockquote><pre>&lt;iframe id=&quot;video&quot; src=&quot;https://www.youtube.com/embed/fGPPfZIvtCw&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
+    <blockquote><pre>&lt;div id=&quot;fullscreen-container&quot;&gt;
+    &lt;iframe id=&quot;video&quot; src=&quot;https://www.youtube.com/embed/fGPPfZIvtCw&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
 &lt;script src=&quot;static/youtube.external.subtitle/youtube.external.subtitle.js&quot;&gt;&lt;/script&gt;
 &lt;style>
-#video { width: 100%; }
+#video { width: 100%; height: 100%; }
+#fullscreen-container { width: 100%; }
 @media screen and (min-width: 500px) {
-  #video { height: 400px; }
+    #fullscreen-container { height: 400px; }
 }
 &lt;/style>
+&lt;button id=&quot;fullscreen-btn&quot;&gt;Fullscreen&lt;/button&gt;
 &lt;script&gt;
 var subtitle = [
     {
@@ -715,6 +744,24 @@ var subtitle = [
 ];
 
 var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitle);
+
+document.getElementById('fullscreen-btn').addEventListener('click', function(e) {
+      var elem = document.getElementById('fullscreen-container');
+
+      var openFullscreen = function() {
+          if (elem.requestFullscreen) {
+              elem.requestFullscreen();
+          } else if (elem.mozRequestFullScreen) { /* Firefox */
+              elem.mozRequestFullScreen();
+          } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+              elem.webkitRequestFullscreen();
+          } else if (elem.msRequestFullscreen) { /* IE/Edge */
+              elem.msRequestFullscreen();
+          }
+    };
+
+    openFullscreen();
+  });
 &lt;/script&gt;
 </pre></blockquote>
 </div>
