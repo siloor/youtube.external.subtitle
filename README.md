@@ -1,5 +1,7 @@
 # YouTube External Subtitle
 
+![Kung Fu Panda Subtitle Example](https://siloor.github.io/youtube.external.subtitle/static/img/example.jpg)
+
 According to YouTube's [policy](http://support.google.com/youtube/answer/2734796?hl=en), only the owner of the content can add subtitle to a video.
 
 With YouTube External Subtitle you can display subtitles over the embedded video from YouTube on your site. These texts could be translations, comments or lyrics as well. (Any kind of texts is allowed)
