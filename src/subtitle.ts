@@ -49,8 +49,8 @@ export const getCacheNames = (start: number, end: number): number[] => {
 export const buildCache = (subtitles: SubtitleEntry[]): Cache => {
   const cache = {};
 
-  for (let subtitle of subtitles) {
-    for (let cacheName of getCacheNames(subtitle.start, subtitle.end)) {
+  for (const subtitle of subtitles) {
+    for (const cacheName of getCacheNames(subtitle.start, subtitle.end)) {
       if (!cache[cacheName]) {
         cache[cacheName] = [];
       }
@@ -73,7 +73,7 @@ export const getSubtitleFromCache = (seconds: number, builtCache: Cache): Subtit
     return null;
   }
 
-  for (let subtitle of cache) {
+  for (const subtitle of cache) {
     if (seconds >= subtitle.start && seconds <= subtitle.end) {
       return subtitle;
     }
@@ -130,16 +130,8 @@ const fullscreenChangeHandler = (): void => {
 
   const subtitles = getSubtitles(document);
 
-  for (let subtitle of subtitles) {
-    const isFullscreenActive = isFullscreen ? fullscreenSubtitle === subtitle : null;
-
-    if (isFullscreen) {
-      setTimeout(() => {
-        subtitle.setIsFullscreenActive(isFullscreenActive);
-      }, 0);
-    } else {
-      subtitle.setIsFullscreenActive(isFullscreenActive);
-    }
+  for (const subtitle of subtitles) {
+    subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
   }
 };
 
@@ -190,7 +182,7 @@ const addQueryStringParameterToUrl = (url: string, qsParameters: any): string =>
     url = url.substr(0, qsIndex);
   }
 
-  for (let i in qsParameters) {
+  for (const i in qsParameters) {
     qs += `${qs === '' ? '?' : '&'}${i}=${qsParameters[i]}`;
   }
 
@@ -232,7 +224,7 @@ const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle): Subti
 };
 
 const isStateChanged = (prevState: State, nextState: State): boolean => {
-  for (let i in nextState) {
+  for (const i in nextState) {
     if (prevState[i] !== nextState[i]) {
       return true;
     }

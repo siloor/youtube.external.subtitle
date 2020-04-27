@@ -57,6 +57,7 @@
         return Container;
     }());
     var DIC = new Container();
+    //# sourceMappingURL=dic.js.map
 
     var CSS = {
         ID: 'youtube-external-subtitle-style',
@@ -139,20 +140,9 @@
         var isFullscreen = !!fullscreenElement;
         var fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
         var subtitles = getSubtitles(document);
-        var _loop_1 = function (subtitle) {
-            var isFullscreenActive = isFullscreen ? fullscreenSubtitle === subtitle : null;
-            if (isFullscreen) {
-                setTimeout(function () {
-                    subtitle.setIsFullscreenActive(isFullscreenActive);
-                }, 0);
-            }
-            else {
-                subtitle.setIsFullscreenActive(isFullscreenActive);
-            }
-        };
         for (var _i = 0, subtitles_2 = subtitles; _i < subtitles_2.length; _i++) {
             var subtitle = subtitles_2[_i];
-            _loop_1(subtitle);
+            subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
         }
     };
     var isInitialized = function (document) {
@@ -398,6 +388,7 @@
     DIC.setDocument(window.document);
     DIC.setOnIframeApiReady(onIframeApiReady);
     var youtube_external_subtitle = { Subtitle: Subtitle };
+    //# sourceMappingURL=youtube.external.subtitle.js.map
 
     return youtube_external_subtitle;
 
