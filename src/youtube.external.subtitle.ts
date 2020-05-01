@@ -1,9 +1,9 @@
 import Subtitle from './subtitle';
-import DIC from './dic';
+import DIC, { Youtube } from './dic';
 
 declare global {
   interface Window {
-    YT: any;
+    YT: Youtube;
   }
 }
 

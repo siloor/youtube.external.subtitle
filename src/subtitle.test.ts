@@ -137,10 +137,10 @@ test('getFullscreenElement returns the correct element', () => {
   )).toBe(ms);
 });
 
-const createContainerMock = (results: any): Element => {
+const createContainerMock = (results: any[]): Element => {
   const container: Partial<Element> = {
     getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-      return results;
+      return results as any;
     }
   };
 

@@ -7,7 +7,12 @@ declare global {
   }
 }
 
-class Container {
+export interface Youtube {
+  Player: any;
+  PlayerState: any;
+}
+
+export class Container {
   private document: Document = null;
   private onIframeApiReady: Function = null;
   private YT: any = null;
@@ -22,11 +27,11 @@ class Container {
     return this.document;
   }
 
-  public setYT(YT: any): void {
+  public setYT(YT: Youtube): void {
     this.YT = YT;
   }
 
-  public getYT(): any {
+  public getYT(): Youtube {
     return this.YT;
   }
 
