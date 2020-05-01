@@ -57,7 +57,6 @@
         return Container;
     }());
     var DIC = new Container();
-    //# sourceMappingURL=dic.js.map
 
     var CSS = {
         ID: 'youtube-external-subtitle-style',
@@ -396,7 +395,6 @@
     DIC.setDocument(window.document);
     DIC.setOnIframeApiReady(onIframeApiReady);
     var youtube_external_subtitle = { Subtitle: Subtitle };
-    //# sourceMappingURL=youtube.external.subtitle.js.map
 
     return youtube_external_subtitle;
 

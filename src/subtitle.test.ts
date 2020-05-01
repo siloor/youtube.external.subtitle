@@ -1,10 +1,12 @@
-import {
+import Subtitle, {
+  SubtitleElement,
   getCacheName,
   getCacheNames,
   buildCache,
   getSubtitleFromCache,
   getFullscreenElement,
-  getSubtitles
+  getSubtitles,
+  getFullscreenSubtitle
 } from './subtitle';
 import DIC from './dic';
 
@@ -135,17 +137,17 @@ test('getFullscreenElement returns the correct element', () => {
   )).toBe(ms);
 });
 
-test('getSubtitles returns the correct subtitles', () => {
-  const createContainerMock = (results): Element => {
-    const container: Partial<Element> = {
-      getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-        return results;
-      }
-    };
-
-    return container as Element;
+const createContainerMock = (results: any): Element => {
+  const container: Partial<Element> = {
+    getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
+      return results;
+    }
   };
 
+  return container as Element;
+};
+
+test('getSubtitles returns the correct subtitles', () => {
   expect(getSubtitles(createContainerMock([]))).toStrictEqual([]);
 
   const subtitle1 = {};
@@ -155,4 +157,17 @@ test('getSubtitles returns the correct subtitles', () => {
     { youtubeExternalSubtitle: subtitle1 },
     { youtubeExternalSubtitle: subtitle2 }
   ]))).arrayItemsToBe([ subtitle1, subtitle2 ]);
+});
+
+test('getFullscreenSubtitle returns the correct subtitle', () => {
+  const subtitle1 = {};
+  const subtitle2 = {};
+
+  expect(getFullscreenSubtitle(undefined)).toBe(null);
+  expect(getFullscreenSubtitle({ youtubeExternalSubtitle: subtitle1 } as SubtitleElement)).toBe(subtitle1);
+  expect(getFullscreenSubtitle(createContainerMock([
+    { youtubeExternalSubtitle: subtitle2 },
+    { youtubeExternalSubtitle: subtitle1 }
+  ]) as SubtitleElement)).toBe(subtitle2);
+  expect(getFullscreenSubtitle(createContainerMock([]) as SubtitleElement)).toBe(null);
 });

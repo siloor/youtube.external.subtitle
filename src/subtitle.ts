@@ -1,6 +1,6 @@
 import DIC from './dic';
 
-interface SubtitleElement extends HTMLDivElement {
+export interface SubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
 }
 
@@ -102,7 +102,7 @@ export const getSubtitles = (container: Element|Document): Subtitle[] => {
   return subtitles;
 };
 
-const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subtitle => {
+export const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subtitle => {
   if (!fullscreenElement) {
     return null;
   }
