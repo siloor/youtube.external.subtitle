@@ -233,6 +233,38 @@ const isStateChanged = (prevState: State, nextState: State): boolean => {
   return false;
 };
 
+const renderClassName = (isFullscreenActive: boolean): string => {
+  const classes = [ CSS.CLASS ];
+
+  if (isFullscreenActive !== null) {
+    classes.push(isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+  }
+
+  return classes.join(' ');
+};
+
+const renderText = (text: string): string => {
+  return `<span>${(text === null ? '' : text).replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
+};
+
+const getFrameRect = (iframe: SubtitleFrame, controlsVisible: boolean): {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  bottomPadding: number
+} => {
+  const height = iframe.offsetHeight;
+
+  return {
+    x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
+    y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
+    width: iframe.offsetWidth,
+    height: height,
+    bottomPadding: height < 200 && !controlsVisible ? 20 : 60
+  };
+};
+
 class Subtitle {
   private cache: Cache = null;
   private timeChangeInterval: number = 0;
@@ -301,40 +333,22 @@ class Subtitle {
   }
 
   public render(): void {
-    const classes = [ CSS.CLASS ];
-
-    if (this.state.isFullscreenActive !== null) {
-      classes.push(this.state.isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
-    }
-
-    this.element.className = classes.join(' ');
-
-    const text = this.state.text === null ? '' : this.state.text;
-
-    this.element.innerHTML = `<span>${text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
+    this.element.className = renderClassName(this.state.isFullscreenActive);
+    this.element.innerHTML = renderText(this.state.text);
 
     this.element.style.display = this.state.text === null ? '' : 'block';
 
     if (this.player) {
-      const iframe = this.player.getIframe();
-
-      const frame = {
-        x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
-        y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
-        width: iframe.offsetWidth,
-        height: iframe.offsetHeight
-      };
+      const frame = getFrameRect(this.player.getIframe(), this.state.controlsVisible);
 
       this.element.style.visibility = 'hidden';
-      this.element.style.top = frame.y + 'px';
-      this.element.style.left = frame.x + 'px';
-      this.element.style.maxWidth = (frame.width - 20) + 'px';
-      this.element.style.fontSize = (frame.height / 260) + 'em';
+      this.element.style.top = `${frame.y}px`;
+      this.element.style.left = `${frame.x}px`;
+      this.element.style.maxWidth = `${frame.width - 20}px`;
+      this.element.style.fontSize = `${frame.height / 260}em`;
 
-      const bottomPadding = frame.height < 200 && !this.state.controlsVisible ? 20 : 60;
-
-      this.element.style.top = (frame.y + frame.height - bottomPadding - this.element.offsetHeight) + 'px';
-      this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
+      this.element.style.top = `${frame.y + frame.height - frame.bottomPadding - this.element.offsetHeight}px`;
+      this.element.style.left = `${frame.x + (frame.width - this.element.offsetWidth) / 2}px`;
       this.element.style.visibility = '';
     }
   }

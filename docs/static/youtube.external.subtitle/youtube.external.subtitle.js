@@ -213,6 +213,26 @@
         }
         return false;
     };
+    var renderClassName = function (isFullscreenActive) {
+        var classes = [CSS.CLASS];
+        if (isFullscreenActive !== null) {
+            classes.push(isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
+        }
+        return classes.join(' ');
+    };
+    var renderText = function (text) {
+        return "<span>" + (text === null ? '' : text).replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
+    };
+    var getFrameRect = function (iframe, controlsVisible) {
+        var height = iframe.offsetHeight;
+        return {
+            x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
+            y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
+            width: iframe.offsetWidth,
+            height: height,
+            bottomPadding: height < 200 && !controlsVisible ? 20 : 60
+        };
+    };
     var Subtitle = /** @class */ (function () {
         function Subtitle(iframe, subtitles) {
             var _this = this;
@@ -286,30 +306,18 @@
             this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
         };
         Subtitle.prototype.render = function () {
-            var classes = [CSS.CLASS];
-            if (this.state.isFullscreenActive !== null) {
-                classes.push(this.state.isFullscreenActive ? CSS.FULLSCREEN : CSS.FULLSCREEN_IGNORE);
-            }
-            this.element.className = classes.join(' ');
-            var text = this.state.text === null ? '' : this.state.text;
-            this.element.innerHTML = "<span>" + text.replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>') + "</span>";
+            this.element.className = renderClassName(this.state.isFullscreenActive);
+            this.element.innerHTML = renderText(this.state.text);
             this.element.style.display = this.state.text === null ? '' : 'block';
             if (this.player) {
-                var iframe = this.player.getIframe();
-                var frame = {
-                    x: iframe.offsetLeft - iframe.scrollLeft + iframe.clientLeft,
-                    y: iframe.offsetTop - iframe.scrollTop + iframe.clientTop,
-                    width: iframe.offsetWidth,
-                    height: iframe.offsetHeight
-                };
+                var frame = getFrameRect(this.player.getIframe(), this.state.controlsVisible);
                 this.element.style.visibility = 'hidden';
-                this.element.style.top = frame.y + 'px';
-                this.element.style.left = frame.x + 'px';
-                this.element.style.maxWidth = (frame.width - 20) + 'px';
-                this.element.style.fontSize = (frame.height / 260) + 'em';
-                var bottomPadding = frame.height < 200 && !this.state.controlsVisible ? 20 : 60;
-                this.element.style.top = (frame.y + frame.height - bottomPadding - this.element.offsetHeight) + 'px';
-                this.element.style.left = (frame.x + (frame.width - this.element.offsetWidth) / 2) + 'px';
+                this.element.style.top = frame.y + "px";
+                this.element.style.left = frame.x + "px";
+                this.element.style.maxWidth = frame.width - 20 + "px";
+                this.element.style.fontSize = frame.height / 260 + "em";
+                this.element.style.top = frame.y + frame.height - frame.bottomPadding - this.element.offsetHeight + "px";
+                this.element.style.left = frame.x + (frame.width - this.element.offsetWidth) / 2 + "px";
                 this.element.style.visibility = '';
             }
         };
