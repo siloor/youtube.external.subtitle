@@ -6,7 +6,8 @@ import Subtitle, {
   getSubtitleFromCache,
   getFullscreenElement,
   getSubtitles,
-  getFullscreenSubtitle
+  getFullscreenSubtitle,
+  fullscreenChangeHandler
 } from './subtitle';
 import DIC from './dic';
 
@@ -170,4 +171,29 @@ test('getFullscreenSubtitle returns the correct subtitle', () => {
     { youtubeExternalSubtitle: subtitle1 }
   ]) as SubtitleElement)).toBe(subtitle2);
   expect(getFullscreenSubtitle(createContainerMock([]) as SubtitleElement)).toBe(null);
+});
+
+test('fullscreenChangeHandler sets subtitles state correctly', () => {
+  const subtitle1 = { setIsFullscreenActive: jest.fn() } as any;
+  const subtitle2 = { setIsFullscreenActive: jest.fn() } as any;
+  const fullscreenElement = { youtubeExternalSubtitle: subtitle2 } as SubtitleElement;
+
+  const container: Partial<Document> = {
+    getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
+      return [
+        { youtubeExternalSubtitle: subtitle1 },
+        { youtubeExternalSubtitle: subtitle2 }
+      ] as any;
+    },
+    fullscreenElement: fullscreenElement
+  };
+
+  const document = container as Document;
+
+  DIC.setDocument(document);
+
+  fullscreenChangeHandler();
+
+  expect(subtitle1.setIsFullscreenActive).toHaveBeenCalledWith(false);
+  expect(subtitle2.setIsFullscreenActive).toHaveBeenCalledWith(true);
 });

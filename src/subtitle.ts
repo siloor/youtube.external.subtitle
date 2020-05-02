@@ -120,7 +120,7 @@ export const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subti
   return null;
 };
 
-const fullscreenChangeHandler = (): void => {
+export const fullscreenChangeHandler = (): void => {
   const document = DIC.getDocument();
 
   const fullscreenElement = getFullscreenElement(document) as SubtitleElement;
