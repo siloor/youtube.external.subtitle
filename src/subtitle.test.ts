@@ -139,10 +139,14 @@ test('getFullscreenElement returns the correct element', () => {
   )).toBe(ms);
 });
 
-const createContainerMock = (results: any[]): Element => {
+const arrayToHTMLCollection = (array: any): HTMLCollectionOf<Element> => {
+  return array as HTMLCollectionOf<Element>;
+};
+
+const createContainerMock = (results: SubtitleElement[]): Element => {
   const container: Partial<Element> = {
     getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-      return results as any;
+      return arrayToHTMLCollection(results);
     }
   };
 
@@ -156,8 +160,8 @@ test('getSubtitles returns the correct subtitles', () => {
   const subtitle2 = {};
 
   expect(getSubtitles(createContainerMock([
-    { youtubeExternalSubtitle: subtitle1 },
-    { youtubeExternalSubtitle: subtitle2 }
+    { youtubeExternalSubtitle: subtitle1 } as SubtitleElement,
+    { youtubeExternalSubtitle: subtitle2 } as SubtitleElement
   ]))).arrayItemsToBe([ subtitle1, subtitle2 ]);
 });
 
@@ -168,23 +172,23 @@ test('getFullscreenSubtitle returns the correct subtitle', () => {
   expect(getFullscreenSubtitle(undefined)).toBe(null);
   expect(getFullscreenSubtitle({ youtubeExternalSubtitle: subtitle1 } as SubtitleElement)).toBe(subtitle1);
   expect(getFullscreenSubtitle(createContainerMock([
-    { youtubeExternalSubtitle: subtitle2 },
-    { youtubeExternalSubtitle: subtitle1 }
+    { youtubeExternalSubtitle: subtitle2 } as SubtitleElement,
+    { youtubeExternalSubtitle: subtitle1 } as SubtitleElement
   ]) as SubtitleElement)).toBe(subtitle2);
   expect(getFullscreenSubtitle(createContainerMock([]) as SubtitleElement)).toBe(null);
 });
 
 test('fullscreenChangeHandler sets subtitles state correctly', () => {
-  const subtitle1 = { setIsFullscreenActive: jest.fn() } as any;
-  const subtitle2 = { setIsFullscreenActive: jest.fn() } as any;
+  const subtitle1 = { setIsFullscreenActive: jest.fn() } as Partial<Subtitle>;
+  const subtitle2 = { setIsFullscreenActive: jest.fn() } as Partial<Subtitle>;
   const fullscreenElement = { youtubeExternalSubtitle: subtitle2 } as SubtitleElement;
 
   const container: Partial<Document> = {
     getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-      return [
+      return arrayToHTMLCollection([
         { youtubeExternalSubtitle: subtitle1 },
         { youtubeExternalSubtitle: subtitle2 }
-      ] as any;
+      ]);
     },
     fullscreenElement: fullscreenElement
   };
@@ -200,7 +204,7 @@ test('fullscreenChangeHandler sets subtitles state correctly', () => {
 });
 
 test('isInitialized returns the correct value', () => {
-  const getDocument = (element: any): Document => {
+  const getDocument = (element: HTMLElement): Document => {
     const document = {
       getElementById: (): HTMLElement => {
         return element;
@@ -211,5 +215,5 @@ test('isInitialized returns the correct value', () => {
   };
 
   expect(isInitialized(getDocument(null))).toBe(false);
-  expect(isInitialized(getDocument({}))).toBe(true);
+  expect(isInitialized(getDocument({} as HTMLElement))).toBe(true);
 });
