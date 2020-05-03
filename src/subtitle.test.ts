@@ -7,7 +7,8 @@ import Subtitle, {
   getFullscreenElement,
   getSubtitles,
   getFullscreenSubtitle,
-  fullscreenChangeHandler
+  fullscreenChangeHandler,
+  isInitialized
 } from './subtitle';
 import DIC from './dic';
 
@@ -196,4 +197,19 @@ test('fullscreenChangeHandler sets subtitles state correctly', () => {
 
   expect(subtitle1.setIsFullscreenActive).toHaveBeenCalledWith(false);
   expect(subtitle2.setIsFullscreenActive).toHaveBeenCalledWith(true);
+});
+
+test('isInitialized returns the correct value', () => {
+  const getDocument = (element: any): Document => {
+    const document = {
+      getElementById: (): HTMLElement => {
+        return element;
+      }
+    } as Partial<Document>;
+
+    return document as Document;
+  };
+
+  expect(isInitialized(getDocument(null))).toBe(false);
+  expect(isInitialized(getDocument({}))).toBe(true);
 });

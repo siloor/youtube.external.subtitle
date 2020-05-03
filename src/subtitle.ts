@@ -135,7 +135,7 @@ export const fullscreenChangeHandler = (): void => {
   }
 };
 
-const isInitialized = (document: Document): boolean => {
+export const isInitialized = (document: Document): boolean => {
   return !!document.getElementById(CSS.ID);
 };
 
