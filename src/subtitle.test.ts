@@ -153,6 +153,10 @@ const createContainerMock = (results: SubtitleElement[]): Element => {
   return container as Element;
 };
 
+const createSubtitleElement = (subtitle: Subtitle): SubtitleElement => {
+  return { youtubeExternalSubtitle: subtitle } as SubtitleElement;
+};
+
 test('getSubtitles returns the correct subtitles', () => {
   expect(getSubtitles(createContainerMock([]))).toStrictEqual([]);
 
@@ -160,8 +164,8 @@ test('getSubtitles returns the correct subtitles', () => {
   const subtitle2 = {};
 
   expect(getSubtitles(createContainerMock([
-    { youtubeExternalSubtitle: subtitle1 } as SubtitleElement,
-    { youtubeExternalSubtitle: subtitle2 } as SubtitleElement
+    createSubtitleElement(subtitle1 as Subtitle),
+    createSubtitleElement(subtitle2 as Subtitle)
   ]))).arrayItemsToBe([ subtitle1, subtitle2 ]);
 });
 
@@ -170,10 +174,10 @@ test('getFullscreenSubtitle returns the correct subtitle', () => {
   const subtitle2 = {};
 
   expect(getFullscreenSubtitle(undefined)).toBe(null);
-  expect(getFullscreenSubtitle({ youtubeExternalSubtitle: subtitle1 } as SubtitleElement)).toBe(subtitle1);
+  expect(getFullscreenSubtitle(createSubtitleElement(subtitle1 as Subtitle))).toBe(subtitle1);
   expect(getFullscreenSubtitle(createContainerMock([
-    { youtubeExternalSubtitle: subtitle2 } as SubtitleElement,
-    { youtubeExternalSubtitle: subtitle1 } as SubtitleElement
+    createSubtitleElement(subtitle2 as Subtitle),
+    createSubtitleElement(subtitle1 as Subtitle)
   ]) as SubtitleElement)).toBe(subtitle2);
   expect(getFullscreenSubtitle(createContainerMock([]) as SubtitleElement)).toBe(null);
 });
@@ -181,13 +185,13 @@ test('getFullscreenSubtitle returns the correct subtitle', () => {
 test('fullscreenChangeHandler sets subtitles state correctly', () => {
   const subtitle1 = { setIsFullscreenActive: jest.fn() } as Partial<Subtitle>;
   const subtitle2 = { setIsFullscreenActive: jest.fn() } as Partial<Subtitle>;
-  const fullscreenElement = { youtubeExternalSubtitle: subtitle2 } as SubtitleElement;
+  const fullscreenElement = createSubtitleElement(subtitle2 as Subtitle);
 
   const container: Partial<Document> = {
     getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
       return arrayToHTMLCollection([
-        { youtubeExternalSubtitle: subtitle1 },
-        { youtubeExternalSubtitle: subtitle2 }
+        createSubtitleElement(subtitle1 as Subtitle),
+        createSubtitleElement(subtitle2 as Subtitle)
       ]);
     },
     fullscreenElement: fullscreenElement
