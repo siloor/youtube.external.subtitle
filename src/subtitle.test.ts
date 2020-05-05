@@ -8,7 +8,8 @@ import Subtitle, {
   getSubtitles,
   getFullscreenSubtitle,
   fullscreenChangeHandler,
-  isInitialized
+  isInitialized,
+  initialize
 } from './subtitle';
 import DIC from './dic';
 
@@ -220,4 +221,58 @@ test('isInitialized returns the correct value', () => {
 
   expect(isInitialized(getDocument(null))).toBe(false);
   expect(isInitialized(getDocument({} as HTMLElement))).toBe(true);
+});
+
+const getDocument = (element: HTMLElement, insertHandler: Function, addEventListenerHandler: Function, createElement: HTMLElement): Document => {
+  const document = {
+    getElementById: (): HTMLElement => {
+      return element;
+    },
+    getElementsByTagName: (): HTMLCollectionOf<any> => {
+      const headElement = {
+        insertBefore: insertHandler
+      };
+
+      return arrayToHTMLCollection([ headElement ]);
+    },
+    createElement: (): HTMLElement => {
+      return createElement;
+    },
+    addEventListener: addEventListenerHandler as any
+  } as Partial<Document>;
+
+  return document as Document;
+};
+
+test('initialize initializes the library', () => {
+  const styleElement = {} as HTMLElement;
+  const insertHandler = jest.fn();
+  const addEventListenerHandler = jest.fn();
+
+  const document = getDocument(null, insertHandler, addEventListenerHandler, styleElement);
+
+  DIC.setDocument(document);
+
+  initialize();
+
+  expect(insertHandler).toHaveBeenCalledWith(styleElement, undefined);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('fullscreenchange', fullscreenChangeHandler);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('webkitfullscreenchange', fullscreenChangeHandler);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('mozfullscreenchange', fullscreenChangeHandler);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('MSFullscreenChange', fullscreenChangeHandler);
+});
+
+test('initialize initializes the library only once', () => {
+  const styleElement = {} as HTMLElement;
+  const insertHandler = jest.fn();
+  const addEventListenerHandler = jest.fn();
+
+  const document = getDocument({} as HTMLElement, insertHandler, addEventListenerHandler, styleElement);
+
+  DIC.setDocument(document);
+
+  initialize();
+
+  expect(insertHandler).not.toHaveBeenCalled();
+  expect(addEventListenerHandler).not.toHaveBeenCalled();
 });

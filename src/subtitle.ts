@@ -139,7 +139,7 @@ export const isInitialized = (document: Document): boolean => {
   return !!document.getElementById(CSS.ID);
 };
 
-const initialize = (): void => {
+export const initialize = (): void => {
   const document = DIC.getDocument();
 
   if (isInitialized(document)) {
