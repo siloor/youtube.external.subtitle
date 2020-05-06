@@ -9,7 +9,8 @@ import Subtitle, {
   getFullscreenSubtitle,
   fullscreenChangeHandler,
   isInitialized,
-  initialize
+  initialize,
+  addQueryStringParameterToUrl
 } from './subtitle';
 import DIC from './dic';
 
@@ -275,4 +276,11 @@ test('initialize initializes the library only once', () => {
 
   expect(insertHandler).not.toHaveBeenCalled();
   expect(addEventListenerHandler).not.toHaveBeenCalled();
+});
+
+test('addQueryStringParameterToUrl returns the correct url', () => {
+  expect(addQueryStringParameterToUrl('http://example.com/', {})).toBe('http://example.com/');
+  expect(addQueryStringParameterToUrl('http://example.com/', { fakeParameter: 'fakeValue' })).toBe('http://example.com/?fakeParameter=fakeValue');
+  expect(addQueryStringParameterToUrl('http://example.com/?fakeParameter=prevValue', { fakeParameter: 'fakeValue' })).toBe('http://example.com/?fakeParameter=prevValue&fakeParameter=fakeValue');
+  expect(addQueryStringParameterToUrl('http://example.com/#hashPart', { fakeParameter: 'fakeValue' })).toBe('http://example.com/?fakeParameter=fakeValue#hashPart');
 });

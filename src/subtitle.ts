@@ -165,7 +165,7 @@ export const initialize = (): void => {
   document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
 };
 
-const addQueryStringParameterToUrl = (url: string, qsParameters: any): string => {
+export const addQueryStringParameterToUrl = (url: string, qsParameters: any): string => {
   const hashIndex = url.indexOf('#');
   let hash = '';
 
