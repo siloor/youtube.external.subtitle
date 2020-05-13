@@ -15,7 +15,8 @@ import Subtitle, {
   addQueryStringParameterToUrl,
   getIframeSrc,
   createSubtitleElement,
-  isStateChanged
+  isStateChanged,
+  renderClassName
 } from './subtitle';
 import DIC from './dic';
 
@@ -334,4 +335,10 @@ test('isStateChanged returns the correct result', () => {
   expect(isStateChanged({} as State, { text: 'value' } as State)).toBe(true);
   expect(isStateChanged({ text: 'value' } as State, { text: 'value' } as State)).toBe(false);
   expect(isStateChanged({ text: 'value' } as State, { text: 'value2' } as State)).toBe(true);
+});
+
+test('renderClassName returns the correct className', () => {
+  expect(renderClassName(null)).toBe('youtube-external-subtitle');
+  expect(renderClassName(false)).toBe('youtube-external-subtitle fullscreen-ignore');
+  expect(renderClassName(true)).toBe('youtube-external-subtitle fullscreen');
 });

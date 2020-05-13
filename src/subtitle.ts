@@ -233,7 +233,7 @@ export const isStateChanged = (prevState: State, nextState: State): boolean => {
   return false;
 };
 
-const renderClassName = (isFullscreenActive: boolean): string => {
+export const renderClassName = (isFullscreenActive: boolean): string => {
   const classes = [ CSS.CLASS ];
 
   if (isFullscreenActive !== null) {
