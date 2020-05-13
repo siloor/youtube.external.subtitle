@@ -14,7 +14,7 @@ interface SubtitleEntry {
   text: string;
 }
 
-interface State {
+export interface State {
   text: string;
   isFullscreenActive: boolean;
   controlsVisible: boolean;
@@ -223,7 +223,7 @@ export const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle)
   return element;
 };
 
-const isStateChanged = (prevState: State, nextState: State): boolean => {
+export const isStateChanged = (prevState: State, nextState: State): boolean => {
   for (const i in nextState) {
     if (prevState[i] !== nextState[i]) {
       return true;

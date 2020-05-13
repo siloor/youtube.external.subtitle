@@ -1,6 +1,7 @@
 import Subtitle, {
   SubtitleElement,
   SubtitleFrame,
+  State,
   getCacheName,
   getCacheNames,
   buildCache,
@@ -13,7 +14,8 @@ import Subtitle, {
   initialize,
   addQueryStringParameterToUrl,
   getIframeSrc,
-  createSubtitleElement
+  createSubtitleElement,
+  isStateChanged
 } from './subtitle';
 import DIC from './dic';
 
@@ -325,4 +327,11 @@ test('createSubtitleElement creates the correct subtitle element', () => {
   expect(element.youtubeExternalSubtitle).toBe(subtitle);
 
   expect(insertHandler).toHaveBeenCalledWith(element, nextSibling);
+});
+
+test('isStateChanged returns the correct result', () => {
+  expect(isStateChanged({ text: 'value' } as State, {} as State)).toBe(false);
+  expect(isStateChanged({} as State, { text: 'value' } as State)).toBe(true);
+  expect(isStateChanged({ text: 'value' } as State, { text: 'value' } as State)).toBe(false);
+  expect(isStateChanged({ text: 'value' } as State, { text: 'value2' } as State)).toBe(true);
 });
