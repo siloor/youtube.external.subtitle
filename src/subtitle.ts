@@ -243,7 +243,7 @@ export const renderClassName = (isFullscreenActive: boolean): string => {
   return classes.join(' ');
 };
 
-const renderText = (text: string): string => {
+export const renderText = (text: string): string => {
   return `<span>${(text === null ? '' : text).replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
 };
 

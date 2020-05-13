@@ -16,7 +16,8 @@ import Subtitle, {
   getIframeSrc,
   createSubtitleElement,
   isStateChanged,
-  renderClassName
+  renderClassName,
+  renderText
 } from './subtitle';
 import DIC from './dic';
 
@@ -341,4 +342,10 @@ test('renderClassName returns the correct className', () => {
   expect(renderClassName(null)).toBe('youtube-external-subtitle');
   expect(renderClassName(false)).toBe('youtube-external-subtitle fullscreen-ignore');
   expect(renderClassName(true)).toBe('youtube-external-subtitle fullscreen');
+});
+
+test('renderText returns the correct text', () => {
+  expect(renderText(null)).toBe('<span></span>');
+  expect(renderText('fake subtitle text')).toBe('<span>fake subtitle text</span>');
+  expect(renderText('fake subtitle text\nwith new line')).toBe('<span>fake subtitle text</span><br /><span>with new line</span>');
 });
