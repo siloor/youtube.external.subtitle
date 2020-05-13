@@ -189,7 +189,7 @@ export const addQueryStringParameterToUrl = (url: string, qsParameters: any): st
   return `${url}${qs}${hash}`;
 };
 
-const getIframeSrc = (src: string): string => {
+export const getIframeSrc = (src: string): string => {
   let newSrc = src;
 
   if (newSrc.indexOf('enablejsapi=1') === -1) {
