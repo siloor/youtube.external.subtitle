@@ -4,7 +4,7 @@ export interface SubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
 }
 
-interface SubtitleFrame extends HTMLIFrameElement {
+export interface SubtitleFrame extends HTMLIFrameElement {
   youtubeExternalSubtitle: Subtitle;
 }
 
@@ -211,7 +211,7 @@ export const getIframeSrc = (src: string): string => {
   return newSrc;
 };
 
-const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle): SubtitleElement => {
+export const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle): SubtitleElement => {
   const document = DIC.getDocument();
 
   const element = document.createElement('div') as SubtitleElement;

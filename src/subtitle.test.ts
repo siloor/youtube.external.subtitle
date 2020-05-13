@@ -1,5 +1,6 @@
 import Subtitle, {
   SubtitleElement,
+  SubtitleFrame,
   getCacheName,
   getCacheNames,
   buildCache,
@@ -11,7 +12,8 @@ import Subtitle, {
   isInitialized,
   initialize,
   addQueryStringParameterToUrl,
-  getIframeSrc
+  getIframeSrc,
+  createSubtitleElement
 } from './subtitle';
 import DIC from './dic';
 
@@ -160,7 +162,7 @@ const createContainerMock = (results: SubtitleElement[]): Element => {
   return container as Element;
 };
 
-const createSubtitleElement = (subtitle: Subtitle): SubtitleElement => {
+const createMockSubtitleElement = (subtitle: Subtitle): SubtitleElement => {
   return { youtubeExternalSubtitle: subtitle } as SubtitleElement;
 };
 
@@ -171,8 +173,8 @@ test('getSubtitles returns the correct subtitles', () => {
   const subtitle2 = {};
 
   expect(getSubtitles(createContainerMock([
-    createSubtitleElement(subtitle1 as Subtitle),
-    createSubtitleElement(subtitle2 as Subtitle)
+    createMockSubtitleElement(subtitle1 as Subtitle),
+    createMockSubtitleElement(subtitle2 as Subtitle)
   ]))).arrayItemsToBe([ subtitle1, subtitle2 ]);
 });
 
@@ -181,10 +183,10 @@ test('getFullscreenSubtitle returns the correct subtitle', () => {
   const subtitle2 = {};
 
   expect(getFullscreenSubtitle(undefined)).toBe(null);
-  expect(getFullscreenSubtitle(createSubtitleElement(subtitle1 as Subtitle))).toBe(subtitle1);
+  expect(getFullscreenSubtitle(createMockSubtitleElement(subtitle1 as Subtitle))).toBe(subtitle1);
   expect(getFullscreenSubtitle(createContainerMock([
-    createSubtitleElement(subtitle2 as Subtitle),
-    createSubtitleElement(subtitle1 as Subtitle)
+    createMockSubtitleElement(subtitle2 as Subtitle),
+    createMockSubtitleElement(subtitle1 as Subtitle)
   ]) as SubtitleElement)).toBe(subtitle2);
   expect(getFullscreenSubtitle(createContainerMock([]) as SubtitleElement)).toBe(null);
 });
@@ -193,9 +195,9 @@ test('fullscreenChangeHandler sets subtitles state correctly', () => {
   const getDocument = (fullscreenSubtitle: Partial<Subtitle>, subtitles: Partial<Subtitle>[]): Partial<Document> => {
     return {
       getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-        return arrayToHTMLCollection(subtitles.map(subtitle => createSubtitleElement(subtitle as Subtitle)));
+        return arrayToHTMLCollection(subtitles.map(subtitle => createMockSubtitleElement(subtitle as Subtitle)));
       },
-      fullscreenElement: fullscreenSubtitle ? createSubtitleElement(fullscreenSubtitle as Subtitle) : undefined
+      fullscreenElement: fullscreenSubtitle ? createMockSubtitleElement(fullscreenSubtitle as Subtitle) : undefined
     };
   };
 
@@ -304,4 +306,23 @@ test('getIframeSrc returns the correct src', () => {
   expect(getIframeSrc('https://www.youtube.com/embed/fGPPfZIvtCw')).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
   expect(getIframeSrc('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=0&html5=0&playsinline=0&fs=1')).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=0&html5=0&playsinline=0&fs=1&enablejsapi=1&html5=1&playsinline=1');
   expect(getIframeSrc('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0')).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
+});
+
+test('createSubtitleElement creates the correct subtitle element', () => {
+  const insertHandler = jest.fn();
+  const nextSibling = {} as ChildNode;
+  const subtitle = {} as Subtitle;
+
+  const parentNode: Partial<ParentNode & Node> = {
+    insertBefore: insertHandler
+  };
+
+  const element = createSubtitleElement({
+    parentNode: parentNode as ParentNode & Node,
+    nextSibling
+  } as SubtitleFrame, subtitle);
+
+  expect(element.youtubeExternalSubtitle).toBe(subtitle);
+
+  expect(insertHandler).toHaveBeenCalledWith(element, nextSibling);
 });
