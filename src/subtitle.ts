@@ -247,7 +247,7 @@ export const renderText = (text: string): string => {
   return `<span>${(text === null ? '' : text).replace(/(?:\r\n|\r|\n)/g, '</span><br /><span>')}</span>`;
 };
 
-const getFrameRect = (iframe: SubtitleFrame, controlsVisible: boolean): {
+export const getFrameRect = (iframe: SubtitleFrame, controlsVisible: boolean): {
   x: number,
   y: number,
   width: number,
@@ -353,7 +353,7 @@ class Subtitle {
     }
   }
 
-  private setState(state: any): void {
+  private setState(state: Partial<State>): void {
     const prevState = this.state;
     const nextState: State = {
       ...prevState,

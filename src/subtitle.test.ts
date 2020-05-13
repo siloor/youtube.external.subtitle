@@ -17,7 +17,8 @@ import Subtitle, {
   createSubtitleElement,
   isStateChanged,
   renderClassName,
-  renderText
+  renderText,
+  getFrameRect
 } from './subtitle';
 import DIC from './dic';
 
@@ -348,4 +349,44 @@ test('renderText returns the correct text', () => {
   expect(renderText(null)).toBe('<span></span>');
   expect(renderText('fake subtitle text')).toBe('<span>fake subtitle text</span>');
   expect(renderText('fake subtitle text\nwith new line')).toBe('<span>fake subtitle text</span><br /><span>with new line</span>');
+});
+
+test('getFrameRect returns the correct frame rectangle', () => {
+  const frame1 = {
+    offsetWidth: 600, offsetHeight: 400,
+    offsetLeft: 10, offsetTop: 100,
+    scrollLeft: 5, scrollTop: 0,
+    clientLeft: 0, clientTop: 10
+  } as SubtitleFrame;
+
+  expect(getFrameRect(frame1, false)).toEqual({
+    height: 400, width: 600,
+    x: 5, y: 110,
+    bottomPadding: 60
+  });
+
+  expect(getFrameRect(frame1, true)).toEqual({
+    height: 400, width: 600,
+    x: 5, y: 110,
+    bottomPadding: 60
+  });
+
+  const frame2 = {
+    offsetWidth: 200, offsetHeight: 150,
+    offsetLeft: 10, offsetTop: 100,
+    scrollLeft: 5, scrollTop: 0,
+    clientLeft: 0, clientTop: 10
+  } as SubtitleFrame;
+
+  expect(getFrameRect(frame2, false)).toEqual({
+    height: 150, width: 200,
+    x: 5, y: 110,
+    bottomPadding: 20
+  });
+
+  expect(getFrameRect(frame2, true)).toEqual({
+    height: 150, width: 200,
+    x: 5, y: 110,
+    bottomPadding: 60
+  });
 });
