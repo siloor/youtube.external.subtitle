@@ -140,6 +140,10 @@ test('getFullscreenElement returns the correct element', () => {
   expect(getFullscreenElement(
     getDocument(undefined, undefined, undefined, undefined, ms)
   )).toBe(ms);
+
+  expect(getFullscreenElement(
+    getDocument(undefined, undefined, undefined, undefined, undefined)
+  )).toBe(undefined);
 });
 
 const arrayToHTMLCollection = (array: any): HTMLCollectionOf<Element> => {
@@ -186,28 +190,34 @@ test('getFullscreenSubtitle returns the correct subtitle', () => {
 });
 
 test('fullscreenChangeHandler sets subtitles state correctly', () => {
-  const subtitle1 = { setIsFullscreenActive: jest.fn() } as Partial<Subtitle>;
-  const subtitle2 = { setIsFullscreenActive: jest.fn() } as Partial<Subtitle>;
-  const fullscreenElement = createSubtitleElement(subtitle2 as Subtitle);
-
-  const container: Partial<Document> = {
-    getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-      return arrayToHTMLCollection([
-        createSubtitleElement(subtitle1 as Subtitle),
-        createSubtitleElement(subtitle2 as Subtitle)
-      ]);
-    },
-    fullscreenElement: fullscreenElement
+  const getDocument = (fullscreenSubtitle: Partial<Subtitle>, subtitles: Partial<Subtitle>[]): Partial<Document> => {
+    return {
+      getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
+        return arrayToHTMLCollection(subtitles.map(subtitle => createSubtitleElement(subtitle as Subtitle)));
+      },
+      fullscreenElement: fullscreenSubtitle ? createSubtitleElement(fullscreenSubtitle as Subtitle) : undefined
+    };
   };
 
-  const document = container as Document;
+  const subtitle1 = { setIsFullscreenActive: jest.fn() };
+  const subtitle2 = { setIsFullscreenActive: jest.fn() };
 
-  DIC.setDocument(document);
+  DIC.setDocument(getDocument(subtitle2, [subtitle1, subtitle2]) as Document);
 
   fullscreenChangeHandler();
 
   expect(subtitle1.setIsFullscreenActive).toHaveBeenCalledWith(false);
   expect(subtitle2.setIsFullscreenActive).toHaveBeenCalledWith(true);
+
+  const subtitle3 = { setIsFullscreenActive: jest.fn() };
+  const subtitle4 = { setIsFullscreenActive: jest.fn() };
+
+  DIC.setDocument(getDocument(undefined, [subtitle3, subtitle4]) as Document);
+
+  fullscreenChangeHandler();
+
+  expect(subtitle3.setIsFullscreenActive).toHaveBeenCalledWith(null);
+  expect(subtitle4.setIsFullscreenActive).toHaveBeenCalledWith(null);
 });
 
 test('isInitialized returns the correct value', () => {
