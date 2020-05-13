@@ -183,6 +183,10 @@ export const addQueryStringParameterToUrl = (url: string, qsParameters: any): st
   }
 
   for (const i in qsParameters) {
+    if (!qsParameters.hasOwnProperty(i)) {
+      continue;
+    }
+
     qs += `${qs === '' ? '?' : '&'}${i}=${qsParameters[i]}`;
   }
 
@@ -225,6 +229,10 @@ export const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle)
 
 export const isStateChanged = (prevState: State, nextState: State): boolean => {
   for (const i in nextState) {
+    if (!nextState.hasOwnProperty(i)) {
+      continue;
+    }
+
     if (prevState[i] !== nextState[i]) {
       return true;
     }
