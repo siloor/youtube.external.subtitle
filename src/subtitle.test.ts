@@ -235,58 +235,62 @@ test('isInitialized returns the correct value', () => {
   expect(isInitialized(getDocument({} as HTMLElement))).toBe(true);
 });
 
-const getDocument = (element: HTMLElement, insertHandler: Function, addEventListenerHandler: Function, createElement: HTMLElement): Document => {
-  const document = {
-    getElementById: (): HTMLElement => {
-      return element;
-    },
-    getElementsByTagName: (): HTMLCollectionOf<any> => {
-      const headElement = {
-        insertBefore: insertHandler
-      };
-
-      return arrayToHTMLCollection([ headElement ]);
-    },
-    createElement: (): HTMLElement => {
-      return createElement;
-    },
-    addEventListener: addEventListenerHandler as any
-  } as Partial<Document>;
-
-  return document as Document;
-};
-
 test('initialize initializes the library', () => {
-  const styleElement = {} as HTMLElement;
-  const insertHandler = jest.fn();
-  const addEventListenerHandler = jest.fn();
+  const getDocument = (element: HTMLElement, insertHandler: Function, addEventListenerHandler: Function, createElement: HTMLElement, hasHeadElement: boolean): Document => {
+    const document = {
+      getElementById: (): HTMLElement => {
+        return element;
+      },
+      getElementsByTagName: (): HTMLCollectionOf<any> => {
+        if (!hasHeadElement) {
+          return arrayToHTMLCollection([]);
+        }
 
-  const document = getDocument(null, insertHandler, addEventListenerHandler, styleElement);
+        const headElement = {
+          insertBefore: insertHandler
+        };
 
-  DIC.setDocument(document);
+        return arrayToHTMLCollection([ headElement ]);
+      },
+      createElement: (): HTMLElement => {
+        return createElement;
+      },
+      addEventListener: addEventListenerHandler as any,
+      documentElement: {
+        insertBefore: insertHandler
+      } as HTMLElement
+    } as Partial<Document>;
 
-  initialize();
+    return document as Document;
+  };
 
-  expect(insertHandler).toHaveBeenCalledWith(styleElement, undefined);
-  expect(addEventListenerHandler).toHaveBeenCalledWith('fullscreenchange', fullscreenChangeHandler);
-  expect(addEventListenerHandler).toHaveBeenCalledWith('webkitfullscreenchange', fullscreenChangeHandler);
-  expect(addEventListenerHandler).toHaveBeenCalledWith('mozfullscreenchange', fullscreenChangeHandler);
-  expect(addEventListenerHandler).toHaveBeenCalledWith('MSFullscreenChange', fullscreenChangeHandler);
-});
+  const testInitialize = (alreadyInitialized: boolean, hasHeadElement: boolean) => {
+    const element = alreadyInitialized ? {} as HTMLElement : null;
+    const styleElement = {} as HTMLElement;
+    const insertHandler = jest.fn();
+    const addEventListenerHandler = jest.fn();
 
-test('initialize initializes the library only once', () => {
-  const styleElement = {} as HTMLElement;
-  const insertHandler = jest.fn();
-  const addEventListenerHandler = jest.fn();
+    const document = getDocument(element, insertHandler, addEventListenerHandler, styleElement, hasHeadElement);
 
-  const document = getDocument({} as HTMLElement, insertHandler, addEventListenerHandler, styleElement);
+    DIC.setDocument(document);
 
-  DIC.setDocument(document);
+    initialize();
 
-  initialize();
+    if (alreadyInitialized) {
+      expect(insertHandler).not.toHaveBeenCalled();
+      expect(addEventListenerHandler).not.toHaveBeenCalled();
+    } else {
+      expect(insertHandler).toHaveBeenCalledWith(styleElement, undefined);
+      expect(addEventListenerHandler).toHaveBeenCalledWith('fullscreenchange', fullscreenChangeHandler);
+      expect(addEventListenerHandler).toHaveBeenCalledWith('webkitfullscreenchange', fullscreenChangeHandler);
+      expect(addEventListenerHandler).toHaveBeenCalledWith('mozfullscreenchange', fullscreenChangeHandler);
+      expect(addEventListenerHandler).toHaveBeenCalledWith('MSFullscreenChange', fullscreenChangeHandler);
+    }
+  };
 
-  expect(insertHandler).not.toHaveBeenCalled();
-  expect(addEventListenerHandler).not.toHaveBeenCalled();
+  testInitialize(false, true);
+  testInitialize(false, false);
+  testInitialize(true, true);
 });
 
 test('addQueryStringParameterToUrl returns the correct url', () => {
