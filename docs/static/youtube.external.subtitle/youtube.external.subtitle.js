@@ -177,6 +177,9 @@
             url = url.substr(0, qsIndex);
         }
         for (var i in qsParameters) {
+            if (!qsParameters.hasOwnProperty(i)) {
+                continue;
+            }
             qs += "" + (qs === '' ? '?' : '&') + i + "=" + qsParameters[i];
         }
         return "" + url + qs + hash;
@@ -206,6 +209,9 @@
     };
     var isStateChanged = function (prevState, nextState) {
         for (var i in nextState) {
+            if (!nextState.hasOwnProperty(i)) {
+                continue;
+            }
             if (prevState[i] !== nextState[i]) {
                 return true;
             }
@@ -392,8 +398,12 @@
             addIframeApiScript();
         }
     };
-    DIC.setDocument(window.document);
-    DIC.setOnIframeApiReady(onIframeApiReady);
+    var init = function (window) {
+        DIC.setDocument(window.document);
+        DIC.setOnIframeApiReady(onIframeApiReady);
+    };
+
+    init(window);
     var youtube_external_subtitle = { Subtitle: Subtitle };
 
     return youtube_external_subtitle;
