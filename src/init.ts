@@ -1,10 +1,4 @@
-import DIC, { Youtube } from './dic';
-
-declare global {
-  interface Window {
-    YT: Youtube;
-  }
-}
+import DIC from './dic';
 
 export const iframeApiScriptAdded = (): boolean => {
   const document = DIC.getDocument();
@@ -32,6 +26,8 @@ const addIframeApiScript = (): void => {
 };
 
 const iframeApiLoaded = () => {
+  const window = DIC.getWindow();
+
   return !!(window.YT && window.YT.Player);
 };
 
@@ -43,6 +39,8 @@ const onIframeApiReady = (cb: Function): void => {
   }
 
   const onLoaded = () => {
+    const window = DIC.getWindow();
+
     DIC.setYT(window.YT);
 
     cb();
@@ -68,6 +66,7 @@ const onIframeApiReady = (cb: Function): void => {
 };
 
 const init = (window: Window) => {
+  DIC.setWindow(window);
   DIC.setDocument(window.document);
   DIC.setOnIframeApiReady(onIframeApiReady);
 };

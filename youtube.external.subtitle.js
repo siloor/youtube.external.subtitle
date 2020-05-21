@@ -32,10 +32,17 @@
 
     var Container = /** @class */ (function () {
         function Container() {
+            this.window = null;
             this.document = null;
             this.onIframeApiReady = null;
             this.YT = null;
         }
+        Container.prototype.setWindow = function (window) {
+            this.window = window;
+        };
+        Container.prototype.getWindow = function () {
+            return this.window;
+        };
         Container.prototype.setDocument = function (document) {
             this.document = document;
         };
@@ -373,6 +380,7 @@
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
     var iframeApiLoaded = function () {
+        var window = DIC.getWindow();
         return !!(window.YT && window.YT.Player);
     };
     var onIframeApiReady = function (cb) {
@@ -381,6 +389,7 @@
             return;
         }
         var onLoaded = function () {
+            var window = DIC.getWindow();
             DIC.setYT(window.YT);
             cb();
         };
@@ -399,6 +408,7 @@
         }
     };
     var init = function (window) {
+        DIC.setWindow(window);
         DIC.setDocument(window.document);
         DIC.setOnIframeApiReady(onIframeApiReady);
     };

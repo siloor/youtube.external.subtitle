@@ -7,17 +7,32 @@ declare global {
   }
 }
 
+declare global {
+  interface Window {
+    YT: Youtube;
+  }
+}
+
 export interface Youtube {
   Player: any;
   PlayerState: any;
 }
 
 export class Container {
+  private window: Window = null;
   private document: Document = null;
   private onIframeApiReady: Function = null;
   private YT: any = null;
 
   constructor() {}
+
+  public setWindow(window: Window): void {
+    this.window = window;
+  }
+
+  public getWindow(): Window {
+    return this.window;
+  }
 
   public setDocument(document: Document): void {
     this.document = document;

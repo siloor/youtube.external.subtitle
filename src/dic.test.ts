@@ -1,5 +1,17 @@
 import { Container, Youtube } from './dic';
 
+test('getWindow returns the correct window', () => {
+  const container = new Container();
+
+  expect(container.getWindow()).toBe(null);
+
+  const window = {} as Window;
+
+  container.setWindow(window);
+
+  expect(container.getWindow()).toBe(window);
+});
+
 test('getDocument returns the correct document', () => {
   const container = new Container();
 
