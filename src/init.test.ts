@@ -1,4 +1,4 @@
-import DIC from './dic';
+import DIC, { Youtube } from './dic';
 import init, {
   iframeApiScriptAdded,
   addIframeApiScript,
@@ -139,6 +139,42 @@ test('waitFor calls the onComplete when isReady is true', () => {
   jest.advanceTimersByTime(1000);
 
   expect(onComplete2).toHaveBeenCalled();
+});
+
+test('onIframeApiReady calls the callback when the Youtube Api is available', () => {
+  const callback1 = jest.fn();
+  const YT1 = {};
+
+  DIC.setYT(YT1 as Youtube);
+
+  onIframeApiReady(callback1);
+
+  expect(callback1).toHaveBeenCalled();
+  expect(DIC.getYT()).toBe(YT1);
+
+  DIC.setYT(null);
+
+  const YT2 = { Player: {} };
+  const document = {
+    getElementsByTagName: (): HTMLCollectionOf<any> => {
+      return arrayToHTMLCollection([
+        { src: 'https://www.youtube.com/iframe_api' }
+      ]);
+    }
+  } as Partial<Document>;
+  const window = {
+    YT: YT2
+  } as Partial<Window>;
+
+  DIC.setWindow(window as Window);
+  DIC.setDocument(document as Document);
+
+  const callback2 = jest.fn();
+
+  onIframeApiReady(callback2);
+
+  expect(callback2).toHaveBeenCalled();
+  expect(DIC.getYT()).toBe(YT2);
 });
 
 test('init sets the correct DIC properties', () => {
