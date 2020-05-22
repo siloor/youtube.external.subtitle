@@ -31,7 +31,7 @@ export const iframeApiLoaded = () => {
   return !!(window.YT && window.YT.Player);
 };
 
-const onIframeApiReady = (cb: Function): void => {
+export const onIframeApiReady = (cb: Function): void => {
   if (DIC.getYT() !== null) {
     cb();
 

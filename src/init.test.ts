@@ -1,8 +1,9 @@
 import DIC from './dic';
-import {
+import init, {
   iframeApiScriptAdded,
   addIframeApiScript,
-  iframeApiLoaded
+  iframeApiLoaded,
+  onIframeApiReady
 } from './init';
 
 const arrayToHTMLCollection = (array: any): HTMLCollectionOf<Element> => {
@@ -76,4 +77,17 @@ test('iframeApiLoaded returns the correct result', () => {
   } as Window);
 
   expect(iframeApiLoaded()).toBe(true);
+});
+
+test('init sets the correct DIC properties', () => {
+  const document = {} as Document;
+  const window = {
+    document: document
+  } as Window;
+
+  init(window);
+
+  expect(DIC.getWindow()).toBe(window);
+  expect(DIC.getDocument()).toBe(document);
+  expect(DIC.getOnIframeApiReady()).toBe(onIframeApiReady);
 });
