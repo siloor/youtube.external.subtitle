@@ -1,7 +1,8 @@
 import DIC from './dic';
 import {
   iframeApiScriptAdded,
-  addIframeApiScript
+  addIframeApiScript,
+  iframeApiLoaded
 } from './init';
 
 const arrayToHTMLCollection = (array: any): HTMLCollectionOf<Element> => {
@@ -57,4 +58,22 @@ test('addIframeApiScript adds the iframe api script', () => {
   addIframeApiScript();
 
   expect(insertHandler).toHaveBeenCalledWith(element, firstScript);
+});
+
+test('iframeApiLoaded returns the correct result', () => {
+  DIC.setWindow({} as Window);
+
+  expect(iframeApiLoaded()).toBe(false);
+
+  DIC.setWindow({
+    YT: {}
+  } as Window);
+
+  expect(iframeApiLoaded()).toBe(false);
+
+  DIC.setWindow({
+    YT: { Player: {} }
+  } as Window);
+
+  expect(iframeApiLoaded()).toBe(true);
 });

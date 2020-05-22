@@ -25,7 +25,7 @@ export const addIframeApiScript = (): void => {
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
 
-const iframeApiLoaded = () => {
+export const iframeApiLoaded = () => {
   const window = DIC.getWindow();
 
   return !!(window.YT && window.YT.Player);
