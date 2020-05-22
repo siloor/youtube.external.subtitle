@@ -27,13 +27,9 @@ test('iframeApiScriptAdded returns the correct result', () => {
     };
   };
 
-  DIC.setDocument(getDocument(false) as Document);
+  expect(iframeApiScriptAdded(getDocument(false) as Document)).toBe(false);
 
-  expect(iframeApiScriptAdded()).toBe(false);
-
-  DIC.setDocument(getDocument(true) as Document);
-
-  expect(iframeApiScriptAdded()).toBe(true);
+  expect(iframeApiScriptAdded(getDocument(true) as Document)).toBe(true);
 });
 
 test('addIframeApiScript adds the iframe api script', () => {
@@ -54,29 +50,21 @@ test('addIframeApiScript adds the iframe api script', () => {
     }
   } as Partial<Document>;
 
-  DIC.setDocument(document as Document);
-
-  addIframeApiScript();
+  addIframeApiScript(document as Document);
 
   expect(insertHandler).toHaveBeenCalledWith(element, firstScript);
 });
 
 test('iframeApiLoaded returns the correct result', () => {
-  DIC.setWindow({} as Window);
+  expect(iframeApiLoaded({} as Window)).toBe(false);
 
-  expect(iframeApiLoaded()).toBe(false);
-
-  DIC.setWindow({
+  expect(iframeApiLoaded({
     YT: {}
-  } as Window);
+  } as Window)).toBe(false);
 
-  expect(iframeApiLoaded()).toBe(false);
-
-  DIC.setWindow({
+  expect(iframeApiLoaded({
     YT: { Player: {} }
-  } as Window);
-
-  expect(iframeApiLoaded()).toBe(true);
+  } as Window)).toBe(true);
 });
 
 test('init sets the correct DIC properties', () => {

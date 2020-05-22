@@ -1,8 +1,6 @@
 import DIC from './dic';
 
-export const iframeApiScriptAdded = (): boolean => {
-  const document = DIC.getDocument();
-
+export const iframeApiScriptAdded = (document: Document): boolean => {
   const scripts = document.getElementsByTagName('script');
 
   for (let i = 0; i < scripts.length; i++) {
@@ -16,22 +14,21 @@ export const iframeApiScriptAdded = (): boolean => {
   return false;
 };
 
-export const addIframeApiScript = (): void => {
-  const document = DIC.getDocument();
-
+export const addIframeApiScript = (document: Document): void => {
   const tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   const firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
 
-export const iframeApiLoaded = () => {
-  const window = DIC.getWindow();
-
+export const iframeApiLoaded = (window: Window) => {
   return !!(window.YT && window.YT.Player);
 };
 
 export const onIframeApiReady = (cb: Function): void => {
+  const window = DIC.getWindow();
+  const document = DIC.getDocument();
+
   if (DIC.getYT() !== null) {
     cb();
 
@@ -39,29 +36,27 @@ export const onIframeApiReady = (cb: Function): void => {
   }
 
   const onLoaded = () => {
-    const window = DIC.getWindow();
-
     DIC.setYT(window.YT);
 
     cb();
   };
 
-  if (iframeApiLoaded()) {
+  if (iframeApiLoaded(window)) {
     onLoaded();
 
     return;
   }
 
   const iframeApiInterval = setInterval(() => {
-    if (iframeApiLoaded()) {
+    if (iframeApiLoaded(window)) {
       clearInterval(iframeApiInterval);
 
       onLoaded();
     }
   }, 100);
 
-  if (!iframeApiScriptAdded()) {
-    addIframeApiScript();
+  if (!iframeApiScriptAdded(document)) {
+    addIframeApiScript(document);
   }
 };
 

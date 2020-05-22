@@ -361,8 +361,7 @@
         return Subtitle;
     }());
 
-    var iframeApiScriptAdded = function () {
-        var document = DIC.getDocument();
+    var iframeApiScriptAdded = function (document) {
         var scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].src;
@@ -372,39 +371,38 @@
         }
         return false;
     };
-    var addIframeApiScript = function () {
-        var document = DIC.getDocument();
+    var addIframeApiScript = function (document) {
         var tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
-    var iframeApiLoaded = function () {
-        var window = DIC.getWindow();
+    var iframeApiLoaded = function (window) {
         return !!(window.YT && window.YT.Player);
     };
     var onIframeApiReady = function (cb) {
+        var window = DIC.getWindow();
+        var document = DIC.getDocument();
         if (DIC.getYT() !== null) {
             cb();
             return;
         }
         var onLoaded = function () {
-            var window = DIC.getWindow();
             DIC.setYT(window.YT);
             cb();
         };
-        if (iframeApiLoaded()) {
+        if (iframeApiLoaded(window)) {
             onLoaded();
             return;
         }
         var iframeApiInterval = setInterval(function () {
-            if (iframeApiLoaded()) {
+            if (iframeApiLoaded(window)) {
                 clearInterval(iframeApiInterval);
                 onLoaded();
             }
         }, 100);
-        if (!iframeApiScriptAdded()) {
-            addIframeApiScript();
+        if (!iframeApiScriptAdded(document)) {
+            addIframeApiScript(document);
         }
     };
     var init = function (window) {
