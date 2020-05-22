@@ -4,6 +4,7 @@ import init, {
   addIframeApiScript,
   grantIframeApiScript,
   iframeApiLoaded,
+  waitFor,
   onIframeApiReady
 } from './init';
 
@@ -115,6 +116,29 @@ test('iframeApiLoaded returns the correct result', () => {
   expect(iframeApiLoaded({
     YT: { Player: {} }
   } as Window)).toBe(true);
+});
+
+jest.useFakeTimers();
+
+test('waitFor calls the onComplete when isReady is true', () => {
+  const onComplete = jest.fn();
+
+  waitFor(() => { return true; }, onComplete);
+
+  expect(onComplete).toHaveBeenCalled();
+
+  const onComplete2 = jest.fn();
+  let counter = 0;
+
+  waitFor(() => {
+    return counter++ > 9;
+  }, onComplete2);
+
+  expect(onComplete2).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(1000);
+
+  expect(onComplete2).toHaveBeenCalled();
 });
 
 test('init sets the correct DIC properties', () => {
