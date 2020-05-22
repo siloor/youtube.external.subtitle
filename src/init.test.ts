@@ -1,5 +1,8 @@
 import DIC from './dic';
-import { iframeApiScriptAdded } from './init';
+import {
+  iframeApiScriptAdded,
+  addIframeApiScript
+} from './init';
 
 const arrayToHTMLCollection = (array: any): HTMLCollectionOf<Element> => {
   return array as HTMLCollectionOf<Element>;
@@ -29,4 +32,29 @@ test('iframeApiScriptAdded returns the correct result', () => {
   DIC.setDocument(getDocument(true) as Document);
 
   expect(iframeApiScriptAdded()).toBe(true);
+});
+
+test('addIframeApiScript adds the iframe api script', () => {
+  const insertHandler = jest.fn();
+  const element = {} as HTMLElement;
+  const firstScript = {
+    parentNode: {
+      insertBefore: insertHandler
+    } as Partial<ParentNode & Node>
+  } as Partial<HTMLScriptElement>;
+
+  const document = {
+    getElementsByTagName: (): HTMLCollectionOf<any> => {
+      return arrayToHTMLCollection([ firstScript ]);
+    },
+    createElement: (): HTMLElement => {
+      return element;
+    }
+  } as Partial<Document>;
+
+  DIC.setDocument(document as Document);
+
+  addIframeApiScript();
+
+  expect(insertHandler).toHaveBeenCalledWith(element, firstScript);
 });

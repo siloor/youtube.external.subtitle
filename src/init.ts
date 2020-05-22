@@ -16,7 +16,7 @@ export const iframeApiScriptAdded = (): boolean => {
   return false;
 };
 
-const addIframeApiScript = (): void => {
+export const addIframeApiScript = (): void => {
   const document = DIC.getDocument();
 
   const tag = document.createElement('script');
