@@ -377,6 +377,11 @@
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
+    var grantIframeApiScript = function (document) {
+        if (!iframeApiScriptAdded(document)) {
+            addIframeApiScript(document);
+        }
+    };
     var iframeApiLoaded = function (window) {
         return !!(window.YT && window.YT.Player);
     };
@@ -401,9 +406,7 @@
                 onLoaded();
             }
         }, 100);
-        if (!iframeApiScriptAdded(document)) {
-            addIframeApiScript(document);
-        }
+        grantIframeApiScript(document);
     };
     var init = function (window) {
         DIC.setWindow(window);

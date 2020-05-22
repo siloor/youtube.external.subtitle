@@ -21,6 +21,12 @@ export const addIframeApiScript = (document: Document): void => {
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
 
+export const grantIframeApiScript = (document: Document): void => {
+  if (!iframeApiScriptAdded(document)) {
+    addIframeApiScript(document);
+  }
+};
+
 export const iframeApiLoaded = (window: Window) => {
   return !!(window.YT && window.YT.Player);
 };
@@ -55,9 +61,7 @@ export const onIframeApiReady = (cb: Function): void => {
     }
   }, 100);
 
-  if (!iframeApiScriptAdded(document)) {
-    addIframeApiScript(document);
-  }
+  grantIframeApiScript(document);
 };
 
 const init = (window: Window) => {
