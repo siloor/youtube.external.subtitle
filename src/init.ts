@@ -27,39 +27,46 @@ export const grantIframeApiScript = (document: Document): void => {
   }
 };
 
-export const iframeApiLoaded = (window: Window) => {
+export const iframeApiLoaded = (window: Window): boolean => {
   return !!(window.YT && window.YT.Player);
 };
 
-export const onIframeApiReady = (cb: Function): void => {
-  const window = DIC.getWindow();
-  const document = DIC.getDocument();
+export const waitFor = (isReady: Function, onComplete: Function): void => {
+  if (isReady()) {
+    onComplete();
 
+    return;
+  }
+
+  const interval = setInterval(() => {
+    if (isReady()) {
+      clearInterval(interval);
+
+      onComplete();
+    }
+  }, 100);
+};
+
+export const onIframeApiReady = (cb: Function): void => {
   if (DIC.getYT() !== null) {
     cb();
 
     return;
   }
 
-  const onLoaded = () => {
-    DIC.setYT(window.YT);
+  const window = DIC.getWindow();
+  const document = DIC.getDocument();
 
-    cb();
-  };
+  waitFor(
+    () => {
+      return iframeApiLoaded(window);
+    },
+    () => {
+      DIC.setYT(window.YT);
 
-  if (iframeApiLoaded(window)) {
-    onLoaded();
-
-    return;
-  }
-
-  const iframeApiInterval = setInterval(() => {
-    if (iframeApiLoaded(window)) {
-      clearInterval(iframeApiInterval);
-
-      onLoaded();
+      cb();
     }
-  }, 100);
+  );
 
   grantIframeApiScript(document);
 };

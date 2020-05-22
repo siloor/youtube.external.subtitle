@@ -385,27 +385,31 @@
     var iframeApiLoaded = function (window) {
         return !!(window.YT && window.YT.Player);
     };
+    var waitFor = function (isReady, onComplete) {
+        if (isReady()) {
+            onComplete();
+            return;
+        }
+        var interval = setInterval(function () {
+            if (isReady()) {
+                clearInterval(interval);
+                onComplete();
+            }
+        }, 100);
+    };
     var onIframeApiReady = function (cb) {
-        var window = DIC.getWindow();
-        var document = DIC.getDocument();
         if (DIC.getYT() !== null) {
             cb();
             return;
         }
-        var onLoaded = function () {
+        var window = DIC.getWindow();
+        var document = DIC.getDocument();
+        waitFor(function () {
+            return iframeApiLoaded(window);
+        }, function () {
             DIC.setYT(window.YT);
             cb();
-        };
-        if (iframeApiLoaded(window)) {
-            onLoaded();
-            return;
-        }
-        var iframeApiInterval = setInterval(function () {
-            if (iframeApiLoaded(window)) {
-                clearInterval(iframeApiInterval);
-                onLoaded();
-            }
-        }, 100);
+        });
         grantIframeApiScript(document);
     };
     var init = function (window) {
