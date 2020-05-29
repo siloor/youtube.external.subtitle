@@ -136,13 +136,7 @@ export const globalStylesAdded = (document: Document): boolean => {
   return !!document.getElementById(CSS.ID);
 };
 
-export const grantGlobalStyles = (): void => {
-  const document = DIC.getDocument();
-
-  if (globalStylesAdded(document)) {
-    return;
-  }
-
+export const addGlobalStyles = (document: Document): void => {
   const style = document.createElement('style');
   style.id = CSS.ID;
   style.type = 'text/css';
@@ -160,6 +154,14 @@ export const grantGlobalStyles = (): void => {
   document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
   document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
   document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+};
+
+export const grantGlobalStyles = (): void => {
+  const document = DIC.getDocument();
+
+  if (!globalStylesAdded(document)) {
+    addGlobalStyles(document);
+  }
 };
 
 const init = (window: Window) => {

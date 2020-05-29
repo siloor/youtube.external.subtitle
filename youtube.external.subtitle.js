@@ -164,11 +164,7 @@
     var globalStylesAdded = function (document) {
         return !!document.getElementById(CSS.ID);
     };
-    var grantGlobalStyles = function () {
-        var document = DIC.getDocument();
-        if (globalStylesAdded(document)) {
-            return;
-        }
+    var addGlobalStyles = function (document) {
         var style = document.createElement('style');
         style.id = CSS.ID;
         style.type = 'text/css';
@@ -179,6 +175,12 @@
         document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+    };
+    var grantGlobalStyles = function () {
+        var document = DIC.getDocument();
+        if (!globalStylesAdded(document)) {
+            addGlobalStyles(document);
+        }
     };
     var init = function (window) {
         DIC.setWindow(window);
