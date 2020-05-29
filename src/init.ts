@@ -1,4 +1,12 @@
 import DIC from './dic';
+import Subtitle, { SubtitleElement } from './subtitle';
+
+export const CSS = {
+  ID: 'youtube-external-subtitle-style',
+  CLASS: 'youtube-external-subtitle',
+  FULLSCREEN: 'fullscreen',
+  FULLSCREEN_IGNORE: 'fullscreen-ignore'
+};
 
 export const iframeApiScriptAdded = (document: Document): boolean => {
   const scripts = document.getElementsByTagName('script');
@@ -69,6 +77,89 @@ export const onIframeApiReady = (cb: Function): void => {
   );
 
   grantIframeApiScript(document);
+};
+
+export const getFullscreenElement = (document: Document): Element => {
+  return document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.webkitCurrentFullScreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement;
+};
+
+export const getSubtitles = (container: Element|Document): Subtitle[] => {
+  const subtitleElements = container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<SubtitleElement>;
+
+  const subtitles = [];
+
+  for (let i = 0; i < subtitleElements.length; i++) {
+    subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
+  }
+
+  return subtitles;
+};
+
+export const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subtitle => {
+  if (!fullscreenElement) {
+    return null;
+  }
+
+  if (fullscreenElement.youtubeExternalSubtitle) {
+    return fullscreenElement.youtubeExternalSubtitle;
+  }
+
+  const elements = getSubtitles(fullscreenElement);
+
+  if (elements.length > 0) {
+    return elements[0];
+  }
+
+  return null;
+};
+
+export const fullscreenChangeHandler = (): void => {
+  const document = DIC.getDocument();
+
+  const fullscreenElement = getFullscreenElement(document) as SubtitleElement;
+  const isFullscreen = !!fullscreenElement;
+
+  const fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
+
+  const subtitles = getSubtitles(document);
+
+  for (const subtitle of subtitles) {
+    subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
+  }
+};
+
+export const isInitialized = (document: Document): boolean => {
+  return !!document.getElementById(CSS.ID);
+};
+
+export const initialize = (): void => {
+  const document = DIC.getDocument();
+
+  if (isInitialized(document)) {
+    return;
+  }
+
+  const style = document.createElement('style');
+  style.id = CSS.ID;
+  style.type = 'text/css';
+  style.innerHTML = `
+    .${CSS.CLASS} { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: normal; font-size: 17px; text-align: center; }
+    .${CSS.CLASS} span { background: #000; background: rgba(0, 0, 0, 0.9); padding: 1px 4px; display: inline-block; margin-bottom: 2px; }
+    .${CSS.CLASS}.${CSS.FULLSCREEN_IGNORE} { display: none !important; }
+    .${CSS.CLASS}.${CSS.FULLSCREEN} { z-index: 3000000000; }
+  `;
+
+  const head = document.getElementsByTagName('head')[0] || document.documentElement;
+  head.insertBefore(style, head.firstChild);
+
+  document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+  document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+  document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+  document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
 };
 
 const init = (window: Window) => {

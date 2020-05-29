@@ -71,6 +71,121 @@
         FULLSCREEN: 'fullscreen',
         FULLSCREEN_IGNORE: 'fullscreen-ignore'
     };
+    var iframeApiScriptAdded = function (document) {
+        var scripts = document.getElementsByTagName('script');
+        for (var i = 0; i < scripts.length; i++) {
+            var src = scripts[i].src;
+            if (src && src.indexOf('youtube.com/iframe_api') !== -1) {
+                return true;
+            }
+        }
+        return false;
+    };
+    var addIframeApiScript = function (document) {
+        var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    };
+    var grantIframeApiScript = function (document) {
+        if (!iframeApiScriptAdded(document)) {
+            addIframeApiScript(document);
+        }
+    };
+    var iframeApiLoaded = function (window) {
+        return !!(window.YT && window.YT.Player);
+    };
+    var waitFor = function (isReady, onComplete) {
+        if (isReady()) {
+            onComplete();
+            return;
+        }
+        var interval = setInterval(function () {
+            if (isReady()) {
+                clearInterval(interval);
+                onComplete();
+            }
+        }, 100);
+    };
+    var onIframeApiReady = function (cb) {
+        if (DIC.getYT() !== null) {
+            cb();
+            return;
+        }
+        var window = DIC.getWindow();
+        var document = DIC.getDocument();
+        waitFor(function () {
+            return iframeApiLoaded(window);
+        }, function () {
+            DIC.setYT(window.YT);
+            cb();
+        });
+        grantIframeApiScript(document);
+    };
+    var getFullscreenElement = function (document) {
+        return document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.webkitCurrentFullScreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement;
+    };
+    var getSubtitles = function (container) {
+        var subtitleElements = container.getElementsByClassName(CSS.CLASS);
+        var subtitles = [];
+        for (var i = 0; i < subtitleElements.length; i++) {
+            subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
+        }
+        return subtitles;
+    };
+    var getFullscreenSubtitle = function (fullscreenElement) {
+        if (!fullscreenElement) {
+            return null;
+        }
+        if (fullscreenElement.youtubeExternalSubtitle) {
+            return fullscreenElement.youtubeExternalSubtitle;
+        }
+        var elements = getSubtitles(fullscreenElement);
+        if (elements.length > 0) {
+            return elements[0];
+        }
+        return null;
+    };
+    var fullscreenChangeHandler = function () {
+        var document = DIC.getDocument();
+        var fullscreenElement = getFullscreenElement(document);
+        var isFullscreen = !!fullscreenElement;
+        var fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
+        var subtitles = getSubtitles(document);
+        for (var _i = 0, subtitles_1 = subtitles; _i < subtitles_1.length; _i++) {
+            var subtitle = subtitles_1[_i];
+            subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
+        }
+    };
+    var isInitialized = function (document) {
+        return !!document.getElementById(CSS.ID);
+    };
+    var initialize = function () {
+        var document = DIC.getDocument();
+        if (isInitialized(document)) {
+            return;
+        }
+        var style = document.createElement('style');
+        style.id = CSS.ID;
+        style.type = 'text/css';
+        style.innerHTML = "\n    ." + CSS.CLASS + " { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: normal; font-size: 17px; text-align: center; }\n    ." + CSS.CLASS + " span { background: #000; background: rgba(0, 0, 0, 0.9); padding: 1px 4px; display: inline-block; margin-bottom: 2px; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN_IGNORE + " { display: none !important; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN + " { z-index: 3000000000; }\n  ";
+        var head = document.getElementsByTagName('head')[0] || document.documentElement;
+        head.insertBefore(style, head.firstChild);
+        document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+        document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+        document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+        document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+    };
+    var init = function (window) {
+        DIC.setWindow(window);
+        DIC.setDocument(window.document);
+        DIC.setOnIframeApiReady(onIframeApiReady);
+    };
+
     var getCacheName = function (seconds) {
         return Math.floor(seconds / 10);
     };
@@ -111,64 +226,6 @@
             }
         }
         return null;
-    };
-    var getFullscreenElement = function (document) {
-        return document.fullscreenElement ||
-            document.webkitFullscreenElement ||
-            document.webkitCurrentFullScreenElement ||
-            document.mozFullScreenElement ||
-            document.msFullscreenElement;
-    };
-    var getSubtitles = function (container) {
-        var subtitleElements = container.getElementsByClassName(CSS.CLASS);
-        var subtitles = [];
-        for (var i = 0; i < subtitleElements.length; i++) {
-            subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
-        }
-        return subtitles;
-    };
-    var getFullscreenSubtitle = function (fullscreenElement) {
-        if (!fullscreenElement) {
-            return null;
-        }
-        if (fullscreenElement.youtubeExternalSubtitle) {
-            return fullscreenElement.youtubeExternalSubtitle;
-        }
-        var elements = getSubtitles(fullscreenElement);
-        if (elements.length > 0) {
-            return elements[0];
-        }
-        return null;
-    };
-    var fullscreenChangeHandler = function () {
-        var document = DIC.getDocument();
-        var fullscreenElement = getFullscreenElement(document);
-        var isFullscreen = !!fullscreenElement;
-        var fullscreenSubtitle = getFullscreenSubtitle(fullscreenElement);
-        var subtitles = getSubtitles(document);
-        for (var _i = 0, subtitles_2 = subtitles; _i < subtitles_2.length; _i++) {
-            var subtitle = subtitles_2[_i];
-            subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
-        }
-    };
-    var isInitialized = function (document) {
-        return !!document.getElementById(CSS.ID);
-    };
-    var initialize = function () {
-        var document = DIC.getDocument();
-        if (isInitialized(document)) {
-            return;
-        }
-        var style = document.createElement('style');
-        style.id = CSS.ID;
-        style.type = 'text/css';
-        style.innerHTML = "\n    ." + CSS.CLASS + " { position: absolute; display: none; z-index: 0; pointer-events: none; color: #fff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: normal; font-size: 17px; text-align: center; }\n    ." + CSS.CLASS + " span { background: #000; background: rgba(0, 0, 0, 0.9); padding: 1px 4px; display: inline-block; margin-bottom: 2px; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN_IGNORE + " { display: none !important; }\n    ." + CSS.CLASS + "." + CSS.FULLSCREEN + " { z-index: 3000000000; }\n  ";
-        var head = document.getElementsByTagName('head')[0] || document.documentElement;
-        head.insertBefore(style, head.firstChild);
-        document.addEventListener('fullscreenchange', fullscreenChangeHandler);
-        document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
-        document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
-        document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
     };
     var addQueryStringParameterToUrl = function (url, qsParameters) {
         var hashIndex = url.indexOf('#');
@@ -360,63 +417,6 @@
         };
         return Subtitle;
     }());
-
-    var iframeApiScriptAdded = function (document) {
-        var scripts = document.getElementsByTagName('script');
-        for (var i = 0; i < scripts.length; i++) {
-            var src = scripts[i].src;
-            if (src && src.indexOf('youtube.com/iframe_api') !== -1) {
-                return true;
-            }
-        }
-        return false;
-    };
-    var addIframeApiScript = function (document) {
-        var tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    };
-    var grantIframeApiScript = function (document) {
-        if (!iframeApiScriptAdded(document)) {
-            addIframeApiScript(document);
-        }
-    };
-    var iframeApiLoaded = function (window) {
-        return !!(window.YT && window.YT.Player);
-    };
-    var waitFor = function (isReady, onComplete) {
-        if (isReady()) {
-            onComplete();
-            return;
-        }
-        var interval = setInterval(function () {
-            if (isReady()) {
-                clearInterval(interval);
-                onComplete();
-            }
-        }, 100);
-    };
-    var onIframeApiReady = function (cb) {
-        if (DIC.getYT() !== null) {
-            cb();
-            return;
-        }
-        var window = DIC.getWindow();
-        var document = DIC.getDocument();
-        waitFor(function () {
-            return iframeApiLoaded(window);
-        }, function () {
-            DIC.setYT(window.YT);
-            cb();
-        });
-        grantIframeApiScript(document);
-    };
-    var init = function (window) {
-        DIC.setWindow(window);
-        DIC.setDocument(window.document);
-        DIC.setOnIframeApiReady(onIframeApiReady);
-    };
 
     init(window);
     var youtube_external_subtitle = { Subtitle: Subtitle };
