@@ -1,3 +1,4 @@
+import DIC from './dic';
 import Subtitle, {
   SubtitleFrame,
   State,
@@ -13,7 +14,6 @@ import Subtitle, {
   renderText,
   getFrameRect
 } from './subtitle';
-import DIC from './dic';
 
 test('getCacheName returns the correct cache name', () => {
   expect(getCacheName(39)).toStrictEqual(3);

@@ -20,6 +20,7 @@ export interface Youtube {
 
 export interface InitService {
   grantIframeApi: Function;
+  grantGlobalStyles: Function;
 }
 
 export class Container {

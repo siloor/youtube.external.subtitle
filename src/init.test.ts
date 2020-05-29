@@ -1,4 +1,5 @@
 import DIC, { Youtube } from './dic';
+import Subtitle, { SubtitleElement } from './subtitle';
 import init, {
   iframeApiScriptAdded,
   addIframeApiScript,
@@ -13,9 +14,6 @@ import init, {
   globalStylesAdded,
   grantGlobalStyles
 } from './init';
-import Subtitle, {
-  SubtitleElement
-} from './subtitle';
 
 declare global {
   namespace jest {
@@ -419,6 +417,7 @@ test('init sets the correct DIC properties', () => {
   expect(DIC.getWindow()).toBe(window);
   expect(DIC.getDocument()).toBe(document);
   expect(DIC.getInitService()).toStrictEqual({
-    grantIframeApi: grantIframeApi
+    grantIframeApi: grantIframeApi,
+    grantGlobalStyles: grantGlobalStyles
   });
 });

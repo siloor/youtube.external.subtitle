@@ -166,7 +166,8 @@ const init = (window: Window) => {
   DIC.setWindow(window);
   DIC.setDocument(window.document);
   DIC.setInitService({
-    grantIframeApi: grantIframeApi
+    grantIframeApi: grantIframeApi,
+    grantGlobalStyles: grantGlobalStyles
   });
 };
 

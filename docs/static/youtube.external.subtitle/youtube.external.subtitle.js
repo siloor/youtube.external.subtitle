@@ -184,7 +184,8 @@
         DIC.setWindow(window);
         DIC.setDocument(window.document);
         DIC.setInitService({
-            grantIframeApi: grantIframeApi
+            grantIframeApi: grantIframeApi,
+            grantGlobalStyles: grantGlobalStyles
         });
     };
 
@@ -345,7 +346,8 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            grantGlobalStyles();
+            var initService = DIC.getInitService();
+            initService.grantGlobalStyles();
             var src = getIframeSrc(iframe.src);
             if (iframe.src !== src) {
                 iframe.src = src;
@@ -355,7 +357,6 @@
             }
             this.element = createSubtitleElement(iframe, this);
             this.render();
-            var initService = DIC.getInitService();
             initService.grantIframeApi(function () {
                 var YT = DIC.getYT();
                 _this.player = new YT.Player(iframe);
