@@ -12,6 +12,7 @@ import init, {
   getFullscreenSubtitle,
   getSubtitles,
   globalStylesAdded,
+  addGlobalStyles,
   grantGlobalStyles
 } from './init';
 
@@ -348,42 +349,65 @@ test('globalStylesAdded returns the correct value', () => {
   expect(globalStylesAdded(getDocument({} as HTMLElement))).toBe(true);
 });
 
-test('grantGlobalStyles adds global styles', () => {
-  const getDocument = (element: HTMLElement, insertHandler: Function, addEventListenerHandler: Function, createElement: HTMLElement, hasHeadElement: boolean): Document => {
-    const document = {
-      getElementById: (): HTMLElement => {
-        return element;
-      },
-      getElementsByTagName: (): HTMLCollectionOf<any> => {
-        if (!hasHeadElement) {
-          return arrayToHTMLCollection([]);
-        }
+const getGlobalStylesDocument = (element: HTMLElement, insertHandler: Function, addEventListenerHandler: Function, createElement: HTMLElement, hasHeadElement: boolean): Document => {
+  const document = {
+    getElementById: (): HTMLElement => {
+      return element;
+    },
+    getElementsByTagName: (): HTMLCollectionOf<any> => {
+      if (!hasHeadElement) {
+        return arrayToHTMLCollection([]);
+      }
 
-        const headElement = {
-          insertBefore: insertHandler
-        };
-
-        return arrayToHTMLCollection([ headElement ]);
-      },
-      createElement: (): HTMLElement => {
-        return createElement;
-      },
-      addEventListener: addEventListenerHandler as any,
-      documentElement: {
+      const headElement = {
         insertBefore: insertHandler
-      } as HTMLElement
-    } as Partial<Document>;
+      };
 
-    return document as Document;
+      return arrayToHTMLCollection([ headElement ]);
+    },
+    createElement: (): HTMLElement => {
+      return createElement;
+    },
+    addEventListener: addEventListenerHandler as any,
+    documentElement: {
+      insertBefore: insertHandler
+    } as HTMLElement
+  } as Partial<Document>;
+
+  return document as Document;
+};
+
+const testGlobalStylesAdded = (insertHandler: Function, styleElement: HTMLElement, addEventListenerHandler: Function) => {
+  expect(insertHandler).toHaveBeenCalledWith(styleElement, undefined);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('fullscreenchange', fullscreenChangeHandler);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('webkitfullscreenchange', fullscreenChangeHandler);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('mozfullscreenchange', fullscreenChangeHandler);
+  expect(addEventListenerHandler).toHaveBeenCalledWith('MSFullscreenChange', fullscreenChangeHandler);
+};
+
+test('addGlobalStyles adds global styles', () => {
+  const testGlobalStyles = (hasHeadElement: boolean) => {
+    const styleElement = {} as HTMLElement;
+    const insertHandler = jest.fn();
+    const addEventListenerHandler = jest.fn();
+
+    addGlobalStyles(getGlobalStylesDocument(null, insertHandler, addEventListenerHandler, styleElement, hasHeadElement));
+
+    testGlobalStylesAdded(insertHandler, styleElement, addEventListenerHandler);
   };
 
+  testGlobalStyles(true);
+  testGlobalStyles(false);
+});
+
+test('grantGlobalStyles adds global styles', () => {
   const testGlobalStyles = (alreadyAdded: boolean, hasHeadElement: boolean) => {
     const element = alreadyAdded ? {} as HTMLElement : null;
     const styleElement = {} as HTMLElement;
     const insertHandler = jest.fn();
     const addEventListenerHandler = jest.fn();
 
-    const document = getDocument(element, insertHandler, addEventListenerHandler, styleElement, hasHeadElement);
+    const document = getGlobalStylesDocument(element, insertHandler, addEventListenerHandler, styleElement, hasHeadElement);
 
     DIC.setDocument(document);
 
@@ -393,11 +417,7 @@ test('grantGlobalStyles adds global styles', () => {
       expect(insertHandler).not.toHaveBeenCalled();
       expect(addEventListenerHandler).not.toHaveBeenCalled();
     } else {
-      expect(insertHandler).toHaveBeenCalledWith(styleElement, undefined);
-      expect(addEventListenerHandler).toHaveBeenCalledWith('fullscreenchange', fullscreenChangeHandler);
-      expect(addEventListenerHandler).toHaveBeenCalledWith('webkitfullscreenchange', fullscreenChangeHandler);
-      expect(addEventListenerHandler).toHaveBeenCalledWith('mozfullscreenchange', fullscreenChangeHandler);
-      expect(addEventListenerHandler).toHaveBeenCalledWith('MSFullscreenChange', fullscreenChangeHandler);
+      testGlobalStylesAdded(insertHandler, styleElement, addEventListenerHandler);
     }
   };
 
