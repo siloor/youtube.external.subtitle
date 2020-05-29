@@ -161,12 +161,12 @@
             subtitle.setIsFullscreenActive(isFullscreen ? fullscreenSubtitle === subtitle : null);
         }
     };
-    var isInitialized = function (document) {
+    var globalStylesAdded = function (document) {
         return !!document.getElementById(CSS.ID);
     };
-    var initialize = function () {
+    var grantGlobalStyles = function () {
         var document = DIC.getDocument();
-        if (isInitialized(document)) {
+        if (globalStylesAdded(document)) {
             return;
         }
         var style = document.createElement('style');
@@ -345,7 +345,7 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            initialize();
+            grantGlobalStyles();
             var src = getIframeSrc(iframe.src);
             if (iframe.src !== src) {
                 iframe.src = src;

@@ -10,8 +10,8 @@ import init, {
   getFullscreenElement,
   getFullscreenSubtitle,
   getSubtitles,
-  isInitialized,
-  initialize
+  globalStylesAdded,
+  grantGlobalStyles
 } from './init';
 import Subtitle, {
   SubtitleElement
@@ -335,7 +335,7 @@ test('fullscreenChangeHandler sets subtitles state correctly', () => {
   expect(subtitle4.setIsFullscreenActive).toHaveBeenCalledWith(null);
 });
 
-test('isInitialized returns the correct value', () => {
+test('globalStylesAdded returns the correct value', () => {
   const getDocument = (element: HTMLElement): Document => {
     const document = {
       getElementById: (): HTMLElement => {
@@ -346,11 +346,11 @@ test('isInitialized returns the correct value', () => {
     return document as Document;
   };
 
-  expect(isInitialized(getDocument(null))).toBe(false);
-  expect(isInitialized(getDocument({} as HTMLElement))).toBe(true);
+  expect(globalStylesAdded(getDocument(null))).toBe(false);
+  expect(globalStylesAdded(getDocument({} as HTMLElement))).toBe(true);
 });
 
-test('initialize initializes the library', () => {
+test('grantGlobalStyles adds global styles', () => {
   const getDocument = (element: HTMLElement, insertHandler: Function, addEventListenerHandler: Function, createElement: HTMLElement, hasHeadElement: boolean): Document => {
     const document = {
       getElementById: (): HTMLElement => {
@@ -379,8 +379,8 @@ test('initialize initializes the library', () => {
     return document as Document;
   };
 
-  const testInitialize = (alreadyInitialized: boolean, hasHeadElement: boolean) => {
-    const element = alreadyInitialized ? {} as HTMLElement : null;
+  const testGlobalStyles = (alreadyAdded: boolean, hasHeadElement: boolean) => {
+    const element = alreadyAdded ? {} as HTMLElement : null;
     const styleElement = {} as HTMLElement;
     const insertHandler = jest.fn();
     const addEventListenerHandler = jest.fn();
@@ -389,9 +389,9 @@ test('initialize initializes the library', () => {
 
     DIC.setDocument(document);
 
-    initialize();
+    grantGlobalStyles();
 
-    if (alreadyInitialized) {
+    if (alreadyAdded) {
       expect(insertHandler).not.toHaveBeenCalled();
       expect(addEventListenerHandler).not.toHaveBeenCalled();
     } else {
@@ -403,9 +403,9 @@ test('initialize initializes the library', () => {
     }
   };
 
-  testInitialize(false, true);
-  testInitialize(false, false);
-  testInitialize(true, true);
+  testGlobalStyles(false, true);
+  testGlobalStyles(false, false);
+  testGlobalStyles(true, true);
 });
 
 test('init sets the correct DIC properties', () => {

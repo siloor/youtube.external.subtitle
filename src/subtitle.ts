@@ -1,5 +1,5 @@
 import DIC from './dic';
-import { CSS, initialize } from './init';
+import { CSS, grantGlobalStyles } from './init';
 
 export interface SubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
@@ -204,7 +204,7 @@ class Subtitle {
 
     iframe.youtubeExternalSubtitle = this;
 
-    initialize();
+    grantGlobalStyles();
 
     const src = getIframeSrc(iframe.src);
 

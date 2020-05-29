@@ -132,14 +132,14 @@ export const fullscreenChangeHandler = (): void => {
   }
 };
 
-export const isInitialized = (document: Document): boolean => {
+export const globalStylesAdded = (document: Document): boolean => {
   return !!document.getElementById(CSS.ID);
 };
 
-export const initialize = (): void => {
+export const grantGlobalStyles = (): void => {
   const document = DIC.getDocument();
 
-  if (isInitialized(document)) {
+  if (globalStylesAdded(document)) {
     return;
   }
 
