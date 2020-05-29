@@ -5,7 +5,7 @@ import init, {
   grantIframeApiScript,
   iframeApiLoaded,
   waitFor,
-  onIframeApiReady,
+  grantIframeApi,
   fullscreenChangeHandler,
   getFullscreenElement,
   getFullscreenSubtitle,
@@ -181,13 +181,13 @@ test('waitFor calls the onComplete when isReady is true', () => {
   expect(onComplete2).toHaveBeenCalled();
 });
 
-test('onIframeApiReady calls the callback when the Youtube Api is available', () => {
+test('grantIframeApi calls the callback when the Youtube Api is available', () => {
   const callback1 = jest.fn();
   const YT1 = {};
 
   DIC.setYT(YT1 as Youtube);
 
-  onIframeApiReady(callback1);
+  grantIframeApi(callback1);
 
   expect(callback1).toHaveBeenCalled();
   expect(DIC.getYT()).toBe(YT1);
@@ -211,7 +211,7 @@ test('onIframeApiReady calls the callback when the Youtube Api is available', ()
 
   const callback2 = jest.fn();
 
-  onIframeApiReady(callback2);
+  grantIframeApi(callback2);
 
   expect(callback2).toHaveBeenCalled();
   expect(DIC.getYT()).toBe(YT2);
@@ -418,5 +418,7 @@ test('init sets the correct DIC properties', () => {
 
   expect(DIC.getWindow()).toBe(window);
   expect(DIC.getDocument()).toBe(document);
-  expect(DIC.getOnIframeApiReady()).toBe(onIframeApiReady);
+  expect(DIC.getInitService()).toStrictEqual({
+    grantIframeApi: grantIframeApi
+  });
 });

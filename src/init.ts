@@ -55,7 +55,7 @@ export const waitFor = (isReady: Function, onComplete: Function): void => {
   }, 100);
 };
 
-export const onIframeApiReady = (cb: Function): void => {
+export const grantIframeApi = (cb: Function): void => {
   if (DIC.getYT() !== null) {
     cb();
 
@@ -165,7 +165,9 @@ export const initialize = (): void => {
 const init = (window: Window) => {
   DIC.setWindow(window);
   DIC.setDocument(window.document);
-  DIC.setOnIframeApiReady(onIframeApiReady);
+  DIC.setInitService({
+    grantIframeApi: grantIframeApi
+  });
 };
 
 export default init;

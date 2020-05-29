@@ -18,11 +18,15 @@ export interface Youtube {
   PlayerState: any;
 }
 
+export interface InitService {
+  grantIframeApi: Function;
+}
+
 export class Container {
   private window: Window = null;
   private document: Document = null;
-  private onIframeApiReady: Function = null;
   private YT: any = null;
+  private initService: InitService = null;
 
   constructor() {}
 
@@ -50,12 +54,12 @@ export class Container {
     return this.YT;
   }
 
-  public setOnIframeApiReady(onIframeApiReady: Function): void {
-    this.onIframeApiReady = onIframeApiReady;
+  public setInitService(initService: InitService): void {
+    this.initService = initService;
   }
 
-  public getOnIframeApiReady(): Function {
-    return this.onIframeApiReady;
+  public getInitService(): InitService {
+    return this.initService;
   }
 }
 

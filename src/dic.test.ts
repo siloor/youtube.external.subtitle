@@ -1,4 +1,4 @@
-import { Container, Youtube } from './dic';
+import { Container, Youtube, InitService } from './dic';
 
 test('getWindow returns the correct window', () => {
   const container = new Container();
@@ -36,14 +36,14 @@ test('getYT returns the correct youtube object', () => {
   expect(container.getYT()).toBe(YT);
 });
 
-test('getOnIframeApiReady returns the correct onIframeApiReady function', () => {
+test('getInitService returns the correct InitService', () => {
   const container = new Container();
 
-  expect(container.getOnIframeApiReady()).toBe(null);
+  expect(container.getInitService()).toBe(null);
 
-  const onIframeApiReady = () => {};
+  const initService = {} as InitService;
 
-  container.setOnIframeApiReady(onIframeApiReady);
+  container.setInitService(initService);
 
-  expect(container.getOnIframeApiReady()).toBe(onIframeApiReady);
+  expect(container.getInitService()).toBe(initService);
 });

@@ -34,8 +34,8 @@
         function Container() {
             this.window = null;
             this.document = null;
-            this.onIframeApiReady = null;
             this.YT = null;
+            this.initService = null;
         }
         Container.prototype.setWindow = function (window) {
             this.window = window;
@@ -55,11 +55,11 @@
         Container.prototype.getYT = function () {
             return this.YT;
         };
-        Container.prototype.setOnIframeApiReady = function (onIframeApiReady) {
-            this.onIframeApiReady = onIframeApiReady;
+        Container.prototype.setInitService = function (initService) {
+            this.initService = initService;
         };
-        Container.prototype.getOnIframeApiReady = function () {
-            return this.onIframeApiReady;
+        Container.prototype.getInitService = function () {
+            return this.initService;
         };
         return Container;
     }());
@@ -107,7 +107,7 @@
             }
         }, 100);
     };
-    var onIframeApiReady = function (cb) {
+    var grantIframeApi = function (cb) {
         if (DIC.getYT() !== null) {
             cb();
             return;
@@ -183,7 +183,9 @@
     var init = function (window) {
         DIC.setWindow(window);
         DIC.setDocument(window.document);
-        DIC.setOnIframeApiReady(onIframeApiReady);
+        DIC.setInitService({
+            grantIframeApi: grantIframeApi
+        });
     };
 
     var getCacheName = function (seconds) {
@@ -353,8 +355,8 @@
             }
             this.element = createSubtitleElement(iframe, this);
             this.render();
-            var onIframeApiReady = DIC.getOnIframeApiReady();
-            onIframeApiReady(function () {
+            var initService = DIC.getInitService();
+            initService.grantIframeApi(function () {
                 var YT = DIC.getYT();
                 _this.player = new YT.Player(iframe);
                 _this.player.addEventListener('onReady', _this.onPlayerReady);

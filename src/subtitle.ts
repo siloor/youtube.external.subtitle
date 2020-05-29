@@ -220,9 +220,9 @@ class Subtitle {
 
     this.render();
 
-    const onIframeApiReady = DIC.getOnIframeApiReady();
+    const initService = DIC.getInitService();
 
-    onIframeApiReady(() => {
+    initService.grantIframeApi(() => {
       const YT = DIC.getYT();
 
       this.player = new YT.Player(iframe);
