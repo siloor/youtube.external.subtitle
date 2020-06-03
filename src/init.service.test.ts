@@ -6,14 +6,12 @@ import InitService, {
   grantIframeApiScript,
   iframeApiLoaded,
   waitFor,
-  grantIframeApi,
   fullscreenChangeHandler,
   getFullscreenElement,
   getFullscreenSubtitle,
   getSubtitles,
   globalStylesAdded,
   addGlobalStyles,
-  grantGlobalStyles,
   init
 } from './init.service';
 
@@ -187,7 +185,9 @@ test('grantIframeApi calls the callback when the Youtube Api is available', () =
 
   DIC.setYT(YT1 as Youtube);
 
-  grantIframeApi(callback1);
+  const initService = new InitService();
+
+  initService.grantIframeApi(callback1);
 
   expect(callback1).toHaveBeenCalled();
   expect(DIC.getYT()).toBe(YT1);
@@ -211,7 +211,7 @@ test('grantIframeApi calls the callback when the Youtube Api is available', () =
 
   const callback2 = jest.fn();
 
-  grantIframeApi(callback2);
+  initService.grantIframeApi(callback2);
 
   expect(callback2).toHaveBeenCalled();
   expect(DIC.getYT()).toBe(YT2);
@@ -412,7 +412,9 @@ test('grantGlobalStyles adds global styles', () => {
 
     DIC.setDocument(document);
 
-    grantGlobalStyles();
+    const initService = new InitService();
+
+    initService.grantGlobalStyles();
 
     if (alreadyAdded) {
       expect(insertHandler).not.toHaveBeenCalled();

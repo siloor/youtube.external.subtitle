@@ -55,30 +55,6 @@ export const waitFor = (isReady: Function, onComplete: Function): void => {
   }, 100);
 };
 
-export const grantIframeApi = (cb: Function): void => {
-  if (DIC.getYT() !== null) {
-    cb();
-
-    return;
-  }
-
-  const window = DIC.getWindow();
-  const document = DIC.getDocument();
-
-  waitFor(
-    () => {
-      return iframeApiLoaded(window);
-    },
-    () => {
-      DIC.setYT(window.YT);
-
-      cb();
-    }
-  );
-
-  grantIframeApiScript(document);
-};
-
 export const getFullscreenElement = (document: Document): Element => {
   return document.fullscreenElement ||
     document.webkitFullscreenElement ||
@@ -156,21 +132,37 @@ export const addGlobalStyles = (document: Document): void => {
   document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
 };
 
-export const grantGlobalStyles = (): void => {
-  const document = DIC.getDocument();
-
-  if (!globalStylesAdded(document)) {
-    addGlobalStyles(document);
-  }
-};
-
 class InitService {
   public grantIframeApi(cb: Function): void {
-    grantIframeApi(cb);
+    if (DIC.getYT() !== null) {
+      cb();
+
+      return;
+    }
+
+    const window = DIC.getWindow();
+    const document = DIC.getDocument();
+
+    waitFor(
+      () => {
+        return iframeApiLoaded(window);
+      },
+      () => {
+        DIC.setYT(window.YT);
+
+        cb();
+      }
+    );
+
+    grantIframeApiScript(document);
   }
 
   public grantGlobalStyles(): void {
-    grantGlobalStyles();
+    const document = DIC.getDocument();
+
+    if (!globalStylesAdded(document)) {
+      addGlobalStyles(document);
+    }
   }
 }
 

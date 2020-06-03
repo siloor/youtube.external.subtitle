@@ -107,21 +107,6 @@
             }
         }, 100);
     };
-    var grantIframeApi = function (cb) {
-        if (DIC.getYT() !== null) {
-            cb();
-            return;
-        }
-        var window = DIC.getWindow();
-        var document = DIC.getDocument();
-        waitFor(function () {
-            return iframeApiLoaded(window);
-        }, function () {
-            DIC.setYT(window.YT);
-            cb();
-        });
-        grantIframeApiScript(document);
-    };
     var getFullscreenElement = function (document) {
         return document.fullscreenElement ||
             document.webkitFullscreenElement ||
@@ -176,20 +161,29 @@
         document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
         document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
     };
-    var grantGlobalStyles = function () {
-        var document = DIC.getDocument();
-        if (!globalStylesAdded(document)) {
-            addGlobalStyles(document);
-        }
-    };
     var InitService = /** @class */ (function () {
         function InitService() {
         }
         InitService.prototype.grantIframeApi = function (cb) {
-            grantIframeApi(cb);
+            if (DIC.getYT() !== null) {
+                cb();
+                return;
+            }
+            var window = DIC.getWindow();
+            var document = DIC.getDocument();
+            waitFor(function () {
+                return iframeApiLoaded(window);
+            }, function () {
+                DIC.setYT(window.YT);
+                cb();
+            });
+            grantIframeApiScript(document);
         };
         InitService.prototype.grantGlobalStyles = function () {
-            grantGlobalStyles();
+            var document = DIC.getDocument();
+            if (!globalStylesAdded(document)) {
+                addGlobalStyles(document);
+            }
         };
         return InitService;
     }());
