@@ -182,13 +182,21 @@
             addGlobalStyles(document);
         }
     };
+    var InitService = /** @class */ (function () {
+        function InitService() {
+        }
+        InitService.prototype.grantIframeApi = function (cb) {
+            grantIframeApi(cb);
+        };
+        InitService.prototype.grantGlobalStyles = function () {
+            grantGlobalStyles();
+        };
+        return InitService;
+    }());
     var init = function (window) {
         DIC.setWindow(window);
         DIC.setDocument(window.document);
-        DIC.setInitService({
-            grantIframeApi: grantIframeApi,
-            grantGlobalStyles: grantGlobalStyles
-        });
+        DIC.setInitService(new InitService());
     };
 
     var getCacheName = function (seconds) {

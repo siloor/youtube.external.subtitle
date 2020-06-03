@@ -164,13 +164,20 @@ export const grantGlobalStyles = (): void => {
   }
 };
 
-const init = (window: Window) => {
+class InitService {
+  public grantIframeApi(cb: Function): void {
+    grantIframeApi(cb);
+  }
+
+  public grantGlobalStyles(): void {
+    grantGlobalStyles();
+  }
+}
+
+export const init = (window: Window) => {
   DIC.setWindow(window);
   DIC.setDocument(window.document);
-  DIC.setInitService({
-    grantIframeApi: grantIframeApi,
-    grantGlobalStyles: grantGlobalStyles
-  });
+  DIC.setInitService(new InitService());
 };
 
-export default init;
+export default InitService;

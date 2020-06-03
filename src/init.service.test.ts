@@ -1,6 +1,6 @@
 import DIC, { Youtube } from './dic';
 import Subtitle, { SubtitleElement } from './subtitle';
-import init, {
+import InitService, {
   iframeApiScriptAdded,
   addIframeApiScript,
   grantIframeApiScript,
@@ -13,7 +13,8 @@ import init, {
   getSubtitles,
   globalStylesAdded,
   addGlobalStyles,
-  grantGlobalStyles
+  grantGlobalStyles,
+  init
 } from './init.service';
 
 declare global {
@@ -436,8 +437,5 @@ test('init sets the correct DIC properties', () => {
 
   expect(DIC.getWindow()).toBe(window);
   expect(DIC.getDocument()).toBe(document);
-  expect(DIC.getInitService()).toStrictEqual({
-    grantIframeApi: grantIframeApi,
-    grantGlobalStyles: grantGlobalStyles
-  });
+  expect(DIC.getInitService().constructor).toBe(InitService);
 });

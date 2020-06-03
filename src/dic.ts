@@ -1,3 +1,5 @@
+import InitService from './init.service';
+
 declare global {
   interface Document {
     webkitFullscreenElement: Element;
@@ -16,11 +18,6 @@ declare global {
 export interface Youtube {
   Player: any;
   PlayerState: any;
-}
-
-export interface InitService {
-  grantIframeApi: Function;
-  grantGlobalStyles: Function;
 }
 
 export class Container {

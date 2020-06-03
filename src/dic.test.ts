@@ -1,4 +1,5 @@
-import { Container, Youtube, InitService } from './dic';
+import { Container, Youtube } from './dic';
+import InitService from './init.service';
 
 test('getWindow returns the correct window', () => {
   const container = new Container();
