@@ -1,5 +1,5 @@
 import DIC from './dic';
-import { CSS } from './init';
+import { CSS } from './init.service';
 
 export interface SubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;

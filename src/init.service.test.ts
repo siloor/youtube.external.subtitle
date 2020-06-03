@@ -14,7 +14,7 @@ import init, {
   globalStylesAdded,
   addGlobalStyles,
   grantGlobalStyles
-} from './init';
+} from './init.service';
 
 declare global {
   namespace jest {

@@ -1,5 +1,5 @@
 import Subtitle from './subtitle';
-import init from './init';
+import init from './init.service';
 
 init(window);
 
