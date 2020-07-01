@@ -49,43 +49,43 @@
     <script src="static/js/subtitles.parser.js"></script>
     <script>
         var loadSRT = function(url, callback) {
-          var httpRequest = new XMLHttpRequest();
+            var httpRequest = new XMLHttpRequest();
 
-          httpRequest.onreadystatechange = function() {
-            if (httpRequest.readyState === XMLHttpRequest.DONE) {
-              var subtitles = parser.fromSrt(httpRequest.responseText, true);
+            httpRequest.onreadystatechange = function() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    var subtitles = parser.fromSrt(httpRequest.responseText, true);
 
-              for (var i in subtitles) {
-                subtitles[i] = {
-                  start : subtitles[i].startTime / 1000,
-                  end   : subtitles[i].endTime / 1000,
-                  text  : subtitles[i].text
-                };
-              }
+                    for (var i in subtitles) {
+                        subtitles[i] = {
+                            start : subtitles[i].startTime / 1000,
+                            end   : subtitles[i].endTime / 1000,
+                            text  : subtitles[i].text
+                        };
+                    }
 
-              callback(subtitles);
-            }
-          };
+                    callback(subtitles);
+                }
+            };
 
-          httpRequest.open('GET', url, true);
-          httpRequest.send(null);
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
         };
 
         loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitlesEn) {
-          loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
-            var subtitles = {
-              en: subtitlesEn,
-              hu: subtitlesHu
-            };
+            loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
+                var subtitles = {
+                    en: subtitlesEn,
+                    hu: subtitlesHu
+                };
 
-            var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
+                var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
 
-            document.getElementById('languages').addEventListener('change', function(e) {
-              var language = this.value;
+                document.getElementById('languages').addEventListener('change', function(e) {
+                    var language = this.value;
 
-              youtubeExternalSubtitle.load(subtitles[language]);
+                    youtubeExternalSubtitle.load(subtitles[language]);
+                });
             });
-          });
         });
     </script>
     <blockquote><pre>&lt;iframe id=&quot;video&quot; width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/fGPPfZIvtCw&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
@@ -97,43 +97,43 @@
 &lt;script src=&quot;static/js/subtitles.parser.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 var loadSRT = function(url, callback) {
-  var httpRequest = new XMLHttpRequest();
+    var httpRequest = new XMLHttpRequest();
 
-  httpRequest.onreadystatechange = function() {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      var subtitles = parser.fromSrt(httpRequest.responseText, true);
+    httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+            var subtitles = parser.fromSrt(httpRequest.responseText, true);
 
-      for (var i in subtitles) {
-        subtitles[i] = {
-          start : subtitles[i].startTime / 1000,
-          end   : subtitles[i].endTime / 1000,
-          text  : subtitles[i].text
-        };
-      }
+            for (var i in subtitles) {
+                subtitles[i] = {
+                    start : subtitles[i].startTime / 1000,
+                    end   : subtitles[i].endTime / 1000,
+                    text  : subtitles[i].text
+                };
+            }
 
-      callback(subtitles);
-    }
-  };
+            callback(subtitles);
+        }
+    };
 
-  httpRequest.open('GET', url, true);
-  httpRequest.send(null);
+    httpRequest.open('GET', url, true);
+    httpRequest.send(null);
 };
 
 loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitlesEn) {
-  loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
-    var subtitles = {
-      en: subtitlesEn,
-      hu: subtitlesHu
-    };
+    loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
+        var subtitles = {
+            en: subtitlesEn,
+            hu: subtitlesHu
+        };
 
-    var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
+        var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
 
-    document.getElementById('languages').addEventListener('change', function(e) {
-      var language = this.value;
+        document.getElementById('languages').addEventListener('change', function(e) {
+            var language = this.value;
 
-      youtubeExternalSubtitle.load(subtitles[language]);
+            youtubeExternalSubtitle.load(subtitles[language]);
+        });
     });
-  });
 });
 &lt;/script&gt;
 </pre></blockquote>

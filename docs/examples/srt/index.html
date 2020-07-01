@@ -41,51 +41,63 @@
     <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
     <script src="static/js/subtitles.parser.js"></script>
     <script>
-        var httpRequest = new XMLHttpRequest();
+        var loadSRT = function(url, callback) {
+            var httpRequest = new XMLHttpRequest();
 
-        httpRequest.onreadystatechange = function() {
-            if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                var subtitles = parser.fromSrt(httpRequest.responseText, true);
+            httpRequest.onreadystatechange = function() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    var subtitles = parser.fromSrt(httpRequest.responseText, true);
 
-                for (var i in subtitles) {
-                    subtitles[i] = {
-                        start : subtitles[i].startTime / 1000,
-                        end   : subtitles[i].endTime / 1000,
-                        text  : subtitles[i].text
-                    };
+                    for (var i in subtitles) {
+                        subtitles[i] = {
+                            start : subtitles[i].startTime / 1000,
+                            end   : subtitles[i].endTime / 1000,
+                            text  : subtitles[i].text
+                        };
+                    }
+
+                    callback(subtitles);
                 }
+            };
 
-                var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles);
-            }
+            httpRequest.open('GET', url, true);
+            httpRequest.send(null);
         };
 
-        httpRequest.open('GET', 'static/srt/kung_fu_panda_3_trailer.srt', true);
-        httpRequest.send(null);
+        loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitles) {
+            var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles);
+        });
     </script>
     <blockquote><pre>&lt;iframe id=&quot;video&quot; width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/fGPPfZIvtCw&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
 &lt;script src=&quot;static/youtube.external.subtitle/youtube.external.subtitle.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;static/js/subtitles.parser.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
-var httpRequest = new XMLHttpRequest();
+var loadSRT = function(url, callback) {
+    var httpRequest = new XMLHttpRequest();
 
-httpRequest.onreadystatechange = function() {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-        var subtitles = parser.fromSrt(httpRequest.responseText, true);
+    httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+            var subtitles = parser.fromSrt(httpRequest.responseText, true);
 
-        for (var i in subtitles) {
-			subtitles[i] = {
-				start : subtitles[i].startTime / 1000,
-				end   : subtitles[i].endTime / 1000,
-				text  : subtitles[i].text
-			};
-		}
+            for (var i in subtitles) {
+                subtitles[i] = {
+                    start : subtitles[i].startTime / 1000,
+                    end   : subtitles[i].endTime / 1000,
+                    text  : subtitles[i].text
+                };
+            }
 
-        var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles);
-    }
+            callback(subtitles);
+        }
+    };
+
+    httpRequest.open('GET', url, true);
+    httpRequest.send(null);
 };
 
-httpRequest.open('GET', 'static/srt/kung_fu_panda_3_trailer.srt', true);
-httpRequest.send(null);
+loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitles) {
+    var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles);
+});
 &lt;/script&gt;
 </pre></blockquote>
 </div>
