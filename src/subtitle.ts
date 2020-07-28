@@ -291,9 +291,11 @@ class Subtitle {
   private start(): void {
     this.stop();
 
-    this.timeChangeInterval = setInterval(this.onTimeChange, 500);
+    const window = DIC.getWindow();
 
-    this.controlsHideTimeout = setTimeout(() => {
+    this.timeChangeInterval = window.setInterval(this.onTimeChange, 500);
+
+    this.controlsHideTimeout = window.setTimeout(() => {
       this.setState({ controlsVisible: false });
     }, 3000);
   }
