@@ -1,3 +1,6 @@
+---
+---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,103 +43,11 @@
     </style>
     <h1>More SRT subtitles</h1>
     <p>You can provide more SRT subtitles to let the users select the one they need.</p>
-    <iframe id="video" width="100%" height="400" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
-    <select id="languages">
-        <option value="en">English</option>
-        <option value="hu">Hungarian</option>
-    </select>
-    <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
-    <script src="static/js/subtitles.parser.js"></script>
-    <script>
-        var loadSRT = function(url, callback) {
-            var httpRequest = new XMLHttpRequest();
-
-            httpRequest.onreadystatechange = function() {
-                if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                    var subtitles = parser.fromSrt(httpRequest.responseText, true);
-
-                    for (var i in subtitles) {
-                        subtitles[i] = {
-                            start : subtitles[i].startTime / 1000,
-                            end   : subtitles[i].endTime / 1000,
-                            text  : subtitles[i].text
-                        };
-                    }
-
-                    callback(subtitles);
-                }
-            };
-
-            httpRequest.open('GET', url, true);
-            httpRequest.send(null);
-        };
-
-        loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitlesEn) {
-            loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
-                var subtitles = {
-                    en: subtitlesEn,
-                    hu: subtitlesHu
-                };
-
-                var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
-
-                document.getElementById('languages').addEventListener('change', function(e) {
-                    var language = this.value;
-
-                    youtubeExternalSubtitle.load(subtitles[language]);
-                });
-            });
-        });
-    </script>
-    <blockquote><pre>&lt;iframe id=&quot;video&quot; width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/fGPPfZIvtCw&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
-&lt;select id=&quot;languages&quot;&gt;
-    &lt;option value=&quot;en&quot;&gt;English&lt;/option&gt;
-    &lt;option value=&quot;hu&quot;&gt;Hungarian&lt;/option&gt;
-&lt;/select&gt;
-&lt;script src=&quot;static/youtube.external.subtitle/youtube.external.subtitle.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;static/js/subtitles.parser.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-var loadSRT = function(url, callback) {
-    var httpRequest = new XMLHttpRequest();
-
-    httpRequest.onreadystatechange = function() {
-        if (httpRequest.readyState === XMLHttpRequest.DONE) {
-            var subtitles = parser.fromSrt(httpRequest.responseText, true);
-
-            for (var i in subtitles) {
-                subtitles[i] = {
-                    start : subtitles[i].startTime / 1000,
-                    end   : subtitles[i].endTime / 1000,
-                    text  : subtitles[i].text
-                };
-            }
-
-            callback(subtitles);
-        }
-    };
-
-    httpRequest.open('GET', url, true);
-    httpRequest.send(null);
-};
-
-loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitlesEn) {
-    loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
-        var subtitles = {
-            en: subtitlesEn,
-            hu: subtitlesHu
-        };
-
-        var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
-
-        document.getElementById('languages').addEventListener('change', function(e) {
-            var language = this.value;
-
-            youtubeExternalSubtitle.load(subtitles[language]);
-        });
-    });
-});
-&lt;/script&gt;
-</pre></blockquote>
+    {% capture example %}{% include examples/moresrtsubtitles.html %}{% endcapture %}
+    {{ example }}
+    <blockquote>
+      <pre>{{ example | xml_escape }}</pre>
+    </blockquote>
 </div>
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127764423-1"></script>
 <script>
