@@ -1,19 +1,24 @@
 import typescript from '@rollup/plugin-typescript';
-
-const output = {
-  dir: '.',
-  format: 'umd',
-  name: 'YoutubeExternalSubtitle'
-};
-
-const docsOutput = Object.assign(
-  {},
-  output,
-  { dir: 'docs/static/youtube.external.subtitle' }
-);
+import copy from 'rollup-plugin-copy';
 
 export default {
   input: 'src/youtube.external.subtitle.ts',
-  output: [output, docsOutput],
-  plugins: [typescript()]
+  output: [
+    {
+      dir: '.',
+      format: 'umd',
+      name: 'YoutubeExternalSubtitle'
+    }
+  ],
+  plugins: [
+    typescript(),
+    copy({
+      targets: [
+        { src: './youtube.external.subtitle.js', dest: 'docs/static/youtube.external.subtitle' },
+        { src: './LICENSE.md', dest: 'docs/_includes' },
+        { src: './README.md', dest: 'docs/_includes' }
+      ],
+      hook: 'writeBundle'
+    })
+  ]
 };
