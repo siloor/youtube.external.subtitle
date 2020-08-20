@@ -1,79 +1,56 @@
+---
+---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>YouTube External Subtitle</title>
-    <base href="./" />
-    <link rel="shortcut icon" href="static/img/favicon/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="static/img/favicon/favicon_32.png" sizes="32x32" />
-    <link rel="icon" href="static/img/favicon/favicon_48.png" sizes="48x48" />
-    <link rel="icon" href="static/img/favicon/favicon_96.png" sizes="96x96" />
-    <link rel="icon" href="static/img/favicon/favicon_144.png" sizes="144x144" />
-    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="static/css/markdown.css" rel="stylesheet" />
-    <link href="static/css/index.css" rel="stylesheet" />
-    <!--[if lt IE 9]>
-    <script src="static/bootstrap/js/html5shiv.min.js"></script>
-    <script src="static/bootstrap/js/respond.min.js"></script>
-    <![endif]-->
-    <script src="static/js/jquery-1.11.2.min.js"></script>
-    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>YouTube External Subtitle</title>
+  <base href="./" />
+  <link rel="shortcut icon" href="static/img/favicon/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="static/img/favicon/favicon_32.png" sizes="32x32" />
+  <link rel="icon" href="static/img/favicon/favicon_48.png" sizes="48x48" />
+  <link rel="icon" href="static/img/favicon/favicon_96.png" sizes="96x96" />
+  <link rel="icon" href="static/img/favicon/favicon_144.png" sizes="144x144" />
+  <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="static/css/markdown.css" rel="stylesheet" />
+  <link href="static/css/index.css" rel="stylesheet" />
+  <!--[if lt IE 9]>
+  <script src="static/bootstrap/js/html5shiv.min.js"></script>
+  <script src="static/bootstrap/js/respond.min.js"></script>
+  <![endif]-->
+  <script src="static/js/jquery-1.11.2.min.js"></script>
+  <script src="static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="./">YouTube External Subtitle</a>
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="./">YouTube External Subtitle</a>
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
     </div>
+  </div>
 </nav>
 <div class="container">
-    <h1>YouTube External Subtitle</h1>
-    <p>According to YouTube's <a href="http://support.google.com/youtube/answer/2734796?hl=en">policy</a>, only the owner of the content can add subtitle to a video.</p>
-    <p>With YouTube External Subtitle you can display subtitles over the embedded video from YouTube on your site. These texts could be translations, comments or lyrics as well. (Any kind of texts is allowed)</p>
-    <h2>GITHUB</h2>
-    <p><a href="http://github.com/siloor/youtube.external.subtitle">http://github.com/siloor/youtube.external.subtitle</a></p>
-    <p>Please, don't forget to star the repository if you like (and use) the script. This will let me know how many users it has and then how to proceed with further development.</p>
-    <h2>Making subtitles</h2>
-    <p>If you would like to make subtitle for a video, there are a lot of tools helping you.</p>
-    <ul>
-        <li>YouTube has an automatic english speech recognition logic, that does a really good job and makes only a few mistakes. Its a very big help by timing the subtitles.</li>
-        <li>On <a href="http://downsub.com/">DownSub.com</a> you can download the subtitles from YouTube as an SRT file.</li>
-        <li>There are a lot of good open source SRT editors out there.</li>
-    </ul>
-    <h2>Examples</h2>
-    <ul>
-        <li><a href="examples/basic">Basic example</a></li>
-        <li><a href="examples/srt">Load an SRT file</a></li>
-        <li><a href="examples/moresubtitles">More subtitles</a></li>
-        <li><a href="examples/moresrtsubtitles">More SRT subtitles</a></li>
-        <li><a href="examples/style">Style subtitles</a></li>
-        <li><a href="examples/fullscreen">Fullscreen</a></li>
-        <li><a href="examples/responsive">Responsive</a></li>
-    </ul>
-    <h2>Limitations</h2>
-    <p>By latest browsers, the embedded iframe requesting the fullscreen mode requires the whole window, so the script is not allowed to display anything in front of the player. That is why YouTube External Subtitle disables the fullscreen button by default. You can add your own fullscreen logic on your page, check the fullscreen example.</p>
-    <p>The script supports AMD.</p><h2>License</h2>
-    <p>The MIT License</p>
-    <p>Copyright (c) 2015 by Milan Magyar <a href="mailto:milan.magyar@gmail.com">milan.magyar@gmail.com</a></p>
-    <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-    <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>		</div>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127764423-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+  {% capture readme %}{% include README.md %}{% endcapture %}
+  {{ readme | markdownify }}
+  {% capture license %}{% include LICENSE.md %}{% endcapture %}
+  {{ license | markdownify }}
+</div>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-127764423-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-        gtag('config', 'UA-127764423-1');
-    </script>
+  gtag('config', 'UA-127764423-1');
+</script>
 </body>
 </html>
