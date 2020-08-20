@@ -1,0 +1,28 @@
+<iframe id="video" width="100%" height="400" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
+<script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
+<style>
+  .youtube-external-subtitle span { background: red; }
+</style>
+<script src="static/js/subtitles.parser.js"></script>
+<script>
+  var httpRequest = new XMLHttpRequest();
+
+  httpRequest.onreadystatechange = function() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      var subtitles = parser.fromSrt(httpRequest.responseText, true);
+
+      for (var i in subtitles) {
+        subtitles[i] = {
+          start : subtitles[i].startTime / 1000,
+          end   : subtitles[i].endTime / 1000,
+          text  : subtitles[i].text
+        };
+      }
+
+      var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles);
+    }
+  };
+
+  httpRequest.open('GET', 'static/srt/kung_fu_panda_3_trailer.srt', true);
+  httpRequest.send(null);
+</script>
