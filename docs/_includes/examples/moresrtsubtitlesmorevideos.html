@@ -7,6 +7,7 @@
 <select id="languages2">
   <option value="en">English</option>
   <option value="hu">Hungarian</option>
+  <option value="de">German</option>
 </select>
 <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
 <script src="static/js/subtitles.parser.js"></script>
@@ -34,37 +35,44 @@
     httpRequest.send(null);
   };
 
-  loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitlesEn) {
-    loadSRT('static/srt/kung_fu_panda_3_trailer_hu.srt', function(subtitlesHu) {
-      var subtitles = {
-        en: subtitlesEn,
-        hu: subtitlesHu
-      };
+  var loadMultipleSRT = function(urls, cb) {
+    var result = {};
 
-      var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
+    Object.keys(urls).forEach(function(language) {
+      loadSRT(urls[language], function(subtitles) {
+        result[language] = subtitles;
 
-      document.getElementById('languages').addEventListener('change', function(e) {
-        var language = this.value;
-
-        youtubeExternalSubtitle.load(subtitles[language]);
+        if (Object.keys(result).length === Object.keys(urls).length) {
+          cb(result);
+        }
       });
+    });
+  };
+
+  loadMultipleSRT({
+    en: 'static/srt/kung_fu_panda_3_trailer.srt',
+    hu: 'static/srt/kung_fu_panda_3_trailer_hu.srt'
+  }, function(subtitles) {
+    var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles.en);
+
+    document.getElementById('languages').addEventListener('change', function(e) {
+      var language = this.value;
+
+      youtubeExternalSubtitle.load(subtitles[language]);
     });
   });
 
-  loadSRT('static/srt/avengers_infinity_war_trailer.srt', function(subtitlesEn) {
-    loadSRT('static/srt/avengers_infinity_war_trailer_hu.srt', function(subtitlesHu) {
-      var subtitles = {
-        en: subtitlesEn,
-        hu: subtitlesHu
-      };
+  loadMultipleSRT({
+    en: 'static/srt/avengers_infinity_war_trailer.srt',
+    hu: 'static/srt/avengers_infinity_war_trailer_hu.srt',
+    de: 'static/srt/avengers_infinity_war_trailer_de.srt'
+  }, function(subtitles) {
+    var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video2'), subtitles.en);
 
-      var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video2'), subtitles.en);
+    document.getElementById('languages2').addEventListener('change', function(e) {
+      var language = this.value;
 
-      document.getElementById('languages2').addEventListener('change', function(e) {
-        var language = this.value;
-
-        youtubeExternalSubtitle.load(subtitles[language]);
-      });
+      youtubeExternalSubtitle.load(subtitles[language]);
     });
   });
 </script>
