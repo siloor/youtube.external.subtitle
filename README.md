@@ -8,7 +8,7 @@ With YouTube External Subtitle you can display subtitles over the embedded video
 
 ## GITHUB
 
-http://github.com/siloor/youtube.external.subtitle
+[http://github.com/siloor/youtube.external.subtitle](http://github.com/siloor/youtube.external.subtitle)
 
 Please, don't forget to star the repository if you like (and use) the script. This will let me know how many users it has and then how to proceed with further development.
 
