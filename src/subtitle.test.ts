@@ -1,4 +1,5 @@
-import DIC from './dic';
+import DIC, { Youtube } from './dic';
+import InitService from './init.service';
 import Subtitle, {
   SubtitleFrame,
   State,
@@ -164,4 +165,107 @@ test('getFrameRect returns the correct frame rectangle', () => {
     x: 5, y: 110,
     bottomPadding: 60
   });
+});
+
+test('new Subtitle() returns a correct Subtitle instance', () => {
+  DIC.setInitService({
+    grantGlobalStyles: () => {},
+    grantIframeApi: (cb) => {
+      cb();
+    }
+  } as InitService);
+
+  const parentNode: Partial<ParentNode & Node> = {
+    insertBefore: jest.fn()
+  };
+
+  const fakeElement = {
+    style: {}
+  } as HTMLElement;
+
+  const document = {
+    createElement: (): HTMLElement => {
+      return fakeElement;
+    }
+  } as Partial<Document>;
+
+  DIC.setDocument(document as Document);
+
+  const fakePlayerAddEventListener = jest.fn();
+
+  const fakePlayer = () => ({
+    addEventListener: fakePlayerAddEventListener
+  });
+
+  DIC.setYT({ Player: fakePlayer } as Youtube);
+
+  const subtitleFrame = {
+    src: 'https://www.youtube.com/embed/fGPPfZIvtCw',
+    parentNode: parentNode as ParentNode & Node
+  } as SubtitleFrame;
+
+  const subtitles = [
+    {
+      'start': 10,
+      'end': 11,
+      'text': 'PO: Master Shifu?'
+    },
+    {
+      'start': 13,
+      'end': 14,
+      'text': 'Good time? Bad time?'
+    }
+  ];
+
+  const subtitle = new Subtitle(subtitleFrame, subtitles);
+
+  expect(subtitle).toBeInstanceOf(Subtitle);
+  expect(subtitleFrame.youtubeExternalSubtitle).toBe(subtitle);
+  expect(subtitleFrame.src).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
+  expect(subtitle['cache']).toEqual({
+    1: [
+      {
+        'end': 11,
+        'start': 10,
+        'text': 'PO: Master Shifu?'
+      },
+      {
+        'end': 14,
+        'start': 13,
+        'text': 'Good time? Bad time?'
+      }
+    ]
+  });
+  expect(subtitle['element']).toBe(fakeElement);
+  expect(subtitle['player']).toBeTruthy();
+  expect(fakePlayerAddEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
+  expect(fakePlayerAddEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
+
+  const subtitleFrame2 = {
+    src: 'https://www.youtube.com/embed/fGPPfZIvtCw',
+    parentNode: parentNode as ParentNode & Node,
+    youtubeExternalSubtitle: {} as Subtitle
+  } as SubtitleFrame;
+
+  expect(() => {
+    new Subtitle(subtitleFrame2, subtitles);
+  }).toThrow('YoutubeExternalSubtitle: subtitle is already added for this element');
+
+  const subtitleFrame3 = {
+    src: 'https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0',
+    parentNode: parentNode as ParentNode & Node
+  } as SubtitleFrame;
+
+  const subtitle3 = new Subtitle(subtitleFrame3, subtitles);
+
+  expect(subtitleFrame3.src).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
+
+  const subtitleFrame4 = {
+    src: 'https://www.youtube.com/embed/fGPPfZIvtCw',
+    parentNode: parentNode as ParentNode & Node
+  } as SubtitleFrame;
+
+  const subtitle4 = new Subtitle(subtitleFrame4, null);
+
+  expect(subtitle4['cache']).toBe(null);
 });
