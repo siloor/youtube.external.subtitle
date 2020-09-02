@@ -197,16 +197,12 @@ class Subtitle {
     controlsVisible: true
   };
 
-  constructor(iframe: SubtitleFrame, subtitles: SubtitleEntry[]) {
+  constructor(iframe: SubtitleFrame, subtitles: SubtitleEntry[] = []) {
     if (iframe.youtubeExternalSubtitle) {
       throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
     }
 
     iframe.youtubeExternalSubtitle = this;
-
-    const initService = DIC.getInitService();
-
-    initService.grantGlobalStyles();
 
     const src = getIframeSrc(iframe.src);
 
@@ -214,11 +210,13 @@ class Subtitle {
       iframe.src = src;
     }
 
-    if (subtitles) {
-      this.load(subtitles);
-    }
+    this.load(subtitles);
 
     this.element = createSubtitleElement(iframe, this);
+
+    const initService = DIC.getInitService();
+
+    initService.grantGlobalStyles();
 
     this.render();
 

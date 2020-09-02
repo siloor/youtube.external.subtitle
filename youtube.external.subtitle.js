@@ -312,6 +312,7 @@
     var Subtitle = /** @class */ (function () {
         function Subtitle(iframe, subtitles) {
             var _this = this;
+            if (subtitles === void 0) { subtitles = []; }
             this.cache = null;
             this.timeChangeInterval = 0;
             this.controlsHideTimeout = 0;
@@ -350,16 +351,14 @@
                 throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
             }
             iframe.youtubeExternalSubtitle = this;
-            var initService = DIC.getInitService();
-            initService.grantGlobalStyles();
             var src = getIframeSrc(iframe.src);
             if (iframe.src !== src) {
                 iframe.src = src;
             }
-            if (subtitles) {
-                this.load(subtitles);
-            }
+            this.load(subtitles);
             this.element = createSubtitleElement(iframe, this);
+            var initService = DIC.getInitService();
+            initService.grantGlobalStyles();
             this.render();
             initService.grantIframeApi(function () {
                 var YT = DIC.getYT();

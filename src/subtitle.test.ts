@@ -167,6 +167,17 @@ test('getFrameRect returns the correct frame rectangle', () => {
   });
 });
 
+const getSubtitleFrame = (src: string): SubtitleFrame => {
+  const parentNode: Partial<ParentNode & Node> = {
+    insertBefore: jest.fn()
+  };
+
+  return {
+    src: src,
+    parentNode: parentNode as ParentNode & Node
+  } as SubtitleFrame;
+};
+
 test('new Subtitle() returns a correct Subtitle instance', () => {
   DIC.setInitService({
     grantGlobalStyles: () => {},
@@ -174,10 +185,6 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
       cb();
     }
   } as InitService);
-
-  const parentNode: Partial<ParentNode & Node> = {
-    insertBefore: jest.fn()
-  };
 
   const fakeElement = {
     style: {}
@@ -199,10 +206,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
 
   DIC.setYT({ Player: fakePlayer } as Youtube);
 
-  const subtitleFrame = {
-    src: 'https://www.youtube.com/embed/fGPPfZIvtCw',
-    parentNode: parentNode as ParentNode & Node
-  } as SubtitleFrame;
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
   const subtitles = [
     {
@@ -241,31 +245,22 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
   expect(fakePlayerAddEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
   expect(fakePlayerAddEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
 
-  const subtitleFrame2 = {
-    src: 'https://www.youtube.com/embed/fGPPfZIvtCw',
-    parentNode: parentNode as ParentNode & Node,
-    youtubeExternalSubtitle: {} as Subtitle
-  } as SubtitleFrame;
+  const subtitleFrame2 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+  subtitleFrame2.youtubeExternalSubtitle = {} as Subtitle;
 
   expect(() => {
     new Subtitle(subtitleFrame2, subtitles);
   }).toThrow('YoutubeExternalSubtitle: subtitle is already added for this element');
 
-  const subtitleFrame3 = {
-    src: 'https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0',
-    parentNode: parentNode as ParentNode & Node
-  } as SubtitleFrame;
+  const subtitleFrame3 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
 
   const subtitle3 = new Subtitle(subtitleFrame3, subtitles);
 
   expect(subtitleFrame3.src).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
 
-  const subtitleFrame4 = {
-    src: 'https://www.youtube.com/embed/fGPPfZIvtCw',
-    parentNode: parentNode as ParentNode & Node
-  } as SubtitleFrame;
+  const subtitleFrame4 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
-  const subtitle4 = new Subtitle(subtitleFrame4, null);
+  const subtitle4 = new Subtitle(subtitleFrame4);
 
-  expect(subtitle4['cache']).toBe(null);
+  expect(subtitle4['cache']).toEqual({});
 });
