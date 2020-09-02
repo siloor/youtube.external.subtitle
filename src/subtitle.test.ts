@@ -178,7 +178,7 @@ const getSubtitleFrame = (src: string): SubtitleFrame => {
   } as SubtitleFrame;
 };
 
-const setDICServices = (fakeElement: HTMLElement, fakePlayerAddEventListener: Function) => {
+const setDICServices = (fakeElement: HTMLElement, playerAddEventListener: Function, playerRemoveEventListener: Function) => {
   DIC.setInitService({
     grantGlobalStyles: () => {},
     grantIframeApi: (cb) => {
@@ -199,12 +199,15 @@ const setDICServices = (fakeElement: HTMLElement, fakePlayerAddEventListener: Fu
   DIC.setDocument(document as Document);
 
   DIC.setYT({
-    Player: () => ({
-      addEventListener: fakePlayerAddEventListener === null
+    Player: (iframe: SubtitleFrame) => ({
+      addEventListener: playerAddEventListener === null
         ? () => {}
-        : fakePlayerAddEventListener,
+        : playerAddEventListener,
+      removeEventListener: playerRemoveEventListener === null
+        ? () => {}
+        : playerRemoveEventListener,
       getIframe: () => {
-        return {} as SubtitleFrame;
+        return iframe;
       }
     })
   } as Youtube);
@@ -217,7 +220,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
 
   const fakePlayerAddEventListener = jest.fn();
 
-  setDICServices(fakeElement, fakePlayerAddEventListener);
+  setDICServices(fakeElement, fakePlayerAddEventListener, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -279,7 +282,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
 });
 
 test('load loads the subtitles properly', () => {
-  setDICServices(null, null);
+  setDICServices(null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -317,7 +320,7 @@ test('load loads the subtitles properly', () => {
 });
 
 test('setIsFullscreenActive sets isFullscreenActive', () => {
-  setDICServices(null, null);
+  setDICServices(null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -332,4 +335,33 @@ test('setIsFullscreenActive sets isFullscreenActive', () => {
   subtitle.setIsFullscreenActive(false);
 
   expect(subtitle['state'].isFullscreenActive).toBe(false);
+});
+
+test('destroy removes the subtitle instance', () => {
+  const fakeElement = {
+    style: {},
+    parentNode: {
+      removeChild: jest.fn()
+    } as Partial<ParentNode & Node>
+  } as HTMLElement;
+
+  const fakePlayerRemoveEventListener = jest.fn();
+
+  setDICServices(fakeElement, null, fakePlayerRemoveEventListener);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const fakeStopMethod = jest.fn();
+
+  subtitle['stop'] = fakeStopMethod;
+
+  subtitle.destroy();
+
+  expect(fakeStopMethod).toHaveBeenCalled();
+  expect(fakeElement.parentNode.removeChild).toHaveBeenCalledWith(fakeElement);
+  expect(subtitleFrame.youtubeExternalSubtitle).toBe(null);
+  expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
+  expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
 });
