@@ -1,7 +1,11 @@
-<iframe id="video" width="100%" height="400" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
+<div id="fullscreen-container" style="width: 100%; height: 400px;">
+  <iframe id="video" width="100%" height="100%" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
+</div>
 <script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
+<button id="fullscreen-btn">Fullscreen</button>
 <style>
   .youtube-external-subtitle span { background: red; }
+  .youtube-external-subtitle.fullscreen span { background: green; }
 </style>
 <script src="static/js/subtitles.parser.js"></script>
 <script>
@@ -30,5 +34,23 @@
 
   loadSRT('static/srt/kung_fu_panda_3_trailer.srt', function(subtitles) {
     var youtubeExternalSubtitle = new YoutubeExternalSubtitle.Subtitle(document.getElementById('video'), subtitles);
+  });
+
+  document.getElementById('fullscreen-btn').addEventListener('click', function(e) {
+    var elem = document.getElementById('fullscreen-container');
+
+    var openFullscreen = function() {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+    };
+
+    openFullscreen();
   });
 </script>
