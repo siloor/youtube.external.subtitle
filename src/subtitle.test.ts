@@ -178,7 +178,7 @@ const getSubtitleFrame = (src: string): SubtitleFrame => {
   } as SubtitleFrame;
 };
 
-test('new Subtitle() returns a correct Subtitle instance', () => {
+const setDICServices = (fakeElement: HTMLElement, fakePlayerAddEventListener: Function) => {
   DIC.setInitService({
     grantGlobalStyles: () => {},
     grantIframeApi: (cb) => {
@@ -186,25 +186,38 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
     }
   } as InitService);
 
-  const fakeElement = {
-    style: {}
-  } as HTMLElement;
-
   const document = {
     createElement: (): HTMLElement => {
-      return fakeElement;
+      return fakeElement === null
+        ? {
+            style: {}
+          } as HTMLElement
+        : fakeElement;
     }
   } as Partial<Document>;
 
   DIC.setDocument(document as Document);
 
+  DIC.setYT({
+    Player: () => ({
+      addEventListener: fakePlayerAddEventListener === null
+        ? () => {}
+        : fakePlayerAddEventListener,
+      getIframe: () => {
+        return {} as SubtitleFrame;
+      }
+    })
+  } as Youtube);
+};
+
+test('new Subtitle() returns a correct Subtitle instance', () => {
+  const fakeElement = {
+    style: {}
+  } as HTMLElement;
+
   const fakePlayerAddEventListener = jest.fn();
 
-  const fakePlayer = () => ({
-    addEventListener: fakePlayerAddEventListener
-  });
-
-  DIC.setYT({ Player: fakePlayer } as Youtube);
+  setDICServices(fakeElement, fakePlayerAddEventListener);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -242,8 +255,8 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
   });
   expect(subtitle['element']).toBe(fakeElement);
   expect(subtitle['player']).toBeTruthy();
-  expect(fakePlayerAddEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
-  expect(fakePlayerAddEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
+  expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
+  expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
 
   const subtitleFrame2 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
   subtitleFrame2.youtubeExternalSubtitle = {} as Subtitle;
@@ -263,4 +276,60 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
   const subtitle4 = new Subtitle(subtitleFrame4);
 
   expect(subtitle4['cache']).toEqual({});
+});
+
+test('load loads the subtitles properly', () => {
+  setDICServices(null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  expect(subtitle['cache']).toEqual({});
+
+  subtitle.load([
+    {
+      'start': 10,
+      'end': 11,
+      'text': 'PO: Master Shifu?'
+    },
+    {
+      'start': 13,
+      'end': 14,
+      'text': 'Good time? Bad time?'
+    }
+  ]);
+
+  expect(subtitle['cache']).toEqual({
+    1: [
+      {
+        'end': 11,
+        'start': 10,
+        'text': 'PO: Master Shifu?'
+      },
+      {
+        'end': 14,
+        'start': 13,
+        'text': 'Good time? Bad time?'
+      }
+    ]
+  });
+});
+
+test('setIsFullscreenActive sets isFullscreenActive', () => {
+  setDICServices(null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  expect(subtitle['state'].isFullscreenActive).toBe(null);
+
+  subtitle.setIsFullscreenActive(true);
+
+  expect(subtitle['state'].isFullscreenActive).toBe(true);
+
+  subtitle.setIsFullscreenActive(false);
+
+  expect(subtitle['state'].isFullscreenActive).toBe(false);
 });
