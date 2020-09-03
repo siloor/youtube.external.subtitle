@@ -365,3 +365,61 @@ test('destroy removes the subtitle instance', () => {
   expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
   expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
 });
+
+test('render displays the subtitles correctly', () => {
+  const fakeElement = {
+    style: {},
+    parentNode: {
+      removeChild: jest.fn()
+    } as Partial<ParentNode & Node>,
+    offsetWidth: 196,
+    offsetHeight: 40
+  } as HTMLElement;
+
+  setDICServices(fakeElement, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  subtitle['state'].isFullscreenActive = true;
+
+  subtitle['player'] = null;
+
+  subtitle.render();
+
+  expect(fakeElement.className).toBe('youtube-external-subtitle fullscreen');
+  expect(fakeElement.innerHTML).toBe('<span></span>');
+  expect(fakeElement.style.display).toBe('');
+
+  subtitle['state'].text = 'PO: Master Shifu?';
+
+  subtitle.render();
+
+  expect(fakeElement.innerHTML).toBe('<span>PO: Master Shifu?</span>');
+  expect(fakeElement.style.display).toBe('block');
+
+  subtitle['player'] = {
+    getIframe: () => {
+      return {
+        offsetLeft: 88,
+        scrollLeft: 0,
+        clientLeft: 0,
+        offsetTop: 174,
+        scrollTop: 0,
+        clientTop: 0,
+        offsetWidth: 1140,
+        offsetHeight: 400,
+      } as SubtitleFrame;
+    }
+  };
+
+  subtitle.render();
+
+  expect(fakeElement.style.display).toBe('block');
+  expect(fakeElement.style.visibility).toBe('');
+  expect(fakeElement.style.top).toBe('474px');
+  expect(fakeElement.style.left).toBe('560px');
+  expect(fakeElement.style.maxWidth).toBe('1120px');
+  expect(fakeElement.style.fontSize).toBe('1.5384615384615385em');
+});
