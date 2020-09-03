@@ -93,12 +93,8 @@ export const addQueryStringParameterToUrl = (url: string, qsParameters: any): st
     url = url.substr(0, qsIndex);
   }
 
-  for (const i in qsParameters) {
-    if (!qsParameters.hasOwnProperty(i)) {
-      continue;
-    }
-
-    qs += `${qs === '' ? '?' : '&'}${i}=${qsParameters[i]}`;
+  for (const qsParameterName of Object.keys(qsParameters)) {
+    qs += `${qs === '' ? '?' : '&'}${qsParameterName}=${qsParameters[qsParameterName]}`;
   }
 
   return `${url}${qs}${hash}`;
@@ -139,12 +135,8 @@ export const createSubtitleElement = (iframe: SubtitleFrame, subtitle: Subtitle)
 };
 
 export const isStateChanged = (prevState: State, nextState: State): boolean => {
-  for (const i in nextState) {
-    if (!nextState.hasOwnProperty(i)) {
-      continue;
-    }
-
-    if (prevState[i] !== nextState[i]) {
+  for (const propertyName of Object.keys(nextState)) {
+    if (prevState[propertyName] !== nextState[propertyName]) {
       return true;
     }
   }

@@ -247,11 +247,9 @@
             qs = url.substr(qsIndex);
             url = url.substr(0, qsIndex);
         }
-        for (var i in qsParameters) {
-            if (!qsParameters.hasOwnProperty(i)) {
-                continue;
-            }
-            qs += "" + (qs === '' ? '?' : '&') + i + "=" + qsParameters[i];
+        for (var _i = 0, _a = Object.keys(qsParameters); _i < _a.length; _i++) {
+            var qsParameterName = _a[_i];
+            qs += "" + (qs === '' ? '?' : '&') + qsParameterName + "=" + qsParameters[qsParameterName];
         }
         return "" + url + qs + hash;
     };
@@ -279,11 +277,9 @@
         return element;
     };
     var isStateChanged = function (prevState, nextState) {
-        for (var i in nextState) {
-            if (!nextState.hasOwnProperty(i)) {
-                continue;
-            }
-            if (prevState[i] !== nextState[i]) {
+        for (var _i = 0, _a = Object.keys(nextState); _i < _a.length; _i++) {
+            var propertyName = _a[_i];
+            if (prevState[propertyName] !== nextState[propertyName]) {
                 return true;
             }
         }
