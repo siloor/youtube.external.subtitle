@@ -448,6 +448,60 @@ test('setState sets the state correctly', () => {
   expect(fakeRender).toHaveBeenCalled();
 });
 
+test('start starts the subtitle correctly', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const fakeStop = jest.fn();
+  const fakeSetInterval = jest.fn();
+  const fakeSetTimeout = jest.fn();
+
+  subtitle['stop'] = fakeStop;
+
+  const window = {
+    setInterval: fakeSetInterval,
+    setTimeout: fakeSetTimeout
+  } as Partial<Window>;
+
+  DIC.setWindow(window as Window);
+
+  subtitle['start']();
+
+  expect(fakeStop).toHaveBeenCalled();
+  expect(fakeSetInterval).toHaveBeenCalledWith(subtitle['onTimeChange'], 500);
+  expect(fakeSetTimeout).toHaveBeenCalledWith(subtitle['onControlsHide'], 3000);
+});
+
+test('stop stops the subtitle correctly', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const fakeSetState = jest.fn();
+  const fakeClearInterval = jest.fn();
+  const fakeClearTimeout = jest.fn();
+
+  subtitle['setState'] = fakeSetState;
+
+  const window = {
+    clearInterval: fakeClearInterval,
+    clearTimeout: fakeClearTimeout
+  } as Partial<Window>;
+
+  DIC.setWindow(window as Window);
+
+  subtitle['stop']();
+
+  expect(fakeClearInterval).toHaveBeenCalledWith(subtitle['timeChangeInterval']);
+  expect(fakeClearTimeout).toHaveBeenCalledWith(subtitle['controlsHideTimeout']);
+  expect(fakeSetState).toHaveBeenCalledWith({ controlsVisible: true });
+});
+
 test('getCurrentVideoId return the correct video id', () => {
   setDICServices(null, null, null);
 
