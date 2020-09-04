@@ -423,3 +423,110 @@ test('render displays the subtitles correctly', () => {
   expect(fakeElement.style.maxWidth).toBe('1120px');
   expect(fakeElement.style.fontSize).toBe('1.5384615384615385em');
 });
+
+test('setState sets the state correctly', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const fakeRender = jest.fn();
+
+  subtitle.render = fakeRender;
+
+  subtitle['state'].text = 'initialText';
+
+  subtitle['setState']({ text: 'initialText' });
+
+  expect(subtitle['state'].text).toBe('initialText');
+  expect(fakeRender).not.toHaveBeenCalled();
+
+  subtitle['setState']({ text: 'fakeText' });
+
+  expect(subtitle['state'].text).toBe('fakeText');
+  expect(fakeRender).toHaveBeenCalled();
+});
+
+test('getCurrentVideoId return the correct video id', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  subtitle['player'] = {
+    getVideoData: () => {
+      return {
+        video_id: 'fakeVideoId',
+      };
+    }
+  };
+
+  expect(subtitle['getCurrentVideoId']()).toBe('fakeVideoId');
+});
+
+test('onTimeChange sets the correct text', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  subtitle['cache'] = {
+    1: [
+      {
+        'end': 11,
+        'start': 10,
+        'text': 'PO: Master Shifu?'
+      },
+      {
+        'end': 14,
+        'start': 13,
+        'text': 'Good time? Bad time?'
+      }
+    ]
+  };
+
+  subtitle['player'] = {
+    getIframe: () => {
+      return subtitleFrame;
+    },
+    getCurrentTime: () => {
+      return 1.12;
+    }
+  };
+
+  subtitle['onTimeChange']();
+
+  expect(subtitle['state'].text).toBe(null);
+
+  subtitle['player'] = {
+    getIframe: () => {
+      return subtitleFrame;
+    },
+    getCurrentTime: () => {
+      return 10.12;
+    }
+  };
+
+  subtitle['onTimeChange']();
+
+  expect(subtitle['state'].text).toBe('PO: Master Shifu?');
+});
+
+test('onPlayerReady sets the correct video id', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  expect(subtitle['videoId']).toBe(null);
+
+  subtitle['getCurrentVideoId'] = () => 'fakeVideoId';
+
+  subtitle['onPlayerReady']();
+
+  expect(subtitle['videoId']).toBe('fakeVideoId');
+});
