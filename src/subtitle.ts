@@ -284,15 +284,14 @@ class Subtitle {
     const window = DIC.getWindow();
 
     this.timeChangeInterval = window.setInterval(this.onTimeChange, 500);
-
-    this.controlsHideTimeout = window.setTimeout(() => {
-      this.setState({ controlsVisible: false });
-    }, 3000);
+    this.controlsHideTimeout = window.setTimeout(this.onControlsHide, 3000);
   }
 
   private stop(): void {
-    clearInterval(this.timeChangeInterval);
-    clearTimeout(this.controlsHideTimeout);
+    const window = DIC.getWindow();
+
+    window.clearInterval(this.timeChangeInterval);
+    window.clearTimeout(this.controlsHideTimeout);
 
     this.setState({ controlsVisible: true });
   }
@@ -305,6 +304,10 @@ class Subtitle {
     const subtitle = getSubtitleFromCache(this.player.getCurrentTime(), this.cache);
 
     this.setState({ text: subtitle ? subtitle.text : null });
+  };
+
+  private onControlsHide = (): void => {
+    this.setState({ controlsVisible: false });
   };
 
   private onPlayerReady = (): void => {

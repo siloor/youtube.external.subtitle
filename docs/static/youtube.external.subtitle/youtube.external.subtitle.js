@@ -324,6 +324,9 @@
                 var subtitle = getSubtitleFromCache(_this.player.getCurrentTime(), _this.cache);
                 _this.setState({ text: subtitle ? subtitle.text : null });
             };
+            this.onControlsHide = function () {
+                _this.setState({ controlsVisible: false });
+            };
             this.onPlayerReady = function () {
                 _this.videoId = _this.getCurrentVideoId();
             };
@@ -402,17 +405,15 @@
             this.render();
         };
         Subtitle.prototype.start = function () {
-            var _this = this;
             this.stop();
             var window = DIC.getWindow();
             this.timeChangeInterval = window.setInterval(this.onTimeChange, 500);
-            this.controlsHideTimeout = window.setTimeout(function () {
-                _this.setState({ controlsVisible: false });
-            }, 3000);
+            this.controlsHideTimeout = window.setTimeout(this.onControlsHide, 3000);
         };
         Subtitle.prototype.stop = function () {
-            clearInterval(this.timeChangeInterval);
-            clearTimeout(this.controlsHideTimeout);
+            var window = DIC.getWindow();
+            window.clearInterval(this.timeChangeInterval);
+            window.clearTimeout(this.controlsHideTimeout);
             this.setState({ controlsVisible: true });
         };
         Subtitle.prototype.getCurrentVideoId = function () {
