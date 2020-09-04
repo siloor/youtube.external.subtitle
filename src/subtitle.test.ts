@@ -596,3 +596,67 @@ test('onControlsHide sets controlsVisible correctly', () => {
 
   expect(subtitle['state'].controlsVisible).toBe(false);
 });
+
+test('onPlayerStateChange handles the change correctly', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const fakeStart = jest.fn();
+  const fakeStop = jest.fn();
+  const fakeSetState = jest.fn();
+
+  subtitle['start'] = fakeStart;
+  subtitle['stop'] = fakeStop;
+  subtitle['setState'] = fakeSetState;
+  subtitle['getCurrentVideoId'] = () => 'fakeVideoId';
+
+  subtitle['videoId'] = 'differentVideoId';
+
+  const fakeYT = {
+    PlayerState: {
+      PLAYING: 'playing',
+      PAUSED: 'paused',
+      ENDED: 'ended',
+      FAKE_EVENT: 'fakeEvent'
+    }
+  };
+
+  DIC.setYT(fakeYT as Youtube);
+
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.PLAYING });
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.PAUSED });
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.ENDED });
+
+  expect(fakeStart).not.toHaveBeenCalled();
+  expect(fakeStop).not.toHaveBeenCalled();
+  expect(fakeSetState).not.toHaveBeenCalled();
+
+  subtitle['videoId'] = 'fakeVideoId';
+
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.FAKE_EVENT });
+
+  expect(fakeStart).not.toHaveBeenCalled();
+  expect(fakeStop).not.toHaveBeenCalled();
+  expect(fakeSetState).not.toHaveBeenCalled();
+
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.PLAYING });
+
+  expect(fakeStart).toHaveBeenCalledTimes(1);
+  expect(fakeStop).not.toHaveBeenCalled();
+  expect(fakeSetState).not.toHaveBeenCalled();
+
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.PAUSED });
+
+  expect(fakeStart).toHaveBeenCalledTimes(1);
+  expect(fakeStop).toHaveBeenCalledTimes(1);
+  expect(fakeSetState).not.toHaveBeenCalled();
+
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.ENDED });
+
+  expect(fakeStart).toHaveBeenCalledTimes(1);
+  expect(fakeStop).toHaveBeenCalledTimes(2);
+  expect(fakeSetState).toHaveBeenCalledWith({ text: null });
+});
