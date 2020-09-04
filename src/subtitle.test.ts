@@ -522,11 +522,23 @@ test('onPlayerReady sets the correct video id', () => {
 
   const subtitle = new Subtitle(subtitleFrame, []);
 
-  expect(subtitle['videoId']).toBe(null);
-
   subtitle['getCurrentVideoId'] = () => 'fakeVideoId';
 
   subtitle['onPlayerReady']();
 
   expect(subtitle['videoId']).toBe('fakeVideoId');
+});
+
+test('onControlsHide sets controlsVisible correctly', () => {
+  setDICServices(null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  subtitle['state'].controlsVisible = true;
+
+  subtitle['onControlsHide']();
+
+  expect(subtitle['state'].controlsVisible).toBe(false);
 });
