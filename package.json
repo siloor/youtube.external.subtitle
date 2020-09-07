@@ -2,7 +2,7 @@
   "name": "youtube.external.subtitle",
   "version": "1.0.0",
   "description": "",
-  "main": "youtube.external.subtitle.js",
+  "main": "dist/youtube.external.subtitle.js",
   "scripts": {
     "start": "rollup -c -w",
     "build": "rollup -c",

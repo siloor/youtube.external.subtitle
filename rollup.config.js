@@ -5,7 +5,7 @@ export default {
   input: 'src/youtube.external.subtitle.ts',
   output: [
     {
-      dir: '.',
+      dir: 'dist',
       format: 'umd',
       name: 'YoutubeExternalSubtitle'
     }
@@ -14,7 +14,7 @@ export default {
     typescript(),
     copy({
       targets: [
-        { src: './youtube.external.subtitle.js', dest: 'docs/static/youtube.external.subtitle' },
+        { src: 'dist/*', dest: 'docs/static/youtube.external.subtitle' },
         { src: './LICENSE.md', dest: 'docs/_includes' },
         { src: './README.md', dest: 'docs/_includes' }
       ],
