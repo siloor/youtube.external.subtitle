@@ -1,13 +1,26 @@
 import typescript from '@rollup/plugin-typescript';
 import copy from 'rollup-plugin-copy';
+import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: 'src/youtube.external.subtitle.ts',
   output: [
     {
-      dir: 'dist',
+      file: 'dist/youtube.external.subtitle.js',
       format: 'umd',
       name: 'YoutubeExternalSubtitle'
+    },
+    {
+      file: 'dist/youtube.external.subtitle.min.js',
+      format: 'umd',
+      name: 'YoutubeExternalSubtitle',
+      plugins: [
+        terser({
+          output: {
+            comments: false
+          }
+        })
+      ]
     }
   ],
   plugins: [
