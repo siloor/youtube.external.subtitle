@@ -64,15 +64,9 @@ export const getFullscreenElement = (document: Document): Element => {
 };
 
 export const getSubtitles = (container: Element|Document): Subtitle[] => {
-  const subtitleElements = container.getElementsByClassName(CSS.CLASS) as HTMLCollectionOf<SubtitleElement>;
+  const initService = DIC.getInitService();
 
-  const subtitles = [];
-
-  for (let i = 0; i < subtitleElements.length; i++) {
-    subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
-  }
-
-  return subtitles;
+  return initService.getSubtitles().filter(subtitle => subtitle.isInContainer(container));
 };
 
 export const getFullscreenSubtitle = (fullscreenElement: SubtitleElement): Subtitle => {
@@ -133,6 +127,24 @@ export const addGlobalStyles = (document: Document): void => {
 };
 
 class InitService {
+  private subtitles: Subtitle[] = [];
+
+  public getSubtitles(): Subtitle[] {
+    return this.subtitles;
+  }
+
+  public addSubtitle(subtitle: Subtitle): void {
+    this.subtitles.push(subtitle);
+  }
+
+  public removeSubtitle(subtitle: Subtitle): void {
+    const index = this.subtitles.indexOf(subtitle);
+
+    if (index !== -1) {
+      this.subtitles.splice(index, 1);
+    }
+  }
+
   public grantIframeApi(cb: Function): void {
     if (DIC.getYT() !== null) {
       cb();

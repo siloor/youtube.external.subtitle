@@ -115,12 +115,8 @@
             document.msFullscreenElement;
     };
     var getSubtitles = function (container) {
-        var subtitleElements = container.getElementsByClassName(CSS.CLASS);
-        var subtitles = [];
-        for (var i = 0; i < subtitleElements.length; i++) {
-            subtitles.push(subtitleElements[i].youtubeExternalSubtitle);
-        }
-        return subtitles;
+        var initService = DIC.getInitService();
+        return initService.getSubtitles().filter(function (subtitle) { return subtitle.isInContainer(container); });
     };
     var getFullscreenSubtitle = function (fullscreenElement) {
         if (!fullscreenElement) {
@@ -163,7 +159,20 @@
     };
     var InitService = /** @class */ (function () {
         function InitService() {
+            this.subtitles = [];
         }
+        InitService.prototype.getSubtitles = function () {
+            return this.subtitles;
+        };
+        InitService.prototype.addSubtitle = function (subtitle) {
+            this.subtitles.push(subtitle);
+        };
+        InitService.prototype.removeSubtitle = function (subtitle) {
+            var index = this.subtitles.indexOf(subtitle);
+            if (index !== -1) {
+                this.subtitles.splice(index, 1);
+            }
+        };
         InitService.prototype.grantIframeApi = function (cb) {
             if (DIC.getYT() !== null) {
                 cb();
@@ -358,6 +367,7 @@
             this.element = createSubtitleElement(iframe, this);
             var initService = DIC.getInitService();
             initService.grantGlobalStyles();
+            initService.addSubtitle(this);
             this.render();
             initService.grantIframeApi(function () {
                 var YT = DIC.getYT();
@@ -378,6 +388,8 @@
             this.player.getIframe().youtubeExternalSubtitle = null;
             this.player.removeEventListener('onReady', this.onPlayerReady);
             this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
+            var initService = DIC.getInitService();
+            initService.removeSubtitle(this);
         };
         Subtitle.prototype.render = function () {
             this.element.className = renderClassName(this.state.isFullscreenActive);
@@ -394,6 +406,9 @@
                 this.element.style.left = frame.x + (frame.width - this.element.offsetWidth) / 2 + "px";
                 this.element.style.visibility = '';
             }
+        };
+        Subtitle.prototype.isInContainer = function (container) {
+            return container.contains(this.element) || container === this.element;
         };
         Subtitle.prototype.setState = function (state) {
             var prevState = this.state;

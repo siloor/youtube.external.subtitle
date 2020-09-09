@@ -210,6 +210,8 @@ class Subtitle {
 
     initService.grantGlobalStyles();
 
+    initService.addSubtitle(this);
+
     this.render();
 
     initService.grantIframeApi(() => {
@@ -239,6 +241,10 @@ class Subtitle {
 
     this.player.removeEventListener('onReady', this.onPlayerReady);
     this.player.removeEventListener('onStateChange', this.onPlayerStateChange);
+
+    const initService = DIC.getInitService();
+
+    initService.removeSubtitle(this);
   }
 
   public render(): void {
@@ -260,6 +266,10 @@ class Subtitle {
       this.element.style.left = `${frame.x + (frame.width - this.element.offsetWidth) / 2}px`;
       this.element.style.visibility = '';
     }
+  }
+
+  public isInContainer(container: Element|Document): boolean {
+    return container.contains(this.element) || container === this.element;
   }
 
   private setState(state: Partial<State>): void {

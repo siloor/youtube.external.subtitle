@@ -178,13 +178,24 @@ const getSubtitleFrame = (src: string): SubtitleFrame => {
   } as SubtitleFrame;
 };
 
-const setDICServices = (fakeElement: HTMLElement, playerAddEventListener: Function, playerRemoveEventListener: Function) => {
-  DIC.setInitService({
+const setDICServices = (
+  fakeElement: HTMLElement,
+  initServiceAddSubtitle: Function,
+  initServiceRemoveSubtitle: Function,
+  playerAddEventListener: Function,
+  playerRemoveEventListener: Function
+) => {
+  const initService = {
     grantGlobalStyles: () => {},
     grantIframeApi: (cb) => {
       cb();
     }
-  } as InitService);
+  } as InitService;
+
+  initService.addSubtitle = initServiceAddSubtitle === null ? () => {} : initServiceAddSubtitle as any;
+  initService.removeSubtitle = initServiceRemoveSubtitle === null ? () => {} : initServiceRemoveSubtitle as any;
+
+  DIC.setInitService(initService);
 
   const document = {
     createElement: (): HTMLElement => {
@@ -219,8 +230,9 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
   } as HTMLElement;
 
   const fakePlayerAddEventListener = jest.fn();
+  const fakeInitServiceAddSubtitle = jest.fn();
 
-  setDICServices(fakeElement, fakePlayerAddEventListener, null);
+  setDICServices(fakeElement, fakeInitServiceAddSubtitle, null, fakePlayerAddEventListener, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -257,6 +269,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
     ]
   });
   expect(subtitle['element']).toBe(fakeElement);
+  expect(fakeInitServiceAddSubtitle).toHaveBeenCalledTimes(1);
   expect(subtitle['player']).toBeTruthy();
   expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
   expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
@@ -267,6 +280,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
   expect(() => {
     new Subtitle(subtitleFrame2, subtitles);
   }).toThrow('YoutubeExternalSubtitle: subtitle is already added for this element');
+  expect(fakeInitServiceAddSubtitle).toHaveBeenCalledTimes(1);
 
   const subtitleFrame3 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
 
@@ -282,7 +296,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
 });
 
 test('load loads the subtitles properly', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -320,7 +334,7 @@ test('load loads the subtitles properly', () => {
 });
 
 test('setIsFullscreenActive sets isFullscreenActive', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -346,8 +360,9 @@ test('destroy removes the subtitle instance', () => {
   } as HTMLElement;
 
   const fakePlayerRemoveEventListener = jest.fn();
+  const fakeInitServiceRemoveSubtitle = jest.fn();
 
-  setDICServices(fakeElement, null, fakePlayerRemoveEventListener);
+  setDICServices(fakeElement, null, fakeInitServiceRemoveSubtitle, null, fakePlayerRemoveEventListener);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -364,6 +379,7 @@ test('destroy removes the subtitle instance', () => {
   expect(subtitleFrame.youtubeExternalSubtitle).toBe(null);
   expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
   expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
+  expect(fakeInitServiceRemoveSubtitle).toHaveBeenCalled();
 });
 
 test('render displays the subtitles correctly', () => {
@@ -376,7 +392,7 @@ test('render displays the subtitles correctly', () => {
     offsetHeight: 40
   } as HTMLElement;
 
-  setDICServices(fakeElement, null, null);
+  setDICServices(fakeElement, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -424,8 +440,30 @@ test('render displays the subtitles correctly', () => {
   expect(fakeElement.style.fontSize).toBe('1.5384615384615385em');
 });
 
+test('isInContainer return the correct result', () => {
+  const fakeElement = {
+    style: {},
+    contains(other: Node | null): boolean {
+      return false;
+    }
+  } as HTMLElement;
+
+  setDICServices(fakeElement, null, null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const notParentContainer = { contains: () => { return false; } } as Partial<Element>;
+  const parentContainer = { contains: () => { return true; } } as Partial<Element>;
+
+  expect(subtitle.isInContainer(notParentContainer as Element)).toBe(false);
+  expect(subtitle.isInContainer(parentContainer as Element)).toBe(true);
+  expect(subtitle.isInContainer(fakeElement)).toBe(true);
+});
+
 test('setState sets the state correctly', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -449,7 +487,7 @@ test('setState sets the state correctly', () => {
 });
 
 test('start starts the subtitle correctly', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -476,7 +514,7 @@ test('start starts the subtitle correctly', () => {
 });
 
 test('stop stops the subtitle correctly', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -503,7 +541,7 @@ test('stop stops the subtitle correctly', () => {
 });
 
 test('getCurrentVideoId return the correct video id', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -521,7 +559,7 @@ test('getCurrentVideoId return the correct video id', () => {
 });
 
 test('onTimeChange sets the correct text', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -570,7 +608,7 @@ test('onTimeChange sets the correct text', () => {
 });
 
 test('onPlayerReady sets the correct video id', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -584,7 +622,7 @@ test('onPlayerReady sets the correct video id', () => {
 });
 
 test('onControlsHide sets controlsVisible correctly', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
@@ -598,7 +636,7 @@ test('onControlsHide sets controlsVisible correctly', () => {
 });
 
 test('onPlayerStateChange handles the change correctly', () => {
-  setDICServices(null, null, null);
+  setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 

@@ -179,6 +179,50 @@ test('waitFor calls the onComplete when isReady is true', () => {
   expect(onComplete2).toHaveBeenCalled();
 });
 
+test('getSubtitles return the correct subtitles', () => {
+  const initService = new InitService();
+
+  const fakeSubtitles = [
+    {} as Subtitle
+  ];
+
+  initService['subtitles'] = fakeSubtitles;
+
+  expect(initService.getSubtitles()).toBe(fakeSubtitles);
+});
+
+test('addSubtitle adds the subtitle correctly', () => {
+  const initService = new InitService();
+
+  const fakeSubtitle = {};
+
+  initService.addSubtitle(fakeSubtitle as Subtitle);
+
+  expect(initService.getSubtitles()).arrayItemsToBe([ fakeSubtitle ]);
+});
+
+test('removeSubtitle removes the subtitle correctly', () => {
+  const initService = new InitService();
+
+  const fakeSubtitle1 = {};
+  const fakeSubtitle2 = {};
+
+  initService['subtitles'] = [
+    fakeSubtitle1 as Subtitle,
+    fakeSubtitle2 as Subtitle
+  ];
+
+  expect(initService.getSubtitles()).arrayItemsToBe([ fakeSubtitle1, fakeSubtitle2 ]);
+
+  initService.removeSubtitle(fakeSubtitle1 as Subtitle);
+
+  expect(initService.getSubtitles()).arrayItemsToBe([ fakeSubtitle2 ]);
+
+  initService.removeSubtitle(fakeSubtitle1 as Subtitle);
+
+  expect(initService.getSubtitles()).arrayItemsToBe([ fakeSubtitle2 ]);
+});
+
 test('grantIframeApi calls the callback when the Youtube Api is available', () => {
   const callback1 = jest.fn();
   const YT1 = {};
@@ -265,69 +309,120 @@ test('getFullscreenElement returns the correct element', () => {
   )).toBe(undefined);
 });
 
-const createContainerMock = (results: SubtitleElement[]): Element => {
-  const container: Partial<Element> = {
-    getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-      return arrayToHTMLCollection(results);
-    }
-  };
-
-  return container as Element;
-};
-
 const createMockSubtitleElement = (subtitle: Subtitle): SubtitleElement => {
   return { youtubeExternalSubtitle: subtitle } as SubtitleElement;
 };
 
 test('getSubtitles returns the correct subtitles', () => {
-  expect(getSubtitles(createContainerMock([]))).toStrictEqual([]);
+  DIC.setInitService({
+    getSubtitles(): Subtitle[] {
+      return [];
+    }
+  } as InitService);
 
-  const subtitle1 = {};
-  const subtitle2 = {};
+  expect(getSubtitles({} as Element)).toStrictEqual([]);
 
-  expect(getSubtitles(createContainerMock([
-    createMockSubtitleElement(subtitle1 as Subtitle),
-    createMockSubtitleElement(subtitle2 as Subtitle)
-  ]))).arrayItemsToBe([ subtitle1, subtitle2 ]);
+  const subtitle1 = {
+    isInContainer: () => false
+  } as Partial<Subtitle>;
+  const subtitle2 = {
+    isInContainer: () => true
+  } as Partial<Subtitle>;
+
+  DIC.setInitService({
+    getSubtitles(): Subtitle[] {
+      return [
+        subtitle1 as Subtitle,
+        subtitle2 as Subtitle
+      ];
+    }
+  } as InitService);
+
+  expect(getSubtitles({} as Element)).arrayItemsToBe([ subtitle2 ]);
 });
 
 test('getFullscreenSubtitle returns the correct subtitle', () => {
-  const subtitle1 = {};
-  const subtitle2 = {};
-
   expect(getFullscreenSubtitle(undefined)).toBe(null);
+
+  const subtitle1 = {
+    isInContainer: () => true
+  } as Partial<Subtitle>;
+
   expect(getFullscreenSubtitle(createMockSubtitleElement(subtitle1 as Subtitle))).toBe(subtitle1);
-  expect(getFullscreenSubtitle(createContainerMock([
-    createMockSubtitleElement(subtitle2 as Subtitle),
-    createMockSubtitleElement(subtitle1 as Subtitle)
-  ]) as SubtitleElement)).toBe(subtitle2);
-  expect(getFullscreenSubtitle(createContainerMock([]) as SubtitleElement)).toBe(null);
+
+  const subtitle2 = {
+    isInContainer: () => true
+  } as Partial<Subtitle>;
+
+  DIC.setInitService({
+    getSubtitles(): Subtitle[] {
+      return [
+        subtitle1 as Subtitle,
+        subtitle2 as Subtitle
+      ];
+    }
+  } as InitService);
+
+  expect(getFullscreenSubtitle({} as SubtitleElement)).toBe(subtitle1);
+
+  DIC.setInitService({
+    getSubtitles(): Subtitle[] {
+      return [];
+    }
+  } as InitService);
+
+  expect(getFullscreenSubtitle({} as SubtitleElement)).toBe(null);
 });
 
 test('fullscreenChangeHandler sets subtitles state correctly', () => {
-  const getDocument = (fullscreenSubtitle: Partial<Subtitle>, subtitles: Partial<Subtitle>[]): Partial<Document> => {
+  const getDocument = (fullscreenSubtitle: Partial<Subtitle>): Partial<Document> => {
     return {
-      getElementsByClassName: (classNames: string): HTMLCollectionOf<Element> => {
-        return arrayToHTMLCollection(subtitles.map(subtitle => createMockSubtitleElement(subtitle as Subtitle)));
-      },
       fullscreenElement: fullscreenSubtitle ? createMockSubtitleElement(fullscreenSubtitle as Subtitle) : undefined
     };
   };
 
-  const subtitle1 = { setIsFullscreenActive: jest.fn() };
-  const subtitle2 = { setIsFullscreenActive: jest.fn() };
+  const subtitle1 = {
+    setIsFullscreenActive: jest.fn(),
+    isInContainer: () => true
+  } as Partial<Subtitle>;
+  const subtitle2 = {
+    setIsFullscreenActive: jest.fn(),
+    isInContainer: () => true
+  } as Partial<Subtitle>;
 
-  DIC.setDocument(getDocument(subtitle2, [subtitle1, subtitle2]) as Document);
+  DIC.setDocument(getDocument(subtitle2) as Document);
+  DIC.setInitService({
+    getSubtitles(): Subtitle[] {
+      return [
+        subtitle1 as Subtitle,
+        subtitle2 as Subtitle
+      ];
+    }
+  } as InitService);
 
   fullscreenChangeHandler();
 
   expect(subtitle1.setIsFullscreenActive).toHaveBeenCalledWith(false);
   expect(subtitle2.setIsFullscreenActive).toHaveBeenCalledWith(true);
 
-  const subtitle3 = { setIsFullscreenActive: jest.fn() };
-  const subtitle4 = { setIsFullscreenActive: jest.fn() };
+  const subtitle3 = {
+    setIsFullscreenActive: jest.fn(),
+    isInContainer: () => true
+  } as Partial<Subtitle>;
+  const subtitle4 = {
+    setIsFullscreenActive: jest.fn(),
+    isInContainer: () => true
+  } as Partial<Subtitle>;
 
-  DIC.setDocument(getDocument(undefined, [subtitle3, subtitle4]) as Document);
+  DIC.setDocument(getDocument(undefined) as Document);
+  DIC.setInitService({
+    getSubtitles(): Subtitle[] {
+      return [
+        subtitle3 as Subtitle,
+        subtitle4 as Subtitle
+      ];
+    }
+  } as InitService);
 
   fullscreenChangeHandler();
 
