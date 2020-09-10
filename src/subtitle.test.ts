@@ -1,6 +1,7 @@
 import DIC, { Youtube } from './dic';
 import InitService from './init.service';
 import Subtitle, {
+  SubtitleElement,
   SubtitleFrame,
   State,
   getCacheName,
@@ -13,6 +14,7 @@ import Subtitle, {
   isStateChanged,
   renderClassName,
   renderText,
+  renderSubtitle,
   getFrameRect
 } from './subtitle';
 
@@ -167,6 +169,52 @@ test('getFrameRect returns the correct frame rectangle', () => {
   });
 });
 
+test('renderSubtitle displays the subtitles correctly', () => {
+  const fakeElement = {
+    style: {},
+    parentNode: {
+      removeChild: jest.fn()
+    } as Partial<ParentNode & Node>,
+    offsetWidth: 196,
+    offsetHeight: 40
+  } as SubtitleElement;
+
+  renderSubtitle(fakeElement, null, true, null, true);
+
+  expect(fakeElement.className).toBe('youtube-external-subtitle fullscreen');
+  expect(fakeElement.innerHTML).toBe('<span></span>');
+  expect(fakeElement.style.display).toBe('');
+
+  renderSubtitle(fakeElement, null, true, 'PO: Master Shifu?', true);
+
+  expect(fakeElement.innerHTML).toBe('<span>PO: Master Shifu?</span>');
+  expect(fakeElement.style.display).toBe('block');
+
+  const fakePlayer = {
+    getIframe: () => {
+      return {
+        offsetLeft: 88,
+        scrollLeft: 0,
+        clientLeft: 0,
+        offsetTop: 174,
+        scrollTop: 0,
+        clientTop: 0,
+        offsetWidth: 1140,
+        offsetHeight: 400,
+      } as SubtitleFrame;
+    }
+  };
+
+  renderSubtitle(fakeElement, fakePlayer, true, 'PO: Master Shifu?', true);
+
+  expect(fakeElement.style.display).toBe('block');
+  expect(fakeElement.style.visibility).toBe('');
+  expect(fakeElement.style.top).toBe('474px');
+  expect(fakeElement.style.left).toBe('560px');
+  expect(fakeElement.style.maxWidth).toBe('1120px');
+  expect(fakeElement.style.fontSize).toBe('1.5384615384615385em');
+});
+
 const getSubtitleFrame = (src: string): SubtitleFrame => {
   const parentNode: Partial<ParentNode & Node> = {
     insertBefore: jest.fn()
@@ -249,7 +297,9 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
     }
   ];
 
-  const subtitle = new Subtitle(subtitleFrame, subtitles);
+  const fakeRenderMethod = jest.fn();
+
+  const subtitle = new Subtitle(subtitleFrame, subtitles, fakeRenderMethod);
 
   expect(subtitle).toBeInstanceOf(Subtitle);
   expect(subtitleFrame.youtubeExternalSubtitle).toBe(subtitle);
@@ -269,6 +319,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
     ]
   });
   expect(subtitle['element']).toBe(fakeElement);
+  expect(subtitle['renderMethod']).toBe(fakeRenderMethod);
   expect(fakeInitServiceAddSubtitle).toHaveBeenCalledTimes(1);
   expect(subtitle['player']).toBeTruthy();
   expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
@@ -286,6 +337,7 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
 
   const subtitle3 = new Subtitle(subtitleFrame3, subtitles);
 
+  expect(subtitle3['renderMethod']).toBe(renderSubtitle);
   expect(subtitleFrame3.src).toBe('https://www.youtube.com/embed/fGPPfZIvtCw?enablejsapi=1&html5=1&playsinline=1&fs=0');
 
   const subtitleFrame4 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
@@ -382,40 +434,20 @@ test('destroy removes the subtitle instance', () => {
   expect(fakeInitServiceRemoveSubtitle).toHaveBeenCalled();
 });
 
-test('render displays the subtitles correctly', () => {
+test('render calls the correct renderMethod', () => {
   const fakeElement = {
-    style: {},
-    parentNode: {
-      removeChild: jest.fn()
-    } as Partial<ParentNode & Node>,
-    offsetWidth: 196,
-    offsetHeight: 40
+    style: {}
   } as HTMLElement;
 
   setDICServices(fakeElement, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
 
-  const subtitle = new Subtitle(subtitleFrame, []);
+  const fakeRenderMethod = jest.fn();
 
-  subtitle['state'].isFullscreenActive = true;
+  const subtitle = new Subtitle(subtitleFrame, [], fakeRenderMethod);
 
-  subtitle['player'] = null;
-
-  subtitle.render();
-
-  expect(fakeElement.className).toBe('youtube-external-subtitle fullscreen');
-  expect(fakeElement.innerHTML).toBe('<span></span>');
-  expect(fakeElement.style.display).toBe('');
-
-  subtitle['state'].text = 'PO: Master Shifu?';
-
-  subtitle.render();
-
-  expect(fakeElement.innerHTML).toBe('<span>PO: Master Shifu?</span>');
-  expect(fakeElement.style.display).toBe('block');
-
-  subtitle['player'] = {
+  const fakePlayer = {
     getIframe: () => {
       return {
         offsetLeft: 88,
@@ -429,15 +461,20 @@ test('render displays the subtitles correctly', () => {
       } as SubtitleFrame;
     }
   };
+  const fakeIsFullscreenActive = true;
+  const fakeText = 'fakeText';
+  const fakeControlsVisible = false;
+
+  subtitle['player'] = fakePlayer;
+  subtitle['state'].isFullscreenActive = fakeIsFullscreenActive;
+  subtitle['state'].text = fakeText;
+  subtitle['state'].controlsVisible = fakeControlsVisible;
+
+  fakeRenderMethod.mockClear();
 
   subtitle.render();
 
-  expect(fakeElement.style.display).toBe('block');
-  expect(fakeElement.style.visibility).toBe('');
-  expect(fakeElement.style.top).toBe('474px');
-  expect(fakeElement.style.left).toBe('560px');
-  expect(fakeElement.style.maxWidth).toBe('1120px');
-  expect(fakeElement.style.fontSize).toBe('1.5384615384615385em');
+  expect(fakeRenderMethod).toHaveBeenCalledWith(fakeElement, fakePlayer, fakeIsFullscreenActive, fakeText, fakeControlsVisible);
 });
 
 test('isInContainer return the correct result', () => {

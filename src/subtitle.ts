@@ -1,6 +1,8 @@
 import DIC from './dic';
 import { CSS } from './init.service';
 
+type RenderMethod = (element: SubtitleElement, player: any, isFullscreenActive: boolean, text: string, controlsVisible: boolean) => void;
+
 export interface SubtitleElement extends HTMLDivElement {
   youtubeExternalSubtitle: Subtitle;
 }
@@ -176,6 +178,27 @@ export const getFrameRect = (iframe: SubtitleFrame, controlsVisible: boolean): {
   };
 };
 
+export const renderSubtitle = (element: SubtitleElement, player: any, isFullscreenActive: boolean, text: string, controlsVisible: boolean): void => {
+  element.className = renderClassName(isFullscreenActive);
+  element.innerHTML = renderText(text);
+
+  element.style.display = text === null ? '' : 'block';
+
+  if (player) {
+    const frame = getFrameRect(player.getIframe(), controlsVisible);
+
+    element.style.visibility = 'hidden';
+    element.style.top = `${frame.y}px`;
+    element.style.left = `${frame.x}px`;
+    element.style.maxWidth = `${frame.width - 20}px`;
+    element.style.fontSize = `${frame.height / 260}em`;
+
+    element.style.top = `${frame.y + frame.height - frame.bottomPadding - element.offsetHeight}px`;
+    element.style.left = `${frame.x + (frame.width - element.offsetWidth) / 2}px`;
+    element.style.visibility = '';
+  }
+};
+
 class Subtitle {
   private cache: Cache = null;
   private timeChangeInterval: number = 0;
@@ -183,13 +206,14 @@ class Subtitle {
   private player: any = null;
   private videoId: string = null;
   private readonly element: SubtitleElement = null;
+  private readonly renderMethod: RenderMethod = null;
   private state: State = {
     text: null,
     isFullscreenActive: null,
     controlsVisible: true
   };
 
-  constructor(iframe: SubtitleFrame, subtitles: SubtitleEntry[] = []) {
+  constructor(iframe: SubtitleFrame, subtitles: SubtitleEntry[] = [], renderMethod: RenderMethod = null) {
     if (iframe.youtubeExternalSubtitle) {
       throw new Error('YoutubeExternalSubtitle: subtitle is already added for this element');
     }
@@ -205,6 +229,8 @@ class Subtitle {
     this.load(subtitles);
 
     this.element = createSubtitleElement(iframe, this);
+
+    this.renderMethod = renderMethod === null ? renderSubtitle : renderMethod;
 
     const initService = DIC.getInitService();
 
@@ -248,24 +274,7 @@ class Subtitle {
   }
 
   public render(): void {
-    this.element.className = renderClassName(this.state.isFullscreenActive);
-    this.element.innerHTML = renderText(this.state.text);
-
-    this.element.style.display = this.state.text === null ? '' : 'block';
-
-    if (this.player) {
-      const frame = getFrameRect(this.player.getIframe(), this.state.controlsVisible);
-
-      this.element.style.visibility = 'hidden';
-      this.element.style.top = `${frame.y}px`;
-      this.element.style.left = `${frame.x}px`;
-      this.element.style.maxWidth = `${frame.width - 20}px`;
-      this.element.style.fontSize = `${frame.height / 260}em`;
-
-      this.element.style.top = `${frame.y + frame.height - frame.bottomPadding - this.element.offsetHeight}px`;
-      this.element.style.left = `${frame.x + (frame.width - this.element.offsetWidth) / 2}px`;
-      this.element.style.visibility = '';
-    }
+    this.renderMethod(this.element, this.player, this.state.isFullscreenActive, this.state.text, this.state.controlsVisible);
   }
 
   public isInContainer(container: Element|Document): boolean {

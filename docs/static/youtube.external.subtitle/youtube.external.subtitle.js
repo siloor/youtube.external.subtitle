@@ -314,16 +314,34 @@
             bottomPadding: height < 200 && !controlsVisible ? 20 : 60
         };
     };
+    var renderSubtitle = function (element, player, isFullscreenActive, text, controlsVisible) {
+        element.className = renderClassName(isFullscreenActive);
+        element.innerHTML = renderText(text);
+        element.style.display = text === null ? '' : 'block';
+        if (player) {
+            var frame = getFrameRect(player.getIframe(), controlsVisible);
+            element.style.visibility = 'hidden';
+            element.style.top = frame.y + "px";
+            element.style.left = frame.x + "px";
+            element.style.maxWidth = frame.width - 20 + "px";
+            element.style.fontSize = frame.height / 260 + "em";
+            element.style.top = frame.y + frame.height - frame.bottomPadding - element.offsetHeight + "px";
+            element.style.left = frame.x + (frame.width - element.offsetWidth) / 2 + "px";
+            element.style.visibility = '';
+        }
+    };
     var Subtitle = /** @class */ (function () {
-        function Subtitle(iframe, subtitles) {
+        function Subtitle(iframe, subtitles, renderMethod) {
             var _this = this;
             if (subtitles === void 0) { subtitles = []; }
+            if (renderMethod === void 0) { renderMethod = null; }
             this.cache = null;
             this.timeChangeInterval = 0;
             this.controlsHideTimeout = 0;
             this.player = null;
             this.videoId = null;
             this.element = null;
+            this.renderMethod = null;
             this.state = {
                 text: null,
                 isFullscreenActive: null,
@@ -365,6 +383,7 @@
             }
             this.load(subtitles);
             this.element = createSubtitleElement(iframe, this);
+            this.renderMethod = renderMethod === null ? renderSubtitle : renderMethod;
             var initService = DIC.getInitService();
             initService.grantGlobalStyles();
             initService.addSubtitle(this);
@@ -392,20 +411,7 @@
             initService.removeSubtitle(this);
         };
         Subtitle.prototype.render = function () {
-            this.element.className = renderClassName(this.state.isFullscreenActive);
-            this.element.innerHTML = renderText(this.state.text);
-            this.element.style.display = this.state.text === null ? '' : 'block';
-            if (this.player) {
-                var frame = getFrameRect(this.player.getIframe(), this.state.controlsVisible);
-                this.element.style.visibility = 'hidden';
-                this.element.style.top = frame.y + "px";
-                this.element.style.left = frame.x + "px";
-                this.element.style.maxWidth = frame.width - 20 + "px";
-                this.element.style.fontSize = frame.height / 260 + "em";
-                this.element.style.top = frame.y + frame.height - frame.bottomPadding - this.element.offsetHeight + "px";
-                this.element.style.left = frame.x + (frame.width - this.element.offsetWidth) / 2 + "px";
-                this.element.style.visibility = '';
-            }
+            this.renderMethod(this.element, this.player, this.state.isFullscreenActive, this.state.text, this.state.controlsVisible);
         };
         Subtitle.prototype.isInContainer = function (container) {
             return container.contains(this.element) || container === this.element;
