@@ -34,6 +34,7 @@ If you'd like to make subtitle for a video, there are a lot of tools helping you
 - [Style subtitles](http://siloor.github.io/youtube.external.subtitle/examples/style/)
 - [Fullscreen](http://siloor.github.io/youtube.external.subtitle/examples/fullscreen/)
 - [Responsive](http://siloor.github.io/youtube.external.subtitle/examples/responsive/)
+- [Custom render method](http://siloor.github.io/youtube.external.subtitle/examples/customrendermethod/)
 
 ## Limitations
 
