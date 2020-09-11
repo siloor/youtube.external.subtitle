@@ -27,7 +27,7 @@ export default {
     typescript(),
     copy({
       targets: [
-        { src: 'dist/*', dest: 'docs/static/youtube.external.subtitle' },
+        { src: 'dist/*', dest: 'docs/static/vendor/youtube.external.subtitle' },
         { src: './LICENSE.md', dest: 'docs/_includes' },
         { src: './README.md', dest: 'docs/_includes' }
       ],

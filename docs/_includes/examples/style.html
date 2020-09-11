@@ -1,13 +1,13 @@
 <div id="fullscreen-container" style="width: 100%; height: 400px;">
   <iframe id="video" width="100%" height="100%" src="https://www.youtube.com/embed/fGPPfZIvtCw" frameborder="0" allowfullscreen="true"></iframe>
 </div>
-<script src="static/youtube.external.subtitle/youtube.external.subtitle.js"></script>
+<script src="static/vendor/youtube.external.subtitle/youtube.external.subtitle.js"></script>
+<script src="static/vendor/subtitles-parser/subtitles.parser.js"></script>
 <button id="fullscreen-btn">Fullscreen</button>
 <style>
   .youtube-external-subtitle span { background: red; }
   .youtube-external-subtitle.fullscreen span { background: green; }
 </style>
-<script src="static/js/subtitles.parser.js"></script>
 <script>
   var loadSRT = function(url, callback) {
     var httpRequest = new XMLHttpRequest();
