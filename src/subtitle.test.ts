@@ -531,10 +531,12 @@ test('start starts the subtitle correctly', () => {
   const subtitle = new Subtitle(subtitleFrame, []);
 
   const fakeStop = jest.fn();
+  const fakeOnTimeChange = jest.fn();
   const fakeSetInterval = jest.fn();
   const fakeSetTimeout = jest.fn();
 
   subtitle['stop'] = fakeStop;
+  subtitle['onTimeChange'] = fakeOnTimeChange;
 
   const window = {
     setInterval: fakeSetInterval,
@@ -548,6 +550,7 @@ test('start starts the subtitle correctly', () => {
   expect(fakeStop).toHaveBeenCalled();
   expect(fakeSetInterval).toHaveBeenCalledWith(subtitle['onTimeChange'], 500);
   expect(fakeSetTimeout).toHaveBeenCalledWith(subtitle['onControlsHide'], 3000);
+  expect(fakeOnTimeChange).toHaveBeenCalled();
 });
 
 test('stop stops the subtitle correctly', () => {

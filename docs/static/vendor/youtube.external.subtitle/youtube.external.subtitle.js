@@ -430,6 +430,7 @@
             var window = DIC.getWindow();
             this.timeChangeInterval = window.setInterval(this.onTimeChange, 500);
             this.controlsHideTimeout = window.setTimeout(this.onControlsHide, 3000);
+            this.onTimeChange();
         };
         Subtitle.prototype.stop = function () {
             var window = DIC.getWindow();
