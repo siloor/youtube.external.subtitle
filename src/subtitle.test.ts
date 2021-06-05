@@ -477,7 +477,7 @@ test('render calls the correct renderMethod', () => {
   expect(fakeRenderMethod).toHaveBeenCalledWith(fakeElement, fakePlayer, fakeIsFullscreenActive, fakeText, fakeControlsVisible);
 });
 
-test('isInContainer return the correct result', () => {
+test('isInContainer returns the correct result', () => {
   const fakeElement = {
     style: {},
     contains(other: Node | null): boolean {
@@ -497,6 +497,20 @@ test('isInContainer return the correct result', () => {
   expect(subtitle.isInContainer(notParentContainer as Element)).toBe(false);
   expect(subtitle.isInContainer(parentContainer as Element)).toBe(true);
   expect(subtitle.isInContainer(fakeElement)).toBe(true);
+});
+
+test('getYTPlayer returns the player', () => {
+  setDICServices(null, null, null, null, null);
+
+  const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
+
+  const subtitle = new Subtitle(subtitleFrame, []);
+
+  const fakePlayer = {};
+
+  subtitle['player'] = fakePlayer;
+
+  expect(subtitle.getYTPlayer()).toBe(fakePlayer);
 });
 
 test('setState sets the state correctly', () => {
@@ -580,7 +594,7 @@ test('stop stops the subtitle correctly', () => {
   expect(fakeSetState).toHaveBeenCalledWith({ controlsVisible: true });
 });
 
-test('getCurrentVideoId return the correct video id', () => {
+test('getCurrentVideoId returns the correct video id', () => {
   setDICServices(null, null, null, null, null);
 
   const subtitleFrame = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');

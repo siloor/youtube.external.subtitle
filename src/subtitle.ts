@@ -281,6 +281,10 @@ class Subtitle {
     return container.contains(this.element) || container === this.element;
   }
 
+  public getYTPlayer(): any {
+    return this.player;
+  }
+
   private setState(state: Partial<State>): void {
     const prevState = this.state;
     const nextState: State = {
