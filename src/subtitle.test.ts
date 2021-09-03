@@ -257,18 +257,26 @@ const setDICServices = (
 
   DIC.setDocument(document as Document);
 
+  class FakePlayer {
+    iframe: SubtitleFrame;
+    addEventListener = playerAddEventListener === null
+      ? () => {}
+      : playerAddEventListener;
+    removeEventListener = playerRemoveEventListener === null
+      ? () => {}
+      : playerRemoveEventListener;
+
+    constructor(iframe: SubtitleFrame) {
+      this.iframe = iframe;
+    }
+
+    getIframe(): SubtitleFrame {
+      return this.iframe;
+    }
+  }
+
   DIC.setYT({
-    Player: (iframe: SubtitleFrame) => ({
-      addEventListener: playerAddEventListener === null
-        ? () => {}
-        : playerAddEventListener,
-      removeEventListener: playerRemoveEventListener === null
-        ? () => {}
-        : playerRemoveEventListener,
-      getIframe: () => {
-        return iframe;
-      }
-    })
+    Player: FakePlayer
   } as Youtube);
 };
 
@@ -321,9 +329,9 @@ test('new Subtitle() returns a correct Subtitle instance', () => {
   expect(subtitle['element']).toBe(fakeElement);
   expect(subtitle['renderMethod']).toBe(fakeRenderMethod);
   expect(fakeInitServiceAddSubtitle).toHaveBeenCalledTimes(1);
-  expect(subtitle['player']).toBeTruthy();
-  expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
-  expect(DIC.getYT().Player().addEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
+  expect(subtitle.getYTPlayer()).toBeTruthy();
+  expect(subtitle.getYTPlayer().addEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
+  expect(subtitle.getYTPlayer().addEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
 
   const subtitleFrame2 = getSubtitleFrame('https://www.youtube.com/embed/fGPPfZIvtCw');
   subtitleFrame2.youtubeExternalSubtitle = {} as Subtitle;
@@ -429,8 +437,8 @@ test('destroy removes the subtitle instance', () => {
   expect(fakeStopMethod).toHaveBeenCalled();
   expect(fakeElement.parentNode.removeChild).toHaveBeenCalledWith(fakeElement);
   expect(subtitleFrame.youtubeExternalSubtitle).toBe(null);
-  expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
-  expect(DIC.getYT().Player().removeEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
+  expect(subtitle.getYTPlayer().removeEventListener).toHaveBeenCalledWith('onReady', subtitle['onPlayerReady']);
+  expect(subtitle.getYTPlayer().removeEventListener).toHaveBeenCalledWith('onStateChange', subtitle['onPlayerStateChange']);
   expect(fakeInitServiceRemoveSubtitle).toHaveBeenCalled();
 });
 
