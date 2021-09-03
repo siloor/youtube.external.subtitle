@@ -17,7 +17,11 @@ declare global {
 
 export interface Youtube {
   Player: any;
-  PlayerState: any;
+  PlayerState: {
+    PLAYING: number;
+    PAUSED: number;
+    ENDED: number;
+  };
 }
 
 export class Container {

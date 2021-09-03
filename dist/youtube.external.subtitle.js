@@ -416,6 +416,9 @@
         Subtitle.prototype.isInContainer = function (container) {
             return container.contains(this.element) || container === this.element;
         };
+        Subtitle.prototype.getYTPlayer = function () {
+            return this.player;
+        };
         Subtitle.prototype.setState = function (state) {
             var prevState = this.state;
             var nextState = __assign(__assign({}, prevState), state);

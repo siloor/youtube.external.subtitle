@@ -709,12 +709,12 @@ test('onPlayerStateChange handles the change correctly', () => {
 
   const fakeYT = {
     PlayerState: {
-      PLAYING: 'playing',
-      PAUSED: 'paused',
-      ENDED: 'ended',
-      FAKE_EVENT: 'fakeEvent'
+      PLAYING: 1,
+      PAUSED: 2,
+      ENDED: 3
     }
   };
+  fakeYT.PlayerState['FAKE_EVENT'] = 4;
 
   DIC.setYT(fakeYT as Youtube);
 
@@ -728,7 +728,7 @@ test('onPlayerStateChange handles the change correctly', () => {
 
   subtitle['videoId'] = 'fakeVideoId';
 
-  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState.FAKE_EVENT });
+  subtitle['onPlayerStateChange']({ data: fakeYT.PlayerState['FAKE_EVENT'] });
 
   expect(fakeStart).not.toHaveBeenCalled();
   expect(fakeStop).not.toHaveBeenCalled();
