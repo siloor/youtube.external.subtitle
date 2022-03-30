@@ -6,6 +6,3 @@ layout: main
 <p>{{ page.description }}</p>
 {% capture example %}{% include examples/{{ page.example }}.html %}{% endcapture %}
 {{ example }}
-<blockquote>
-  <pre>{{ example | xml_escape }}</pre>
-</blockquote>
