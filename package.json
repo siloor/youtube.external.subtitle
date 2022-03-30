@@ -1,5 +1,5 @@
 {
-  "name": "youtube.external.subtitle",
+  "name": "jamsubs",
   "version": "1.0.0",
   "description": "",
   "main": "dist/youtube.external.subtitle.js",
