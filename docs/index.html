@@ -2,9 +2,3 @@
 layout: main
 basehref: ./
 ---
-
-<style>p img { max-width: 100%; }</style>
-{% capture readme %}{% include README.md %}{% endcapture %}
-{{ readme | markdownify }}
-{% capture license %}{% include LICENSE.md %}{% endcapture %}
-{{ license | markdownify }}
